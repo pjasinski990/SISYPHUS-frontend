@@ -1,6 +1,7 @@
 interface AuthResponse {
     success: boolean;
     message: string;
+    token: string | null;
 }
 
 async function authRequest(endpoint: string, username: string, password: string): Promise<AuthResponse> {

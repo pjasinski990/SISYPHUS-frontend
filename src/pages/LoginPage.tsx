@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "src/components/ui/card";
 import { Input } from "src/components/ui/input";
 import { Button } from "src/components/ui/button";
 import { Alert, AlertDescription } from "src/components/ui/alert";
 import Layout from "src/components/Layout";
 import { login, register } from "src/services/auth";
+import { useAuth } from "src/context/AuthContext";
 
 const LoginPage: React.FC = () => {
     const [isLogin, setIsLogin] = useState(true);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
+    const { setToken } = useAuth();
+    const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -19,9 +23,12 @@ const LoginPage: React.FC = () => {
                 ? await login(username, password)
                 : await register(username, password);
 
-            setMessage(response.success
-                ? `Success! ${response.message}`
-                : `Error: ${response.message}`);
+            if (response.success) {
+                setToken(response.token);
+                navigate('/dashboard');
+            } else {
+                setMessage(`Error: ${response.message}`);
+            }
         } catch (error) {
             console.error(error);
             setMessage('An error occurred. Please try again.');
