@@ -6,7 +6,7 @@ import { Button } from "src/components/ui/button";
 import { Alert, AlertDescription } from "src/components/ui/alert";
 import Layout from "src/components/Layout";
 import { useAuth } from "src/context/AuthContext";
-import { authService } from "src/lib/auth";
+import { AuthService, authService } from "../service/auth";
 
 const LoginPage: React.FC = () => {
     const [isLogin, setIsLogin] = useState(true);
@@ -23,13 +23,25 @@ const LoginPage: React.FC = () => {
             : await authService.register(username, password);
 
         if (response.success) {
-            setToken(response.token);
+            const token = AuthService.extractToken(response)
+            await handleSuccessfulResponse(token);
+        }
+        else {
+            setMessage(`Login error: ${response.message}`);
+        }
+    };
+
+    const handleSuccessfulResponse = async(token: string) => {
+        setToken(token);
+        const tokenSet = await AuthService.waitForToken(token)
+        if (tokenSet) {
             navigate('/dashboard');
         }
         else {
-            setMessage(response.message);
+            setMessage(`Error logging in. Try again later.`)
         }
-    };
+    }
+
 
     const toggleAuthMode = () => setIsLogin(!isLogin);
 

@@ -10,16 +10,39 @@ class ApiService {
         });
     }
 
-    private getAuthToken(): string {
-        return localStorage.getItem('authToken') || '';
+    private getAuthToken(): string | null {
+        return localStorage.getItem('authToken');
+    }
+
+    private isTokenValid(token: string): boolean {
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const expirationTime = payload.exp * 1000; // Convert to milliseconds
+            return Date.now() < expirationTime;
+        } catch (error) {
+            console.error('Error parsing token:', error);
+            return false;
+        }
+    }
+
+    private ensureValidToken(): string {
+        const token = this.getAuthToken();
+        if (!token) {
+            throw new Error('No authentication token found');
+        }
+        if (!this.isTokenValid(token)) {
+            throw new Error('Authentication token is expired or invalid');
+        }
+        return token;
     }
 
     private createAuthConfig(config: AxiosRequestConfig = {}): AxiosRequestConfig {
+        const token = this.ensureValidToken();
         return {
             ...config,
             headers: {
                 ...config.headers,
-                Authorization: `Bearer ${this.getAuthToken()}`,
+                Authorization: `Bearer ${token}`,
             },
         };
     }
@@ -27,6 +50,10 @@ class ApiService {
     handleAxiosError(error: unknown): never {
         if (axios.isAxiosError(error)) {
             console.error('Axios error:', error.message);
+            if (error.response?.status === 401) {
+                localStorage.removeItem('authToken');
+                window.location.href = '/login';
+            }
             throw new Error(`Request failed: ${error.message}`);
         } else {
             console.error('Unexpected error:', error);
@@ -60,17 +87,12 @@ class ApiService {
     }
 
     public async get<T>(endpoint: string, config: AxiosRequestConfig = {}): Promise<T> {
-        const response: AxiosResponse<T> = await this.api.get(
-            endpoint,
-        );
+        const response: AxiosResponse<T> = await this.api.get(endpoint);
         return response.data;
     }
 
     public async post<T>(endpoint: string, data: any, config: AxiosRequestConfig = {}): Promise<T> {
-        const response: AxiosResponse<T> = await this.api.post(
-            endpoint,
-            data,
-        );
+        const response: AxiosResponse<T> = await this.api.post(endpoint, data, config);
         return response.data;
     }
 }
