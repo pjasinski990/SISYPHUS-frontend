@@ -1,5 +1,3 @@
-import { apiService } from "./api";
-
 export enum TaskCategory {
     GREEN,
     BLUE,
@@ -23,14 +21,7 @@ export interface Task {
     startTime: string,
 }
 
-export class DailyPlanService {
-    async getDailyPlan(date: string): Promise<any> {
-        return apiService.authenticatedGet(`/daily-plan/${date}`);
-    }
-
-    static formatToIsoDate(date: Date): string {
-        return date.toISOString().split('T')[0];
-    }
+export class TaskService {
 }
 
-export const dailyPlanService = new DailyPlanService()
+export const dailyPlanService = new TaskService()

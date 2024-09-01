@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse, AxiosRequestConfig } from 'axios';
+import { AuthService } from "./authService";
 
 class ApiService {
     private api: AxiosInstance;
@@ -10,34 +11,8 @@ class ApiService {
         });
     }
 
-    private getAuthToken(): string | null {
-        return localStorage.getItem('authToken');
-    }
-
-    private isTokenValid(token: string): boolean {
-        try {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            const expirationTime = payload.exp * 1000; // Convert to milliseconds
-            return Date.now() < expirationTime;
-        } catch (error) {
-            console.error('Error parsing token:', error);
-            return false;
-        }
-    }
-
-    private ensureValidToken(): string {
-        const token = this.getAuthToken();
-        if (!token) {
-            throw new Error('No authentication token found');
-        }
-        if (!this.isTokenValid(token)) {
-            throw new Error('Authentication token is expired or invalid');
-        }
-        return token;
-    }
-
     private createAuthConfig(config: AxiosRequestConfig = {}): AxiosRequestConfig {
-        const token = this.ensureValidToken();
+        const token = AuthService.ensureValidToken();
         return {
             ...config,
             headers: {

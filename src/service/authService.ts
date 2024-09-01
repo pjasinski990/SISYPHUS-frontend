@@ -1,5 +1,5 @@
 import { AxiosError } from 'axios';
-import { apiService } from "./api";
+import { apiService } from "./apiService";
 
 interface AuthResponse {
     message: string;
@@ -51,6 +51,33 @@ export class AuthService {
             checkToken();
         });
     };
+
+    static getAuthToken(): string | null {
+        return localStorage.getItem('authToken');
+    }
+
+    static isTokenValid(token: string): boolean {
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const expirationTime = payload.exp * 1000; // Convert to milliseconds
+            return Date.now() < expirationTime;
+        } catch (error) {
+            console.error('Error parsing token:', error);
+            return false;
+        }
+    }
+
+    static ensureValidToken(): string {
+        const token = this.getAuthToken();
+        if (!token) {
+            throw new Error('No authentication token found');
+        }
+        if (!this.isTokenValid(token)) {
+            localStorage.removeItem('authToken');
+            throw new Error('Authentication token is expired or invalid. Removed invalid token.');
+        }
+        return token;
+    }
 
     private buildResponseFromAuthError(error: unknown) {
         if (error instanceof AxiosError) {

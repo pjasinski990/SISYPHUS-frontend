@@ -1,4 +1,4 @@
-import { apiService } from "./api";
+import { apiService } from "./apiService";
 import { Task } from "./taskService";
 
 export interface DailyPlan {

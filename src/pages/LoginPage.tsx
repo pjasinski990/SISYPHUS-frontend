@@ -6,7 +6,7 @@ import { Button } from "src/components/ui/button";
 import { Alert, AlertDescription } from "src/components/ui/alert";
 import Layout from "src/components/Layout";
 import { useAuth } from "src/context/AuthContext";
-import { AuthService, authService } from "../service/auth";
+import { AuthService, authService } from "../service/authService";
 
 const LoginPage: React.FC = () => {
     const [isLogin, setIsLogin] = useState(true);

@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from "src/components/Layout";
 import { useAuth } from "src/context/AuthContext";
-import { dailyPlanService, DailyPlanService } from "../service/dailyPlan";
+import { DailyPlan, DailyPlanService, dailyPlanService } from "../service/dailyPlanService";
+import { DailyPlanComponent, DailyPlanContent } from "src/components/DailyPlanComponent";
 import { Card, CardContent, CardHeader, CardTitle } from "src/components/ui/card";
 import { Button } from "src/components/ui/button";
 
@@ -13,14 +14,6 @@ interface Task {
     size: string;
     description: string;
     startTime: string;
-}
-
-interface DailyPlan {
-    id: string;
-    ownerUsername: string;
-    day: string;
-    todo: Task[];
-    done: Task[];
 }
 
 const Dashboard: React.FC = () => {
@@ -54,39 +47,7 @@ const Dashboard: React.FC = () => {
                     <CardTitle>Dashboard</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <p className="mb-4">Welcome to your dashboard!</p>
-                    {dailyPlan ? (
-                        <div>
-                            <h2 className="text-xl font-semibold mb-2">Daily Plan for {dailyPlan.day}</h2>
-                            <div className="mb-4">
-                                <h3 className="text-lg font-semibold">To Do:</h3>
-                                <ul>
-                                    {dailyPlan.todo.map((task) => (
-                                        <li key={task.id} className="mb-2">
-                                            <span className="font-medium">{task.description}</span> -
-                                            {task.startTime} ({task.category}, {task.size})
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                            <div>
-                                <h3 className="text-lg font-semibold">Done:</h3>
-                                <ul>
-                                    {dailyPlan.done.map((task) => (
-                                        <li key={task.id} className="mb-2">
-                                            <span className="font-medium">{task.description}</span> -
-                                            {task.startTime} ({task.category}, {task.size})
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        </div>
-                    ) : (
-                        <p>Loading daily plan...</p>
-                    )}
-                    <Button onClick={handleLogout} className="w-full mt-4">
-                        Logout
-                    </Button>
+                    <DailyPlanComponent dailyPlan={dailyPlan} onLogout={handleLogout} />
                 </CardContent>
             </Card>
         </Layout>
