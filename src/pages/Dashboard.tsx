@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "src/components/ui/card
 import { Button } from "src/components/ui/button";
 import Layout from "src/components/Layout";
 import { useAuth } from "src/context/AuthContext";
+import {formatToIsoDate, getDailyPlan} from "src/lib/dailyPlan";
 
 const Dashboard: React.FC = () => {
     const { logout } = useAuth();
@@ -13,6 +14,11 @@ const Dashboard: React.FC = () => {
         logout();
         navigate('/login');
     };
+
+    const date = formatToIsoDate(new Date());
+    getDailyPlan(date)
+        .then(data => console.log(data.plan))
+        .catch(error => console.error('Error:', error));
 
     return (
         <Layout>

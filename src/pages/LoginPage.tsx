@@ -5,8 +5,8 @@ import { Input } from "src/components/ui/input";
 import { Button } from "src/components/ui/button";
 import { Alert, AlertDescription } from "src/components/ui/alert";
 import Layout from "src/components/Layout";
-import { login, register } from "src/services/auth";
 import { useAuth } from "src/context/AuthContext";
+import { authService } from "src/lib/auth";
 
 const LoginPage: React.FC = () => {
     const [isLogin, setIsLogin] = useState(true);
@@ -18,20 +18,16 @@ const LoginPage: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        try {
-            const response = isLogin
-                ? await login(username, password)
-                : await register(username, password);
+        const response = isLogin
+            ? await authService.login(username, password)
+            : await authService.register(username, password);
 
-            if (response.success) {
-                setToken(response.token);
-                navigate('/dashboard');
-            } else {
-                setMessage(`Error: ${response.message}`);
-            }
-        } catch (error) {
-            console.error(error);
-            setMessage('An error occurred. Please try again.');
+        if (response.success) {
+            setToken(response.token);
+            navigate('/dashboard');
+        }
+        else {
+            setMessage(response.message);
         }
     };
 
