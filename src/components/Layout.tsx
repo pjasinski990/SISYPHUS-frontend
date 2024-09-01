@@ -27,7 +27,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     return (
         <div className="flex flex-col min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-200">
             <nav className="flex justify-between items-center p-4 bg-white dark:bg-gray-800 shadow">
-                <RouterLink to="/" className="text-xl font-bold">MyApp</RouterLink>
+                <RouterLink to="/" className="text-xl font-bold">mind=blown</RouterLink>
                 <div className="flex items-center space-x-4">
                     {isAuthenticated && (
                         <RouterLink to="/profile" className="flex items-center space-x-2 text-sm">
@@ -35,13 +35,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                             <span>{username}</span>
                         </RouterLink>
                     )}
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={toggleDarkMode}
-                    >
-                        {darkMode ? <Sun className="h-[1.2rem] w-[1.2rem]"/> :
-                            <Moon className="h-[1.2rem] w-[1.2rem]"/>}
+                    <Button variant="ghost" size="icon" onClick={toggleDarkMode}>
+                        {darkMode
+                            ? <Sun className="h-[1.2rem] w-[1.2rem]"/>
+                            : <Moon className="h-[1.2rem] w-[1.2rem]"/>}
                         <span className="sr-only">Toggle theme</span>
                     </Button>
                 </div>
