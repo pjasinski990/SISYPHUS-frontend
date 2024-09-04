@@ -3,18 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import Layout from "src/components/Layout";
 import { useAuth } from "src/context/AuthContext";
 import { DailyPlan, DailyPlanService, dailyPlanService } from "../service/dailyPlanService";
-import { DailyPlanComponent, DailyPlanContent } from "src/components/DailyPlanComponent";
+import { DailyPlanComponent } from "src/components/DailyPlanComponent";
 import { Card, CardContent, CardHeader, CardTitle } from "src/components/ui/card";
-import { Button } from "src/components/ui/button";
-
-interface Task {
-    id: string;
-    ownerUsername: string;
-    category: string;
-    size: string;
-    description: string;
-    startTime: string;
-}
+import { DropResult } from "react-beautiful-dnd";
 
 const Dashboard: React.FC = () => {
     const { logout } = useAuth();
@@ -32,8 +23,34 @@ const Dashboard: React.FC = () => {
             }
         };
 
-        fetchDailyPlan();
+        fetchDailyPlan().then(r => console.log(r));
     }, []);
+
+    const onDragEnd = (result: DropResult) => {
+        console.log(result);
+        const { source, destination } = result;
+        if (!dailyPlan || !destination) {
+            return;
+        }
+
+        if (
+            source.droppableId === destination.droppableId &&
+            source.index === destination.index
+        ) {
+            return;
+        }
+
+        const newDailyPlan: DailyPlan = { ...dailyPlan };
+
+        const sourceList = source.droppableId === 'todo' ? newDailyPlan.todo : newDailyPlan.done;
+        const destList = destination.droppableId === 'todo' ? newDailyPlan.todo : newDailyPlan.done;
+
+        if (sourceList && destList) {
+            const [movedTask] = sourceList.splice(source.index, 1);
+            destList.splice(destination.index, 0, movedTask);
+            setDailyPlan(newDailyPlan);
+        }
+    };
 
     const handleLogout = () => {
         logout();
@@ -47,7 +64,7 @@ const Dashboard: React.FC = () => {
                     <CardTitle>Dashboard</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <DailyPlanComponent dailyPlan={dailyPlan} onLogout={handleLogout} />
+                    <DailyPlanComponent dailyPlan={dailyPlan} onLogout={handleLogout} onTaskMove={onDragEnd}/>
                 </CardContent>
             </Card>
         </Layout>

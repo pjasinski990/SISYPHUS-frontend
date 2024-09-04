@@ -17,6 +17,7 @@ export interface Task {
     ownerUsername: string,
     category: TaskCategory,
     size: TaskSize,
+    title: string,
     description: string,
     startTime: string,
 }
