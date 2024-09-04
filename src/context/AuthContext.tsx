@@ -1,4 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 interface AuthContextType {
     token: string | null;
@@ -54,9 +56,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     const logout = () => {
+        localStorage.removeItem('authToken');
         setTokenState(null);
         setUsername(null);
-        localStorage.removeItem('authToken');
     };
 
     return (
@@ -72,4 +74,26 @@ export const useAuth = () => {
         throw new Error('useAuth must be used within an AuthProvider');
     }
     return context;
+};
+
+export const useAuthInterceptor = () => {
+    const { logout } = useAuth();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const interceptor = axios.interceptors.response.use(
+            (response) => response,
+            (error) => {
+                if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+                    logout();
+                    navigate('/login');
+                }
+                return Promise.reject(error);
+            }
+        );
+
+        return () => {
+            axios.interceptors.response.eject(interceptor);
+        };
+    }, [logout, navigate]);
 };

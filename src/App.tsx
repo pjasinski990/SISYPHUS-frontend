@@ -1,7 +1,7 @@
 import './App.css'
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthProvider, useAuth, useAuthInterceptor } from './context/AuthContext';
 import LoginPage from './pages/LoginPage';
 import Dashboard from './pages/Dashboard';
 import ProfilePage from './pages/Profile';
@@ -18,6 +18,7 @@ const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
 const AppRoutes: React.FC = () => {
     const { isAuthenticated } = useAuth();
+    useAuthInterceptor();
 
     return (
         <Routes>

@@ -1,15 +1,10 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Card, CardHeader, CardContent, CardTitle } from "../components/ui/card";
-import { Button } from "../components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import Layout from '../components/Layout';
 
 const ProfilePage: React.FC = () => {
-    const { username, logout } = useAuth();
-
-    const handleLogout = () => {
-        logout();
-    };
+    const { username } = useAuth();
 
     return (
         <Layout>
@@ -20,7 +15,6 @@ const ProfilePage: React.FC = () => {
                 <CardContent>
                     <p className="mb-4">Username: {username}</p>
                     <p className="mb-4">Hello, {username} 🫡</p>
-                    <Button onClick={handleLogout} className="w-full">Logout</Button>
                 </CardContent>
             </Card>
         </Layout>
