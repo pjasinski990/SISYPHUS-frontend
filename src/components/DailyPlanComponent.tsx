@@ -24,12 +24,9 @@ interface DailyPlanComponentProps {
 
 
 const TaskList: React.FC<TaskListProps> = ({ title, tasks, droppableId }) => {
-    console.log(`Rendering TaskList: ${title}`, tasks);
-
     return (
         <Droppable droppableId={droppableId}>
             {(provided, snapshot) => {
-                console.log(`Droppable state for ${droppableId}:`, snapshot);
                 return (
                     <div
                         {...provided.droppableProps}
@@ -41,11 +38,9 @@ const TaskList: React.FC<TaskListProps> = ({ title, tasks, droppableId }) => {
                         <h3 className="font-semibold mb-2 text-gray-800 dark:text-gray-200">{title}</h3>
                         {tasks.map((task, index) => {
                             const taskId = String(task.id);
-                            console.log(`Rendering task in ${title}:`, taskId);
                             return (
                                 <Draggable key={taskId} draggableId={taskId} index={index}>
                                     {(provided, snapshot) => {
-                                        console.log(`Draggable state for ${taskId}:`, snapshot);
                                         return (
                                             <div
                                                 ref={provided.innerRef}
@@ -76,29 +71,14 @@ const TaskList: React.FC<TaskListProps> = ({ title, tasks, droppableId }) => {
     );
 };
 const DailyPlanContent: React.FC<DailyPlanContentProps> = ({ dailyPlan, onTaskMove }) => {
-    console.log("Rendering DailyPlanContent", dailyPlan);
-
     if (!dailyPlan) return <p className="text-gray-800 dark:text-gray-200">Loading daily plan...</p>;
 
-    const handleDragStart = (initial: DragStart) => {
-        console.log("Drag started:", initial);
-    };
-
-    const handleDragUpdate = (update: DragUpdate) => {
-        console.log("Drag update:", update);
-    };
-
     const handleDragEnd = (result: DropResult) => {
-        console.log("Drag ended:", result);
         onTaskMove(result);
     };
 
     return (
-        <DragDropContext
-            onDragStart={handleDragStart}
-            onDragUpdate={handleDragUpdate}
-            onDragEnd={handleDragEnd}
-        >
+        <DragDropContext onDragEnd={handleDragEnd}>
             <div className="flex gap-4">
                 <div className="flex-1">
                     <TaskList title="To Do" tasks={dailyPlan.todo} droppableId="todo" />
@@ -119,9 +99,6 @@ export const DailyPlanComponent: React.FC<DailyPlanComponentProps> = ({ dailyPla
             </CardHeader>
             <CardContent>
                 <DailyPlanContent dailyPlan={dailyPlan} onTaskMove={onTaskMove} />
-                <Button onClick={onLogout} className="w-full mt-4">
-                    Logout
-                </Button>
             </CardContent>
         </Card>
     ) : null;
