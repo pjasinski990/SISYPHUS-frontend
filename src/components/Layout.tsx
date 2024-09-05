@@ -6,7 +6,10 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
-    const [darkMode, setDarkMode] = useState(true);
+    const [darkMode, setDarkMode] = useState(() => {
+        const savedMode = localStorage.getItem('darkMode');
+        return savedMode !== null ? JSON.parse(savedMode) : true;
+    });
 
     useEffect(() => {
         if (darkMode) {
@@ -14,6 +17,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         } else {
             document.documentElement.classList.remove('dark');
         }
+        localStorage.setItem('darkMode', JSON.stringify(darkMode));
     }, [darkMode]);
 
     const toggleDarkMode = () => {
