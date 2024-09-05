@@ -6,6 +6,7 @@ import { DailyPlan, DailyPlanService, dailyPlanService } from "../service/dailyP
 import { DailyPlanComponent } from "src/components/DailyPlanComponent";
 import { Card, CardContent, CardHeader, CardTitle } from "src/components/ui/card";
 import { DropResult } from "react-beautiful-dnd";
+import { DraggableLocation } from "@hello-pangea/dnd";
 
 const Dashboard: React.FC = () => {
     const { logout } = useAuth();
@@ -23,34 +24,38 @@ const Dashboard: React.FC = () => {
             }
         };
 
-        fetchDailyPlan().then(r => console.log(r));
+        fetchDailyPlan().then(() => {});
     }, []);
 
-    const onDragEnd = (result: DropResult) => {
-        console.log(result);
-        const { source, destination } = result;
-        if (!dailyPlan || !destination) {
+    const onDragEnd = async (result: DropResult) => {
+        const {source, destination} = result;
+        if (!isValidDragAction(source, destination) || !dailyPlan) {
             return;
         }
+        const newDailyPlan = moveTask(dailyPlan, source, destination!!);
+        setDailyPlan(newDailyPlan)
+        await dailyPlanService.updateDailyPlan(newDailyPlan)
+    };
 
-        if (
-            source.droppableId === destination.droppableId &&
-            source.index === destination.index
-        ) {
-            return;
+    const isValidDragAction = (source: DraggableLocation, destination: DraggableLocation | null | undefined) => {
+        if (!destination) {
+            return false;
         }
+        return !(source.droppableId === destination.droppableId &&
+            source.index === destination.index);
+    }
 
+    const moveTask = (dailyPlan: DailyPlan, source: DraggableLocation, destination: DraggableLocation) => {
         const newDailyPlan: DailyPlan = { ...dailyPlan };
-
         const sourceList = source.droppableId === 'todo' ? newDailyPlan.todo : newDailyPlan.done;
         const destList = destination.droppableId === 'todo' ? newDailyPlan.todo : newDailyPlan.done;
 
         if (sourceList && destList) {
             const [movedTask] = sourceList.splice(source.index, 1);
             destList.splice(destination.index, 0, movedTask);
-            setDailyPlan(newDailyPlan);
         }
-    };
+        return newDailyPlan
+    }
 
     const handleLogout = () => {
         logout();

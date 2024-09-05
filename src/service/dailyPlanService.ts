@@ -1,5 +1,6 @@
 import { apiService } from "./apiService";
 import { Task } from "./taskService";
+import { debounce, DebouncedFunc } from 'lodash';
 
 export interface DailyPlan {
     id: string,
@@ -10,6 +11,10 @@ export interface DailyPlan {
 }
 
 export class DailyPlanService {
+    async updateDailyPlan(dailyPlan: DailyPlan): Promise<any> {
+        return apiService.authenticatedPut(`/daily-plan/${dailyPlan.day}`, dailyPlan);
+    }
+
     async getDailyPlan(date: string): Promise<any> {
         return apiService.authenticatedGet(`/daily-plan/${date}`);
     }

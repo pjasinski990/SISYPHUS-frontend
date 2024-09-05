@@ -25,10 +25,6 @@ class ApiService {
     handleAxiosError(error: unknown): never {
         if (axios.isAxiosError(error)) {
             console.error('Axios error:', error.message);
-            if (error.response?.status === 401) {
-                localStorage.removeItem('authToken');
-                window.location.href = '/login';
-            }
             throw new Error(`Request failed: ${error.message}`);
         } else {
             console.error('Unexpected error:', error);
@@ -51,6 +47,19 @@ class ApiService {
     public async authenticatedPost<T>(endpoint: string, data: any, config: AxiosRequestConfig = {}): Promise<T> {
         try {
             const response: AxiosResponse<T> = await this.api.post(
+                endpoint,
+                data,
+                this.createAuthConfig(config)
+            );
+            return response.data;
+        } catch (error) {
+            this.handleAxiosError(error);
+        }
+    }
+
+    public async authenticatedPut<T>(endpoint: string, data: any, config: AxiosRequestConfig = {}): Promise<T> {
+        try {
+            const response: AxiosResponse<T> = await this.api.put(
                 endpoint,
                 data,
                 this.createAuthConfig(config)
