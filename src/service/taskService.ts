@@ -1,3 +1,5 @@
+import { apiService } from "./apiService";
+
 export enum TaskCategory {
     GREEN,
     BLUE,
@@ -13,16 +15,25 @@ export enum TaskSize {
 }
 
 export interface Task {
-    id: string,
+    id: string | null,
     ownerUsername: string,
     category: TaskCategory,
     size: TaskSize,
     title: string,
     description: string,
+    reusable: boolean,
+    createdAt: string,
+    updatedAt: string,
     startTime: string,
 }
 
-export class TaskService {
+class TaskService {
+    async newTask(task: Task): Promise<Task> {
+        return apiService.authenticatedPost(`/api/tasks/new`, task);
+    }
+    async updateTask(task: Task): Promise<Task> {
+        return apiService.authenticatedPut(`/api/tasks/${task.id}`, task);
+    }
 }
 
-export const dailyPlanService = new TaskService()
+export const taskService = new TaskService()

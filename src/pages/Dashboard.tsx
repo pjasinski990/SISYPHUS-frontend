@@ -1,21 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Layout from "src/components/Layout";
-import { useAuth } from "src/context/AuthContext";
-import { DailyPlan, DailyPlanService, dailyPlanService } from "../service/dailyPlanService";
-import { DailyPlanComponent } from "src/components/DailyPlanComponent";
+import { DailyPlan, dailyPlanService } from "../service/dailyPlanService";
+import { DailyPlanComponent, TaskFormData } from "src/components/DailyPlanComponent";
 import { Card, CardContent, CardHeader, CardTitle } from "src/components/ui/card";
 import { DropResult } from "react-beautiful-dnd";
 import { DraggableLocation } from "@hello-pangea/dnd";
+import { formatToIsoDate } from "src/lib/utils";
+import { Task, taskService } from "../service/taskService";
+import { useAuth } from "../context/AuthContext";
 
 const Dashboard: React.FC = () => {
-    const { logout } = useAuth();
-    const navigate = useNavigate();
     const [dailyPlan, setDailyPlan] = useState<DailyPlan | null>(null);
+
+    const { username } = useAuth();
 
     useEffect(() => {
         const fetchDailyPlan = async () => {
-            const date = DailyPlanService.formatToIsoDate(new Date());
+            const date = formatToIsoDate(new Date());
             try {
                 const data = await dailyPlanService.getDailyPlan(date);
                 setDailyPlan(data.plan);
@@ -57,9 +58,49 @@ const Dashboard: React.FC = () => {
         return newDailyPlan
     }
 
-    const handleLogout = () => {
-        logout();
-        navigate('/login');
+    const handleAddTask = async (taskData: TaskFormData) => {
+        try {
+            const newTask: Task = {
+                id: null,
+                ...taskData,
+                ownerUsername: username!!,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+            const createdTask = await taskService.newTask(newTask);
+            const updatedDailyPlan = { ...dailyPlan, todo: [...dailyPlan!!.todo, createdTask] } as DailyPlan;
+            setDailyPlan(updatedDailyPlan);
+            await dailyPlanService.updateDailyPlan(updatedDailyPlan);
+        } catch (error) {
+            console.error('Failed to create task:', error);
+        }
+    };
+
+    const handleEditTask = async (taskId: string, updatedTaskData: TaskFormData) => {
+        try {
+            const taskToUpdate = dailyPlan!!.todo.find(task => task.id === taskId) ||
+                dailyPlan!!.done.find(task => task.id === taskId);
+            if (!taskToUpdate) {
+                console.log('Error: task not found')
+                return
+            }
+            const updatedTask: Task = {
+                ...taskToUpdate,
+                ...updatedTaskData,
+                updatedAt: new Date().toISOString()
+            };
+            const updatedDailyPlan = {
+                ...dailyPlan,
+                todo: dailyPlan!!.todo.map(task => task.id === taskId ? updatedTask : task),
+                done: dailyPlan!!.done.map(task => task.id === taskId ? updatedTask : task)
+            } as DailyPlan;
+
+            setDailyPlan(updatedDailyPlan);
+            await taskService.updateTask(updatedTask);
+            await dailyPlanService.updateDailyPlan(updatedDailyPlan);
+        } catch (error) {
+            console.error('Failed to update task:', error);
+        }
     };
 
     return (
@@ -69,7 +110,7 @@ const Dashboard: React.FC = () => {
                     <CardTitle>Dashboard</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <DailyPlanComponent dailyPlan={dailyPlan} onLogout={handleLogout} onTaskMove={onDragEnd}/>
+                    <DailyPlanComponent dailyPlan={dailyPlan} onTaskMove={onDragEnd} onEditTask={handleEditTask} onAddTask={handleAddTask} />
                 </CardContent>
             </Card>
         </Layout>

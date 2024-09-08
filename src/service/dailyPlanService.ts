@@ -9,17 +9,17 @@ export interface DailyPlan {
     done: Task[],
 }
 
-export class DailyPlanService {
+export interface GetDailyPlanResponse {
+    plan: DailyPlan;
+}
+
+class DailyPlanService {
     async updateDailyPlan(dailyPlan: DailyPlan): Promise<any> {
         return apiService.authenticatedPut(`/daily-plan/${dailyPlan.day}`, dailyPlan);
     }
 
-    async getDailyPlan(date: string): Promise<any> {
+    async getDailyPlan(date: string): Promise<GetDailyPlanResponse> {
         return apiService.authenticatedGet(`/daily-plan/${date}`);
-    }
-
-    static formatToIsoDate(date: Date): string {
-        return date.toISOString().split('T')[0];
     }
 }
 
