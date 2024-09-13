@@ -18,16 +18,19 @@ const LoginPage: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const response = isLogin
-            ? await authService.login(username, password)
-            : await authService.register(username, password);
+        try {
+            const response = isLogin
+                ? await authService.login(username, password)
+                : await authService.register(username, password);
 
-        if (response.success) {
-            const token = AuthService.extractToken(response)
+            const token = AuthService.extractToken(response);
             await handleSuccessfulResponse(token);
-        }
-        else {
-            setMessage(`Login error: ${response.message}`);
+        } catch (error) {
+            if (error instanceof Error) {
+                setMessage(`Login error: ${error.message}`);
+            } else {
+                setMessage('An unexpected error occurred.');
+            }
         }
     };
 

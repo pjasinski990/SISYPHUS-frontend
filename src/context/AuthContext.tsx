@@ -38,27 +38,55 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return storedToken ? extractUsernameFromToken(storedToken) : null;
     });
 
+    const [logoutMessage, setLogoutMessage] = useState<string | null>(null);
+
     const isAuthenticated = !!token;
 
     useEffect(() => {
+        let timerId: NodeJS.Timeout;
+
         if (token) {
             localStorage.setItem('authToken', token);
             const extractedUsername = extractUsernameFromToken(token);
             setUsername(extractedUsername);
+
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                const expirationTime = payload.exp * 1000;
+                const currentTime = Date.now();
+                const timeout = expirationTime - currentTime;
+
+                if (timeout > 0) {
+                    timerId = setTimeout(() => {
+                        logout('Your session has expired. Please log in again.');
+                    }, timeout);
+                } else {
+                    logout('Your session has expired. Please log in again.');
+                }
+            } catch (error) {
+                console.error('Error parsing token:', error);
+                logout('Invalid token. Please log in again.');
+            }
         } else {
             localStorage.removeItem('authToken');
             setUsername(null);
         }
-    }, [token]);
 
+        return () => {
+            if (timerId) clearTimeout(timerId);
+        };
+    }, [token]);
     const setToken = (newToken: string | null) => {
         setTokenState(newToken);
     };
 
-    const logout = () => {
+    const logout = (message?: string) => {
         localStorage.removeItem('authToken');
         setTokenState(null);
         setUsername(null);
+        if (message) {
+            setLogoutMessage(message);
+        }
     };
 
     return (
@@ -74,26 +102,4 @@ export const useAuth = () => {
         throw new Error('useAuth must be used within an AuthProvider');
     }
     return context;
-};
-
-export const useAuthInterceptor = () => {
-    const { logout } = useAuth();
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        const interceptor = axios.interceptors.response.use(
-            (response) => response,
-            (error) => {
-                if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-                    logout();
-                    navigate('/login');
-                }
-                return Promise.reject(error);
-            }
-        );
-
-        return () => {
-            axios.interceptors.response.eject(interceptor);
-        };
-    }, [logout, navigate]);
 };

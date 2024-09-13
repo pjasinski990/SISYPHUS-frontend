@@ -1,9 +1,8 @@
-import { AxiosError } from 'axios';
+import axios, { AxiosError } from 'axios';
 import { apiService } from "./apiService";
 
 interface AuthResponse {
     message: string;
-    success: boolean;
     token: string | null;
 }
 
@@ -14,7 +13,7 @@ export class AuthService {
         try {
             return await apiService.post<AuthResponse>(`http://localhost:8080${endpoint}`, { username, password });
         } catch (error) {
-            return this.buildResponseFromAuthError(error)
+            this.handleAuthError(error)
         }
     }
 
@@ -24,6 +23,17 @@ export class AuthService {
 
     public register(username: string, password: string): Promise<AuthResponse> {
         return this.authRequest('/auth/register', username, password);
+    }
+
+    private handleAuthError(error: unknown): never {
+        if (axios.isAxiosError(error) && error.response && error.response.data) {
+            const data = error.response.data as { message?: string };
+            const message = data.message || 'Unknown authentication error occurred';
+            throw new Error(message);
+        } else {
+            console.error(`Unknown error occurred: ${error}`);
+            throw new Error('An unknown error occurred during authentication.');
+        }
     }
 
     static extractToken(response: AuthResponse): string {
