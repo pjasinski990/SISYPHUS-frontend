@@ -13,7 +13,7 @@ const LoginPage: React.FC = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
-    const { setToken } = useAuth();
+    const { setToken, setRefreshToken } = useAuth();
     const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -24,7 +24,8 @@ const LoginPage: React.FC = () => {
                 : await authService.register(username, password);
 
             const token = AuthService.extractToken(response);
-            await handleSuccessfulResponse(token);
+            const refreshToken = AuthService.extractRefreshToken(response);
+            await handleSuccessfulResponse(token, refreshToken);
         } catch (error) {
             if (error instanceof Error) {
                 setMessage(`Login error: ${error.message}`);
@@ -34,8 +35,9 @@ const LoginPage: React.FC = () => {
         }
     };
 
-    const handleSuccessfulResponse = async(token: string) => {
+    const handleSuccessfulResponse = async(token: string, refreshToken: string) => {
         setToken(token);
+        setRefreshToken(refreshToken);
         const tokenSet = await AuthService.waitForToken(token)
         if (tokenSet) {
             navigate('/dashboard');

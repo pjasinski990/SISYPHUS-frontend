@@ -4,6 +4,7 @@ import { apiService } from "./apiService";
 interface AuthResponse {
     message: string;
     token: string | null;
+    refreshToken: string | null;
 }
 
 export class AuthService {
@@ -45,6 +46,15 @@ export class AuthService {
         }
     }
 
+    static extractRefreshToken(response: AuthResponse): string {
+        try {
+            return response.refreshToken!!
+        } catch (error) {
+            console.error(`Error extracting refresh token from ${response}: ${error}`)
+            throw error
+        }
+    }
+
     static waitForToken = (token: string): Promise<boolean> => {
         return new Promise((resolve) => {
             const startTime = Date.now();
@@ -76,16 +86,37 @@ export class AuthService {
         }
     }
 
-    static ensureValidToken(): string {
-        const token = this.getAuthToken();
-        if (!token) {
-            throw new Error('No authentication token found');
+    public static async refreshAccessToken(): Promise<void> {
+        const refreshToken = localStorage.getItem('refreshToken');
+        if (!refreshToken) {
+            throw new Error('No refresh token available');
         }
-        if (!this.isTokenValid(token)) {
+        try {
+            const response = await axios.post<AuthResponse>('http://localhost:8080/auth/refresh', { refreshToken });
+            const newToken = response.data.token;
+            const newRefreshToken = response.data.refreshToken;
+            if (!newToken) {
+                throw new Error('No new access token returned');
+            }
+            localStorage.setItem('authToken', newToken);
+            if (newRefreshToken) {
+                localStorage.setItem('refreshToken', newRefreshToken);
+            }
+            window.dispatchEvent(
+                new CustomEvent('tokenRefreshed', { detail: { token: newToken, refreshToken: newRefreshToken } })
+            );
+        } catch (error) {
             localStorage.removeItem('authToken');
-            throw new Error('Authentication token is expired or invalid. Removed invalid token.');
+            localStorage.removeItem('refreshToken');
+            window.dispatchEvent(new Event('authLogout'));
+            throw error;
         }
-        return token;
+    }
+
+    public static logout() {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('refreshToken');
+        window.dispatchEvent(new Event('authLogout'));
     }
 }
 

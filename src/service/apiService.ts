@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse, AxiosRequestConfig } from 'axios';
-import { AuthService } from "./authService";
+import { AuthService } from './authService';
 
 class ApiService {
     private api: AxiosInstance;
@@ -9,17 +9,47 @@ class ApiService {
             baseURL,
             withCredentials: true,
         });
-    }
-
-    private createAuthConfig(config: AxiosRequestConfig = {}): AxiosRequestConfig {
-        const token = AuthService.ensureValidToken();
-        return {
-            ...config,
-            headers: {
-                ...config.headers,
-                Authorization: `Bearer ${token}`,
+        this.api.interceptors.request.use(
+            async (config) => {
+                let token = AuthService.getAuthToken();
+                if (token) {
+                    if (!AuthService.isTokenValid(token)) {
+                        try {
+                            await AuthService.refreshAccessToken();
+                            token = AuthService.getAuthToken();
+                        } catch (error) {
+                            AuthService.logout();
+                            throw error;
+                        }
+                    }
+                    config.headers['Authorization'] = `Bearer ${token}`;
+                }
+                return config;
             },
-        };
+            (error) => Promise.reject(error)
+        );
+
+        this.api.interceptors.response.use(
+            (response) => response,
+            async (error) => {
+                const originalRequest = error.config;
+                if (error.response && error.response.status === 401 && !originalRequest._retry) {
+                    originalRequest._retry = true;
+                    try {
+                        await AuthService.refreshAccessToken();
+                        const token = AuthService.getAuthToken();
+                        if (token) {
+                            originalRequest.headers['Authorization'] = `Bearer ${token}`;
+                        }
+                        return this.api(originalRequest);
+                    } catch (refreshError) {
+                        AuthService.logout();
+                        return Promise.reject(refreshError);
+                    }
+                }
+                return Promise.reject(error);
+            }
+        );
     }
 
     handleAxiosError(error: unknown): never {
@@ -34,10 +64,7 @@ class ApiService {
 
     public async authenticatedGet<T>(endpoint: string, config: AxiosRequestConfig = {}): Promise<T> {
         try {
-            const response: AxiosResponse<T> = await this.api.get(
-                endpoint,
-                this.createAuthConfig(config)
-            );
+            const response: AxiosResponse<T> = await this.api.get(endpoint, config);
             return response.data;
         } catch (error) {
             this.handleAxiosError(error);
@@ -46,11 +73,7 @@ class ApiService {
 
     public async authenticatedPost<T>(endpoint: string, data: any, config: AxiosRequestConfig = {}): Promise<T> {
         try {
-            const response: AxiosResponse<T> = await this.api.post(
-                endpoint,
-                data,
-                this.createAuthConfig(config)
-            );
+            const response: AxiosResponse<T> = await this.api.post(endpoint, data, config);
             return response.data;
         } catch (error) {
             this.handleAxiosError(error);
@@ -59,11 +82,7 @@ class ApiService {
 
     public async authenticatedPut<T>(endpoint: string, data: any, config: AxiosRequestConfig = {}): Promise<T> {
         try {
-            const response: AxiosResponse<T> = await this.api.put(
-                endpoint,
-                data,
-                this.createAuthConfig(config)
-            );
+            const response: AxiosResponse<T> = await this.api.put(endpoint, data, config);
             return response.data;
         } catch (error) {
             this.handleAxiosError(error);
@@ -71,7 +90,7 @@ class ApiService {
     }
 
     public async get<T>(endpoint: string, config: AxiosRequestConfig = {}): Promise<T> {
-        const response: AxiosResponse<T> = await this.api.get(endpoint);
+        const response: AxiosResponse<T> = await this.api.get(endpoint, config);
         return response.data;
     }
 

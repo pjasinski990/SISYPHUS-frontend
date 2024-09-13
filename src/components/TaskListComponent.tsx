@@ -27,7 +27,7 @@ const categoryColors: Record<TaskCategory, string> = {
     [TaskCategory.BLUE]: "bg-blue-100 dark:bg-blue-800",
     [TaskCategory.RED]: "bg-red-100 dark:bg-red-800",
     [TaskCategory.YELLOW]: "bg-yellow-100 dark:bg-yellow-700",
-    [TaskCategory.WHITE]: "bg-gray-100 dark:bg-gray-700",
+    [TaskCategory.WHITE]: "bg-gray-100 dark:bg-gray-500",
     [TaskCategory.PINK]: "bg-pink-100 dark:bg-pink-800",
 };
 
@@ -83,23 +83,10 @@ export const TaskList: React.FC<TaskListProps> = ({
                                                       onEditTask,
                                                   }) => {
     return (
-        <Droppable droppableId={droppableId}>
-            {(provided, snapshot) => (
-                <div
-                    {...provided.droppableProps}
-                    ref={provided.innerRef}
-                    className={`bg-gray-50 dark:bg-gray-800 p-4 rounded-lg min-h-[200px] transition-colors duration-200 ${
-                        snapshot.isDraggingOver ? "bg-blue-50 dark:bg-blue-900" : ""
-                    }`}
-                >
-                    <h3 className="font-semibold mb-2 text-gray-800 dark:text-gray-200">{title}</h3>
-                    {tasks.map((task, index) => (
-                        <TaskItem key={task.id} task={task} index={index} onEditTask={onEditTask} />
-                    ))}
-                    {provided.placeholder}
-                </div>
-            )}
-        </Droppable>
+        <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg min-h-[200px]">
+            <TaskListHeader title={title} />
+            <DroppableTaskList droppableId={droppableId} tasks={tasks} onEditTask={onEditTask} />
+        </div>
     );
 };
 
@@ -112,29 +99,49 @@ export const ExtendableTaskList: React.FC<ExtendableTaskListProps> = ({
                                                                           onEditTask,
                                                                       }) => {
     return (
+        <div className="bg-gray-50 dark:bg-gray-800 p-4 pb-2 rounded-lg min-h-[200px]">
+            <TaskListHeader title={title} showAddButton={showAddButton} onAddTask={onAddTask} />
+            <DroppableTaskList droppableId={droppableId} tasks={tasks} onEditTask={onEditTask} />
+        </div>
+    );
+};
+
+const TaskListHeader: React.FC<{
+    title: string;
+    showAddButton?: boolean;
+    onAddTask?: () => void;
+}> = ({ title, showAddButton = false, onAddTask }) => {
+    return (
+        <div className="flex justify-between items-center mb-2">
+            <h3 className="font-semibold text-gray-800 dark:text-gray-200">{title}</h3>
+            {showAddButton && onAddTask && (
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={onAddTask}
+                    className="flex items-center dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors duration-200"
+                >
+                    <PlusCircle className="mr-1 h-4 w-4" />
+                    Add
+                </Button>
+            )}
+        </div>
+    );
+};
+
+const DroppableTaskList: React.FC<{
+    droppableId: string;
+    tasks: Task[];
+    onEditTask: (task: Task) => void;
+}> = ({ droppableId, tasks, onEditTask }) => {
+    return (
         <Droppable droppableId={droppableId}>
             {(provided, snapshot) => (
                 <div
                     {...provided.droppableProps}
                     ref={provided.innerRef}
-                    className={`bg-gray-50 dark:bg-gray-800 p-4 rounded-lg min-h-[200px] transition-colors duration-200 ${
-                        snapshot.isDraggingOver ? "bg-blue-50 dark:bg-blue-900" : ""
-                    }`}
+                    className={`transition-colors duration-200 ${snapshot.isDraggingOver ? "bg-slate-200 dark:bg-slate-700" : ""}`}
                 >
-                    <div className="flex justify-between items-center mb-2">
-                        <h3 className="font-semibold text-gray-800 dark:text-gray-200">{title}</h3>
-                        {showAddButton && onAddTask && (
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={onAddTask}
-                                className="flex items-center hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200"
-                            >
-                                <PlusCircle className="mr-1 h-4 w-4" />
-                                Add
-                            </Button>
-                        )}
-                    </div>
                     {tasks.map((task, index) => (
                         <TaskItem key={task.id} task={task} index={index} onEditTask={onEditTask} />
                     ))}
