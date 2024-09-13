@@ -64,23 +64,35 @@ const TaskForm: React.FC<TaskFormProps> = ({ initialData, onSubmit, onCancel }) 
                 onChange={handleChange}
                 placeholder="Task Description"
             />
-            <Select name="category" onValueChange={handleSelectChange("category")} defaultValue={formData.category.toString()}>
+            <Select
+                name="category"
+                onValueChange={handleSelectChange("category")}
+                value={formData.category}
+            >
                 <SelectTrigger>
-                    <SelectValue placeholder="Select category" />
+                    <SelectValue placeholder="Select category">{formData.category}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
-                    {Object.entries(TaskCategory).filter(([key]) => isNaN(Number(key))).map(([key, value]) => (
-                        <SelectItem key={key} value={value.toString()}>{key}</SelectItem>
+                    {Object.values(TaskCategory).map((value) => (
+                        <SelectItem key={value} value={value}>
+                            {value}
+                        </SelectItem>
                     ))}
                 </SelectContent>
             </Select>
-            <Select name="size" onValueChange={handleSelectChange("size")} defaultValue={formData.size.toString()}>
+            <Select
+                name="size"
+                onValueChange={handleSelectChange("size")}
+                value={formData.size}
+            >
                 <SelectTrigger>
-                    <SelectValue placeholder="Select size" />
+                    <SelectValue placeholder="Select size">{formData.size}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
-                    {Object.entries(TaskSize).filter(([key]) => isNaN(Number(key))).map(([key, value]) => (
-                        <SelectItem key={key} value={value.toString()}>{key}</SelectItem>
+                    {Object.values(TaskSize).map((value) => (
+                        <SelectItem key={value} value={value}>
+                            {value}
+                        </SelectItem>
                     ))}
                 </SelectContent>
             </Select>

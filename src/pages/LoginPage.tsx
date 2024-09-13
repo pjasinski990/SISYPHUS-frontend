@@ -45,7 +45,6 @@ const LoginPage: React.FC = () => {
         }
     }
 
-
     const toggleAuthMode = () => setIsLogin(!isLogin);
 
     return (

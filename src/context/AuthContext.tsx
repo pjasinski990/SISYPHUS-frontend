@@ -1,6 +1,4 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
 interface AuthContextType {
     token: string | null;
@@ -38,8 +36,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return storedToken ? extractUsernameFromToken(storedToken) : null;
     });
 
-    const [logoutMessage, setLogoutMessage] = useState<string | null>(null);
-
     const isAuthenticated = !!token;
 
     useEffect(() => {
@@ -58,14 +54,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
                 if (timeout > 0) {
                     timerId = setTimeout(() => {
-                        logout('Your session has expired. Please log in again.');
+                        logout();
                     }, timeout);
                 } else {
-                    logout('Your session has expired. Please log in again.');
+                    logout();
                 }
             } catch (error) {
                 console.error('Error parsing token:', error);
-                logout('Invalid token. Please log in again.');
+                logout();
             }
         } else {
             localStorage.removeItem('authToken');
@@ -80,13 +76,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setTokenState(newToken);
     };
 
-    const logout = (message?: string) => {
+    const logout = () => {
         localStorage.removeItem('authToken');
         setTokenState(null);
         setUsername(null);
-        if (message) {
-            setLogoutMessage(message);
-        }
     };
 
     return (

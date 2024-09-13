@@ -1,4 +1,4 @@
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import { apiService } from "./apiService";
 
 interface AuthResponse {
@@ -11,7 +11,7 @@ export class AuthService {
 
     public async authRequest(endpoint: string, username: string, password: string): Promise<AuthResponse> {
         try {
-            return await apiService.post<AuthResponse>(`http://localhost:8080${endpoint}`, { username, password });
+            return await apiService.post<AuthResponse>(`http://localhost:8080${endpoint}`, {username, password});
         } catch (error) {
             this.handleAuthError(error)
         }
@@ -39,8 +39,7 @@ export class AuthService {
     static extractToken(response: AuthResponse): string {
         try {
             return response.token!!
-        }
-        catch (error) {
+        } catch (error) {
             console.error(`Error extracting token from ${response}: ${error}`)
             throw error
         }
@@ -87,20 +86,6 @@ export class AuthService {
             throw new Error('Authentication token is expired or invalid. Removed invalid token.');
         }
         return token;
-    }
-
-    private buildResponseFromAuthError(error: unknown) {
-        if (error instanceof AxiosError) {
-            if (error.response && error.response.data) {
-                return error.response.data as AuthResponse;
-            } else {
-                console.log(`Unknown axios error occurred: ${error}`)
-                throw error;
-            }
-        } else {
-            console.log(`Unknown error occurred: ${error}`)
-            throw error;
-        }
     }
 }
 
