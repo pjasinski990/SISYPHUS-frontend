@@ -31,8 +31,13 @@ class TaskService {
     async newTask(task: Task): Promise<Task> {
         return apiService.authenticatedPost(`/api/tasks/`, task);
     }
+
     async updateTask(task: Task): Promise<Task> {
         return apiService.authenticatedPut(`/api/tasks/`, task);
+    }
+
+    async getTasks(): Promise<Task[]> {
+        return apiService.authenticatedGet(`/api/tasks/`);
     }
 }
 

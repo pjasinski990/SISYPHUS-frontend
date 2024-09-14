@@ -1,32 +1,36 @@
 import React, { useEffect, useState } from 'react';
 import Layout from "src/components/Layout";
 import { DailyPlan, dailyPlanService } from "../service/dailyPlanService";
-import { DailyPlanComponent } from "src/components/DailyPlanComponent";
-import { Card, CardContent, CardHeader, CardTitle } from "src/components/ui/card";
+import { DailyPlanDashboard } from "src/components/DailyPlanDashboard";
 import { DropResult } from "react-beautiful-dnd";
 import { DraggableLocation } from "@hello-pangea/dnd";
 import { formatToIsoDate } from "src/lib/utils";
 import { Task, taskService } from "../service/taskService";
 import { useAuth } from "../context/AuthContext";
-import { TaskFormData } from "src/components/TaskForm";
+import { TaskFormData } from "src/components/task/TaskForm";
+import { ReusableTaskPicker } from "src/components/ReusableTaskPicker";
 
 const Dashboard: React.FC = () => {
     const [dailyPlan, setDailyPlan] = useState<DailyPlan | null>(null);
-
+    const [reusableTasks, setReusableTasks] = useState<Task[]>([]);
     const { username } = useAuth();
 
     useEffect(() => {
-        const fetchDailyPlan = async () => {
+        const fetchData = async () => {
             const date = formatToIsoDate(new Date());
             try {
-                const data = await dailyPlanService.getDailyPlan(date);
-                setDailyPlan(data.plan);
+                const [dailyPlanData, reusableTasksData] = await Promise.all([
+                    dailyPlanService.getDailyPlan(date),
+                    taskService.getTasks()
+                ]);
+                setDailyPlan(dailyPlanData.plan);
+                setReusableTasks(reusableTasksData);
             } catch (error) {
-                console.error('Error fetching daily plan:', error);
+                console.error('Error fetching data:', error);
             }
         };
 
-        fetchDailyPlan().then(() => {});
+        fetchData().then();
     }, []);
 
     const onDragEnd = async (result: DropResult) => {
@@ -59,17 +63,19 @@ const Dashboard: React.FC = () => {
         return newDailyPlan
     }
 
-    const handleAddTask = async (taskData: TaskFormData) => {
+    const handleAddToTodo = async (taskData: TaskFormData) => {
         try {
-            const newTask: Task = {
+            let newTask: Task = {
                 id: null,
                 ...taskData,
                 ownerUsername: username!!,
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
             };
-            const createdTask = await taskService.newTask(newTask);
-            const updatedDailyPlan = { ...dailyPlan, todo: [...dailyPlan!!.todo, createdTask] } as DailyPlan;
+            if (taskData.reusable) {
+                newTask = await taskService.newTask(newTask);
+            }
+            const updatedDailyPlan = { ...dailyPlan, todo: [...dailyPlan!!.todo, newTask] } as DailyPlan;
             setDailyPlan(updatedDailyPlan);
             await dailyPlanService.updateDailyPlan(updatedDailyPlan);
         } catch (error) {
@@ -77,24 +83,32 @@ const Dashboard: React.FC = () => {
         }
     };
 
+    const handleRemoveTaskFromDailyPlan = async (taskId: string) => {
+        try {
+            const updatedDailyPlan = removeTaskFromDailyPlan(dailyPlan!!, taskId);
+
+            setDailyPlan(updatedDailyPlan);
+            await dailyPlanService.updateDailyPlan(updatedDailyPlan);
+        } catch (error) {
+            console.error('Failed to remove task:', error);
+        }
+    };
+
     const handleEditTask = async (taskId: string, updatedTaskData: TaskFormData) => {
         try {
-            const taskToUpdate = dailyPlan!!.todo.find(task => task.id === taskId) ||
-                dailyPlan!!.done.find(task => task.id === taskId);
+            const taskToUpdate = findTaskInDailyPlan(dailyPlan!!, taskId);
             if (!taskToUpdate) {
-                console.log('Error: task not found')
-                return
+                console.log('Error: task not found');
+                return;
             }
+
             const updatedTask: Task = {
                 ...taskToUpdate,
                 ...updatedTaskData,
                 updatedAt: new Date().toISOString()
             };
-            const updatedDailyPlan = {
-                ...dailyPlan,
-                todo: dailyPlan!!.todo.map(task => task.id === taskId ? updatedTask : task),
-                done: dailyPlan!!.done.map(task => task.id === taskId ? updatedTask : task)
-            } as DailyPlan;
+
+            const updatedDailyPlan = updateTaskInDailyPlan(dailyPlan!!, updatedTask);
 
             setDailyPlan(updatedDailyPlan);
             await taskService.updateTask(updatedTask);
@@ -104,16 +118,44 @@ const Dashboard: React.FC = () => {
         }
     };
 
+    const findTaskInDailyPlan = (dailyPlan: DailyPlan, taskId: string): Task | null => {
+        return dailyPlan.todo.find(task => task.id === taskId) ||
+            dailyPlan.done.find(task => task.id === taskId) ||
+            null;
+    };
+
+    const updateTaskInDailyPlan = (dailyPlan: DailyPlan, updatedTask: Task): DailyPlan => {
+        return {
+            ...dailyPlan,
+            todo: dailyPlan.todo.map(task => task.id === updatedTask.id ? updatedTask : task),
+            done: dailyPlan.done.map(task => task.id === updatedTask.id ? updatedTask : task)
+        };
+    };
+
+    const removeTaskFromDailyPlan = (dailyPlan: DailyPlan, taskId: string): DailyPlan => {
+        return {
+            ...dailyPlan,
+            todo: dailyPlan.todo.filter(task => task.id !== taskId),
+            done: dailyPlan.done.filter(task => task.id !== taskId)
+        };
+    };
+
     return (
         <Layout>
-            <Card className="w-full max-w-3xl">
-                <CardHeader>
-                    <CardTitle>Dashboard</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <DailyPlanComponent dailyPlan={dailyPlan} onTaskMove={onDragEnd} onEditTask={handleEditTask} onAddTask={handleAddTask} />
-                </CardContent>
-            </Card>
+            <div className="flex gap-4 mt-4">
+                <div className="w-1/4">
+                    <ReusableTaskPicker tasks={reusableTasks} handleAddToTodo={handleAddToTodo}/>
+                </div>
+                <div className="w-3/4">
+                    <DailyPlanDashboard
+                        dailyPlan={dailyPlan}
+                        onTaskMove={onDragEnd}
+                        onEditTask={handleEditTask}
+                        onAddTask={handleAddToTodo}
+                        onRemoveTask={handleRemoveTaskFromDailyPlan}
+                    />
+                </div>
+            </div>
         </Layout>
     );
 };

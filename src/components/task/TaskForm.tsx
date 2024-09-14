@@ -1,4 +1,4 @@
-import { Task, TaskCategory, TaskSize } from "../service/taskService";
+import { Task, TaskCategory, TaskSize } from "../../service/taskService";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Input } from "src/components/ui/input";
