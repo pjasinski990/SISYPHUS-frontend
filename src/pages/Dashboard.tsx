@@ -63,7 +63,7 @@ const Dashboard: React.FC = () => {
         return newDailyPlan
     }
 
-    const handleAddToTodo = async (taskData: TaskFormData) => {
+    const handleCreateTaskInTodo = async (taskData: TaskFormData) => {
         try {
             let newTask: Task = {
                 id: null,
@@ -74,6 +74,7 @@ const Dashboard: React.FC = () => {
             };
             if (taskData.reusable) {
                 newTask = await taskService.newTask(newTask);
+                setReusableTasks([...reusableTasks, newTask]);
             }
             const updatedDailyPlan = { ...dailyPlan, todo: [...dailyPlan!!.todo, newTask] } as DailyPlan;
             setDailyPlan(updatedDailyPlan);
@@ -82,6 +83,19 @@ const Dashboard: React.FC = () => {
             console.error('Failed to create task:', error);
         }
     };
+
+    const handleAddReusableTaskToTodo = async (newTask: Task) => {
+        try {
+            if (!dailyPlan || !newTask.id || findTaskInDailyPlan(dailyPlan, newTask.id)) {
+                return
+            }
+            const updatedDailyPlan = { ...dailyPlan, todo: [...dailyPlan!!.todo, newTask] } as DailyPlan;
+            setDailyPlan(updatedDailyPlan);
+            await dailyPlanService.updateDailyPlan(updatedDailyPlan);
+        } catch (error) {
+            console.error('Failed to move task:', error);
+        }
+    }
 
     const handleRemoveTaskFromDailyPlan = async (taskId: string) => {
         try {
@@ -144,14 +158,14 @@ const Dashboard: React.FC = () => {
         <Layout>
             <div className="flex gap-4 mt-4">
                 <div className="w-1/4">
-                    <ReusableTaskPicker tasks={reusableTasks} handleAddToTodo={handleAddToTodo}/>
+                    <ReusableTaskPicker tasks={reusableTasks} handleAddToTodo={handleAddReusableTaskToTodo}/>
                 </div>
                 <div className="w-3/4">
                     <DailyPlanDashboard
                         dailyPlan={dailyPlan}
                         onTaskMove={onDragEnd}
                         onEditTask={handleEditTask}
-                        onAddTask={handleAddToTodo}
+                        onAddTask={handleCreateTaskInTodo}
                         onRemoveTask={handleRemoveTaskFromDailyPlan}
                     />
                 </div>
