@@ -31,8 +31,18 @@ const categoryColors: Record<TaskCategory, string> = {
     [TaskCategory.PINK]: "bg-pink-100 dark:bg-pink-800",
 };
 
+const categoryHoverColors: Record<TaskCategory, string> = {
+    [TaskCategory.GREEN]: "hover:bg-green-200 dark:hover:bg-green-900",
+    [TaskCategory.BLUE]: "hover:bg-blue-200 dark:hover:bg-blue-900",
+    [TaskCategory.RED]: "hover:bg-red-200 dark:hover:bg-red-900",
+    [TaskCategory.YELLOW]: "hover:bg-yellow-200 dark:hover:bg-yellow-800",
+    [TaskCategory.WHITE]: "hover:bg-gray-200 dark:hover:bg-gray-600",
+    [TaskCategory.PINK]: "hover:bg-pink-200 dark:hover:bg-pink-900",
+}
+
 const TaskItem: React.FC<TaskItemProps> = ({ task, index, onEditTask }) => {
     const categoryClass = categoryColors[task.category];
+    const categoryEditButtonClass = categoryHoverColors[task.category];
 
     return (
         <Draggable draggableId={String(task.id)} index={index}>
@@ -57,7 +67,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, index, onEditTask }) => {
                             variant="ghost"
                             size="sm"
                             onClick={() => onEditTask(task)}
-                            className="ml-2"
+                            className={`ml-2 ${categoryEditButtonClass}`}
                         >
                             <Edit className="h-4 w-4" />
                         </Button>
@@ -94,13 +104,12 @@ export const ExtendableTaskList: React.FC<ExtendableTaskListProps> = ({
                                                                           title,
                                                                           tasks,
                                                                           droppableId,
-                                                                          showAddButton = false,
                                                                           onAddTask,
                                                                           onEditTask,
                                                                       }) => {
     return (
         <div className="bg-gray-50 dark:bg-gray-800 p-4 pb-2 rounded-lg min-h-[200px]">
-            <TaskListHeader title={title} showAddButton={showAddButton} onAddTask={onAddTask} />
+            <TaskListHeader title={title} showAddButton={true} onAddTask={onAddTask} />
             <DroppableTaskList droppableId={droppableId} tasks={tasks} onEditTask={onEditTask} />
         </div>
     );

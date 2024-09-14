@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import Layout from "src/components/Layout";
 import { DailyPlan, dailyPlanService } from "../service/dailyPlanService";
-import { DailyPlanComponent, TaskFormData } from "src/components/DailyPlanComponent";
+import { DailyPlanComponent } from "src/components/DailyPlanComponent";
 import { Card, CardContent, CardHeader, CardTitle } from "src/components/ui/card";
 import { DropResult } from "react-beautiful-dnd";
 import { DraggableLocation } from "@hello-pangea/dnd";
 import { formatToIsoDate } from "src/lib/utils";
 import { Task, taskService } from "../service/taskService";
 import { useAuth } from "../context/AuthContext";
+import { TaskFormData } from "src/components/TaskForm";
 
 const Dashboard: React.FC = () => {
     const [dailyPlan, setDailyPlan] = useState<DailyPlan | null>(null);

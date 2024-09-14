@@ -1,125 +1,12 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "src/components/ui/card";
-import { Button } from "src/components/ui/button";
-import { Input } from "src/components/ui/input";
 import { DragDropContext, DropResult } from '@hello-pangea/dnd';
 import { DailyPlan } from "../service/dailyPlanService";
 import { ExtendableTaskList, TaskList } from "./TaskListComponent";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "src/components/ui/dialog";
-import { Textarea } from "src/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "src/components/ui/select";
-import { Task, TaskCategory, TaskSize } from "../service/taskService";
+import { Task } from "../service/taskService";
+import { TaskForm, TaskFormData } from "src/components/TaskForm";
 
-export interface TaskFormData {
-    title: string;
-    description: string;
-    category: TaskCategory;
-    size: TaskSize;
-    startTime: string;
-    reusable: boolean;
-}
-
-interface TaskFormProps {
-    initialData?: Task;
-    onSubmit: (task: TaskFormData) => void;
-    onCancel: () => void;
-}
-
-const TaskForm: React.FC<TaskFormProps> = ({ initialData, onSubmit, onCancel }) => {
-    const [formData, setFormData] = useState<TaskFormData>(initialData || {
-        title: '',
-        description: '',
-        category: TaskCategory.WHITE,
-        size: TaskSize.SMALL,
-        startTime: '',
-        reusable: false,
-    });
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-    };
-
-    const handleSelectChange = (name: string) => (value: string) => {
-        setFormData(prev => ({ ...prev, [name]: value }));
-    };
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        onSubmit(formData);
-    };
-
-    return (
-        <form onSubmit={handleSubmit} className="space-y-4">
-            <Input
-                name="title"
-                value={formData.title}
-                onChange={handleChange}
-                placeholder="Task Title"
-                required
-            />
-            <Textarea
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                placeholder="Task Description"
-            />
-            <Select
-                name="category"
-                onValueChange={handleSelectChange("category")}
-                value={formData.category}
-            >
-                <SelectTrigger>
-                    <SelectValue placeholder="Select category">{formData.category}</SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                    {Object.values(TaskCategory).map((value) => (
-                        <SelectItem key={value} value={value}>
-                            {value}
-                        </SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
-            <Select
-                name="size"
-                onValueChange={handleSelectChange("size")}
-                value={formData.size}
-            >
-                <SelectTrigger>
-                    <SelectValue placeholder="Select size">{formData.size}</SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                    {Object.values(TaskSize).map((value) => (
-                        <SelectItem key={value} value={value}>
-                            {value}
-                        </SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
-            <Input
-                name="startTime"
-                value={formData.startTime}
-                onChange={handleChange}
-                placeholder="Start Time"
-                type="time"
-            />
-            <div className="flex items-center space-x-2">
-                <input
-                    type="checkbox"
-                    id="reusable"
-                    name="reusable"
-                    checked={formData.reusable}
-                    onChange={(e) => setFormData(prev => ({ ...prev, reusable: e.target.checked }))}
-                />
-                <label htmlFor="reusable">Reusable</label>
-            </div>
-            <div className="flex justify-end space-x-2">
-                <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
-                <Button type="submit">Save</Button>
-            </div>
-        </form>
-    );
-};
 
 interface DailyPlanContentProps {
     dailyPlan: DailyPlan | null;
