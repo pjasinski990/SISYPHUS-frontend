@@ -1,5 +1,5 @@
 import { Task, TaskCategory, TaskSize } from "../../service/taskService";
-import React from "react";
+import React, { forwardRef } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Input } from "src/components/ui/input";
 import { Textarea } from "src/components/ui/textarea";
@@ -23,7 +23,12 @@ interface TaskFormProps {
     hideReusableState?: boolean;
 }
 
-export const TaskForm: React.FC<TaskFormProps> = ({ initialData, onSubmit, onCancel, hideReusableState = false}) => {
+export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(({
+                                                                        initialData,
+                                                                        onSubmit,
+                                                                        onCancel,
+                                                                        hideReusableState = false
+                                                                    }, ref) => {
     const { register, handleSubmit, control, formState: { errors } } = useForm<TaskFormData>({
         defaultValues: initialData ? {
             title: initialData.title,
@@ -46,8 +51,16 @@ export const TaskForm: React.FC<TaskFormProps> = ({ initialData, onSubmit, onCan
         onSubmit(data);
     };
 
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+        if (event.key === 'Enter' && event.shiftKey) {
+            event.stopPropagation();
+        } else if (event.key === 'Enter') {
+            event.preventDefault();
+        }
+    };
+
     return (
-        <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
+        <form ref={ref} onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
             <div>
                 <label htmlFor="title" className="block text-sm font-medium text-gray-700">
                     Title
@@ -56,6 +69,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({ initialData, onSubmit, onCan
                     id="title"
                     {...register("title", { required: "Title is required" })}
                     placeholder="Task Title"
+                    onKeyDown={handleKeyDown}
                 />
                 {errors.title && <p className="mt-1 text-sm text-red-600">{errors.title.message}</p>}
             </div>
@@ -68,6 +82,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({ initialData, onSubmit, onCan
                     id="description"
                     {...register("description")}
                     placeholder="Task Description"
+                    onKeyDown={handleKeyDown}
                 />
             </div>
 
@@ -161,4 +176,4 @@ export const TaskForm: React.FC<TaskFormProps> = ({ initialData, onSubmit, onCan
             </div>
         </form>
     );
-};
+});
