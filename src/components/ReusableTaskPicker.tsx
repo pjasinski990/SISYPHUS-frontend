@@ -3,9 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "src/components/ui/card
 import { Task } from "../service/taskService";
 import { TaskItem } from "src/components/task/TaskItem";
 import { PlusButton } from "src/components/library/PlusButton";
-import { TaskFormData } from "src/components/library/TaskForm";
-import { TaskDialog } from "src/components/library/TaskDialog";
+import { TaskFormData } from "src/components/task/TaskForm";
+import { TaskDialog } from "src/components/task/TaskDialog";
 import { ConfirmDialog } from "src/components/library/ConfirmDialog";
+import { FoldingTaskItem } from "src/components/task/FoldingTaskItem";
+import { TaskPropertiesProvider } from "src/components/context/TaskPropertiesContext";
 
 interface ReusableTaskPickerProps {
     tasks: Task[];
@@ -23,23 +25,11 @@ export const ReusableTaskPicker: React.FC<ReusableTaskPickerProps> = ({
     const [editingTask, setEditingTask] = useState<Task | null>(null);
     const [removingTask, setRemovingTask] = useState<Task | null>(null);
 
-    const handleEditTask = (task: Task) => {
-        setEditingTask(task);
-    };
-
-    const handleRemoveTask = (task: Task) => {
-        setRemovingTask(task);
-    };
-
     const handleTaskFormSubmit = (taskData: TaskFormData) => {
         if (editingTask) {
             onEditTask(editingTask.id!, taskData);
             setEditingTask(null);
         }
-    };
-
-    const handleTaskFormCancel = () => {
-        setEditingTask(null);
     };
 
     const handleConfirmRemoveTask = () => {
@@ -49,10 +39,6 @@ export const ReusableTaskPicker: React.FC<ReusableTaskPickerProps> = ({
         }
     };
 
-    const handleCancelRemoveTask = () => {
-        setRemovingTask(null);
-    };
-
     return (
         <Card>
             <TaskDialog
@@ -60,7 +46,7 @@ export const ReusableTaskPicker: React.FC<ReusableTaskPickerProps> = ({
                 initialData={editingTask}
                 hideReusableState={true}
                 onSubmit={handleTaskFormSubmit}
-                onCancel={handleTaskFormCancel}
+                onCancel={() => {setEditingTask(null);}}
                 title={'Edit Task'}
             />
 
@@ -69,10 +55,10 @@ export const ReusableTaskPicker: React.FC<ReusableTaskPickerProps> = ({
                 title="Confirmation"
                 message="Remove this task from reusable tasks?"
                 onConfirm={handleConfirmRemoveTask}
-                onCancel={handleCancelRemoveTask}
+                onCancel={() => {setRemovingTask(null);}}
             >
                 {removingTask && (
-                    <TaskItem task={removingTask} onRemoveTask={() => {}} onEditTask={() => {}}/>
+                    <TaskItem task={removingTask} isVanity={true}/>
                 )}
             </ConfirmDialog>
 
@@ -83,8 +69,15 @@ export const ReusableTaskPicker: React.FC<ReusableTaskPickerProps> = ({
                 <ul className="space-y-2">
                     {tasks.map((task) => (
                         <li key={task.id} className="flex items-center justify-between p-2">
-                            <TaskItem task={task} onEditTask={handleEditTask} onRemoveTask={handleRemoveTask} />
-                            <PlusButton label={""} onClick={() => onAddToTodo(task)}/>
+                            <TaskPropertiesProvider
+                                onTaskEdit={() => setEditingTask(task)}
+                                onTaskRemove={() => setRemovingTask(task)}
+                                isDraggable={false}
+                                isFoldable={true}
+                            >
+                                <FoldingTaskItem task={task}/>
+                                <PlusButton label={""} onClick={() => onAddToTodo(task)}/>
+                            </TaskPropertiesProvider>
                         </li>
                     ))}
                 </ul>

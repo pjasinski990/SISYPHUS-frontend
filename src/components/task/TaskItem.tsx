@@ -1,24 +1,28 @@
 import { Task } from "../../service/taskService";
 import React from "react";
-import { categoryColors, categoryHoverColors, TaskItemContent } from "src/components/task/TaskItemContent";
+import { TaskItemContent } from "src/components/task/TaskItemContent";
+import { TaskPropertiesProvider } from "src/components/context/TaskPropertiesContext";
 
 interface TaskItemProps {
     task: Task;
-    onEditTask: (task: Task) => void;
-    onRemoveTask: (task: Task) => void;
+    isVanity?: boolean;
 }
 
-export const TaskItem: React.FC<TaskItemProps> = ({ task, onEditTask, onRemoveTask }) => {
-    const categoryClass = categoryColors[task.category];
-    const categoryEditButtonClass = categoryHoverColors[task.category];
-
-    return (
-        <TaskItemContent
-            task={task}
-            onEditTask={onEditTask}
-            onRemoveTask={onRemoveTask}
-            categoryClass={categoryClass}
-            categoryEditButtonClass={categoryEditButtonClass}
-        />
-    );
+export const TaskItem: React.FC<TaskItemProps> = ({ task, isVanity = false }) => {
+    if (isVanity) {
+        return (
+            <TaskPropertiesProvider
+                onTaskEdit={() => {}}
+                onTaskRemove={() => {}}
+                isDraggable={false}
+                isFoldable={false}
+            >
+                <TaskItemContent task={task} />
+            </TaskPropertiesProvider>
+        );
+    } else {
+        return (
+            <TaskItemContent task={task} />
+        )
+    }
 };

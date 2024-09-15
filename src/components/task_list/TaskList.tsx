@@ -8,15 +8,24 @@ interface TaskListProps {
     title: string;
     tasks: Task[];
     droppableId: string;
-    onEditTask: (task: Task) => void;
-    onRemoveTask: (task: Task) => void;
+    showAddButton?: boolean;
+    onAddTask?: () => void;
 }
 
-interface ExtendableTaskListProps extends TaskListProps {
-    showAddButton?: boolean;
-    onRemoveTask: (task: Task) => void;
-    onAddTask: () => void;
-}
+export const TaskList: React.FC<TaskListProps> = ({
+                                                      title,
+                                                      tasks,
+                                                      droppableId,
+                                                      showAddButton,
+                                                      onAddTask,
+                                                  }) => {
+    return (
+        <div className="bg-slate-50 dark:bg-slate-900 p-4 pb-2 rounded-lg min-h-[200px] shadow shadow-slate-200 dark:shadow-slate-950">
+            <TaskListHeader title={title} showAddButton={showAddButton} onAddTask={onAddTask} />
+            <DroppableTasks droppableId={droppableId} tasks={tasks}/>
+        </div>
+    );
+};
 
 const TaskListHeader: React.FC<{
     title: string;
@@ -31,43 +40,10 @@ const TaskListHeader: React.FC<{
     );
 };
 
-export const TaskList: React.FC<TaskListProps> = ({
-                                                      title,
-                                                      tasks,
-                                                      droppableId,
-                                                      onEditTask,
-                                                      onRemoveTask,
-                                                  }) => {
-    return (
-        <div className="bg-slate-50 dark:bg-slate-900 p-4 pb-2 rounded-lg min-h-[200px] shadow shadow-slate-200 dark:shadow-slate-950">
-            <TaskListHeader title={title} />
-            <DroppableTaskList droppableId={droppableId} tasks={tasks} onEditTask={onEditTask} onRemoveTask={onRemoveTask}/>
-        </div>
-    );
-};
-
-export const ExtendableTaskList: React.FC<ExtendableTaskListProps> = ({
-                                                                          title,
-                                                                          tasks,
-                                                                          droppableId,
-                                                                          onAddTask,
-                                                                          onEditTask,
-                                                                          onRemoveTask,
-                                                                      }) => {
-    return (
-        <div className="bg-slate-50 dark:bg-slate-900 p-4 pb-2 rounded-lg min-h-[200px] shadow shadow-slate-200 dark:shadow-slate-950">
-            <TaskListHeader title={title} showAddButton={true} onAddTask={onAddTask} />
-            <DroppableTaskList droppableId={droppableId} tasks={tasks} onEditTask={onEditTask} onRemoveTask={onRemoveTask}/>
-        </div>
-    );
-};
-
-const DroppableTaskList: React.FC<{
+const DroppableTasks: React.FC<{
     droppableId: string;
     tasks: Task[];
-    onEditTask: (task: Task) => void;
-    onRemoveTask: (task: Task) => void;
-}> = ({ droppableId, tasks, onEditTask, onRemoveTask }) => {
+}> = ({ droppableId, tasks }) => {
     return (
         <Droppable droppableId={droppableId}>
             {(provided, snapshot) => (
@@ -77,7 +53,7 @@ const DroppableTaskList: React.FC<{
                     className={`transition-colors duration-200 flex flex-col gap-0 ${snapshot.isDraggingOver ? "bg-slate-200 dark:bg-slate-700" : ""}`}
                 >
                     {tasks.map((task, index) => (
-                        <DraggableTaskItem key={task.id} task={task} index={index} onEditTask={onEditTask} onRemoveTask={onRemoveTask}/>
+                        <DraggableTaskItem key={task.id} task={task} index={index}/>
                     ))}
                     {provided.placeholder}
                 </div>

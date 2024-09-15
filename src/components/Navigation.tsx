@@ -2,7 +2,7 @@ import React from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { Button } from "src/components/ui/button";
 import { LogOut, Moon, Sun, User } from "lucide-react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "src/components/context/AuthContext";
 
 interface NavigationProps {
     darkMode: boolean;

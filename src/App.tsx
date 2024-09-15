@@ -1,7 +1,7 @@
 import './App.css'
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthProvider, useAuth } from 'src/components/context/AuthContext';
 import LoginPage from './pages/LoginPage';
 import Dashboard from './pages/Dashboard';
 import ProfilePage from './pages/Profile';

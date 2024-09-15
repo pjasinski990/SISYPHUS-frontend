@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "src/components/ui/dialog";
-import { TaskForm, TaskFormData } from "src/components/library/TaskForm";
+import { TaskForm, TaskFormData } from "src/components/task/TaskForm";
 import { Task } from "../../service/taskService";
 
 interface TaskDialogProps {

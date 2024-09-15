@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { DragDropContext, DropResult } from '@hello-pangea/dnd';
-import { ExtendableTaskList, TaskList } from "src/components/task_list/TaskList";
+import { TaskList } from "src/components/task_list/TaskList";
 import { TaskItem } from "src/components/task/TaskItem";
 import { DailyPlan } from "../../service/dailyPlanService";
-import { TaskFormData } from "src/components/library/TaskForm";
+import { TaskFormData } from "src/components/task/TaskForm";
 import { Task } from "../../service/taskService";
-import { TaskDialog } from "src/components/library/TaskDialog";
+import { TaskDialog } from "src/components/task/TaskDialog";
 import { ConfirmDialog } from "src/components/library/ConfirmDialog";
+import { TaskPropertiesProvider } from "src/components/context/TaskPropertiesContext";
 
 interface DailyPlanContentProps {
     dailyPlan: DailyPlan;
@@ -73,24 +74,24 @@ export const DailyPlanContent: React.FC<DailyPlanContentProps> = ({
         <DragDropContext onDragEnd={handleDragEnd}>
             <div className="flex gap-4">
                 <div className="flex-1">
-                    <ExtendableTaskList
-                        title="To Do"
-                        tasks={dailyPlan.todo}
-                        droppableId="todo"
-                        showAddButton={true}
-                        onAddTask={handleAddTask}
-                        onEditTask={handleEditTask}
-                        onRemoveTask={handleRemoveTask}
-                    />
+                    <TaskPropertiesProvider onTaskEdit={handleEditTask} onTaskRemove={handleRemoveTask} isDraggable={true} isFoldable={true}>
+                        <TaskList
+                            title="To Do"
+                            tasks={dailyPlan.todo}
+                            droppableId="todo"
+                            showAddButton={true}
+                            onAddTask={handleAddTask}
+                        />
+                    </TaskPropertiesProvider>
                 </div>
                 <div className="flex-1">
-                    <TaskList
-                        title="Done"
-                        tasks={dailyPlan.done}
-                        droppableId="done"
-                        onEditTask={handleEditTask}
-                        onRemoveTask={handleRemoveTask}
-                    />
+                    <TaskPropertiesProvider onTaskEdit={handleEditTask} onTaskRemove={handleRemoveTask} isDraggable={true} isFoldable={true}>
+                        <TaskList
+                            title="Done"
+                            tasks={dailyPlan.done}
+                            droppableId="done"
+                        />
+                    </TaskPropertiesProvider>
                 </div>
             </div>
 
@@ -111,7 +112,7 @@ export const DailyPlanContent: React.FC<DailyPlanContentProps> = ({
                 onCancel={handleCancelRemoveTask}
             >
                 {removingTask && (
-                    <TaskItem task={removingTask} onRemoveTask={() => {}} onEditTask={() => {}}/>
+                    <TaskItem task={removingTask} isVanity={true}/>
                 )}
             </ConfirmDialog>
         </DragDropContext>

@@ -1,17 +1,12 @@
 import { Task, TaskCategory } from "../../service/taskService";
-import { DraggableProvided, DraggableStateSnapshot } from "@hello-pangea/dnd";
 import React from "react";
 import { Button } from "src/components/ui/button";
 import { CircleMinus, Edit } from "lucide-react";
+import { useTaskProperties } from "src/components/context/TaskPropertiesContext";
 
 interface TaskItemContentProps {
     task: Task;
-    onEditTask: (task: Task) => void;
-    onRemoveTask: (task: Task) => void;
-    categoryClass: string;
-    categoryEditButtonClass: string;
-    provided?: DraggableProvided;
-    snapshot?: DraggableStateSnapshot;
+    showMetadata?: boolean;
 }
 
 export const categoryColors: Record<TaskCategory, string> = {
@@ -32,9 +27,9 @@ export const categoryHoverColors: Record<TaskCategory, string> = {
     [TaskCategory.PINK]: "hover:bg-pink-200 dark:hover:bg-pink-900",
 }
 
-
 export const TaskMetadata: React.FC<{ task: Task }> = ({ task }) => (
     <div className="text-xs mt-1 text-gray-600 dark:text-gray-300">
+        <p className="text-sm">{task.description}</p>
         <span className="mr-2">Category: {task.category}</span>
         <span className="mr-2">Size: {task.size}</span>
         {task.startTime && <span>Start: {task.startTime}</span>}
@@ -43,42 +38,25 @@ export const TaskMetadata: React.FC<{ task: Task }> = ({ task }) => (
 
 export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                                                                     task,
-                                                                    onEditTask,
-                                                                    onRemoveTask,
-                                                                    categoryClass,
-                                                                    categoryEditButtonClass,
-                                                                    provided,
-                                                                    snapshot,
+                                                                    showMetadata = true,
                                                                 }) => {
-    const draggingClass = snapshot?.isDragging ? 'opacity-75' : '';
+    const categoryClass = categoryColors[task.category];
+    const categoryEditButtonClass = categoryHoverColors[task.category];
+
+    const { onTaskEdit, onTaskRemove } = useTaskProperties()
 
     return (
-        <div
-            ref={provided?.innerRef}
-            {...provided?.draggableProps}
-            className={`p-4 mb-2 rounded shadow-md text-gray-800 dark:text-gray-100 ${categoryClass} ${draggingClass}`}
-        >
-            <div {...provided?.dragHandleProps} className="flex justify-between items-start">
+        <div className={`p-4 mb-2 rounded shadow-md text-gray-800 dark:text-gray-100 ${categoryClass}`}>
+            <div className="flex justify-between items-start">
                 <div>
                     <h4 className="font-semibold">{task.title}</h4>
-                    <p className="text-sm">{task.description}</p>
-                    <TaskMetadata task={task} />
+                    {showMetadata && <TaskMetadata task={task} />}
                 </div>
                 <div className="flex items-end">
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onEditTask(task)}
-                        className={`${categoryEditButtonClass}`}
-                    >
+                    <Button variant="ghost" size="sm" onClick={() => onTaskEdit(task)} className={categoryEditButtonClass}>
                         <Edit className="h-4 w-4" />
                     </Button>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onRemoveTask(task)}
-                        className={`${categoryEditButtonClass}`}
-                    >
+                    <Button variant="ghost" size="sm" onClick={() => onTaskRemove(task)} className={categoryEditButtonClass}>
                         <CircleMinus className="h-4 w-4" />
                     </Button>
                 </div>

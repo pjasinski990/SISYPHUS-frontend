@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import Layout from "src/components/Layout";
 import { DailyPlan, dailyPlanService } from "../service/dailyPlanService";
 import { Task, taskService } from "../service/taskService";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "src/components/context/AuthContext";
 import { formatToIsoDate } from "src/lib/utils";
 import { DraggableLocation, DropResult } from "@hello-pangea/dnd";
 import { DailyPlanDashboard } from "src/components/DailyPlanDashboard";
 import { ReusableTaskPicker } from "src/components/ReusableTaskPicker";
-import { TaskFormData } from "src/components/library/TaskForm";
+import { TaskFormData } from "src/components/task/TaskForm";
 
 const Dashboard: React.FC = () => {
     const [dailyPlan, setDailyPlan] = useState<DailyPlan | null>(null);
@@ -29,7 +29,7 @@ const Dashboard: React.FC = () => {
             }
         };
 
-        fetchData();
+        fetchData().then();
     }, []);
 
     const onDragEnd = async (result: DropResult) => {

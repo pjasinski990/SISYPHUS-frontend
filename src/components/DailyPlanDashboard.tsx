@@ -2,10 +2,10 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "src/components/ui/card";
 import { DailyPlan } from "../service/dailyPlanService";
 import { DropResult } from "@hello-pangea/dnd";
-import { TaskFormData } from "src/components/library/TaskForm";
+import { TaskFormData } from "src/components/task/TaskForm";
 import { DailyPlanContent } from "src/components/daily_plan/DailyPlanContent";
-
-interface DailyPlanDashboardProps {
+import { TaskPropertiesProvider } from "src/components/context/TaskPropertiesContext";
+ interface DailyPlanDashboardProps {
     dailyPlan: DailyPlan | null;
     onTaskMove: (result: DropResult) => void;
     onAddTask: (task: TaskFormData) => void;
