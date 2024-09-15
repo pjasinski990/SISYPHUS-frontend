@@ -28,6 +28,10 @@ export interface Task {
 }
 
 class TaskService {
+    async getTasks(): Promise<Task[]> {
+        return apiService.authenticatedGet(`/api/tasks/`);
+    }
+
     async newTask(task: Task): Promise<Task> {
         return apiService.authenticatedPost(`/api/tasks/`, task);
     }
@@ -36,8 +40,8 @@ class TaskService {
         return apiService.authenticatedPut(`/api/tasks/`, task);
     }
 
-    async getTasks(): Promise<Task[]> {
-        return apiService.authenticatedGet(`/api/tasks/`);
+    async deleteTask(taskId: string): Promise<Task> {
+        return apiService.authenticatedDelete(`/api/tasks/${taskId}`);
     }
 }
 

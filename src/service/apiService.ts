@@ -89,6 +89,15 @@ class ApiService {
         }
     }
 
+    public async authenticatedDelete<T>(endpoint: string, config: AxiosRequestConfig = {}): Promise<T> {
+        try {
+            const response: AxiosResponse<T> = await this.api.delete(endpoint, config);
+            return response.data;
+        } catch (error) {
+            this.handleAxiosError(error);
+        }
+    }
+
     public async get<T>(endpoint: string, config: AxiosRequestConfig = {}): Promise<T> {
         const response: AxiosResponse<T> = await this.api.get(endpoint, config);
         return response.data;

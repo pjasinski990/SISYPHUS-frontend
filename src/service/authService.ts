@@ -39,7 +39,7 @@ export class AuthService {
 
     static extractToken(response: AuthResponse): string {
         try {
-            return response.token!!
+            return response.token!
         } catch (error) {
             console.error(`Error extracting token from ${response}: ${error}`)
             throw error
@@ -48,7 +48,7 @@ export class AuthService {
 
     static extractRefreshToken(response: AuthResponse): string {
         try {
-            return response.refreshToken!!
+            return response.refreshToken!
         } catch (error) {
             console.error(`Error extracting refresh token from ${response}: ${error}`)
             throw error

@@ -20,9 +20,10 @@ interface TaskFormProps {
     initialData?: Task;
     onSubmit: (task: TaskFormData) => void;
     onCancel: () => void;
+    hideReusableState?: boolean;
 }
 
-export const TaskForm: React.FC<TaskFormProps> = ({ initialData, onSubmit, onCancel }) => {
+export const TaskForm: React.FC<TaskFormProps> = ({ initialData, onSubmit, onCancel, hideReusableState = false}) => {
     const { register, handleSubmit, control, formState: { errors } } = useForm<TaskFormData>({
         defaultValues: initialData ? {
             title: initialData.title,
@@ -130,23 +131,27 @@ export const TaskForm: React.FC<TaskFormProps> = ({ initialData, onSubmit, onCan
                 />
             </div>
 
-            <div className="flex items-center">
-                <Controller
-                    name="reusable"
-                    control={control}
-                    render={({ field }) => (
-                        <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                            id="reusable"
-                            className="w-6 h-6 ml-1"
+            {hideReusableState ||
+                <>
+                    <div className="flex items-center">
+                        <Controller
+                            name="reusable"
+                            control={control}
+                            render={({ field }) => (
+                                <Checkbox
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                    id="reusable"
+                                    className="w-6 h-6 ml-1"
+                                />
+                            )}
                         />
-                    )}
-                />
-                <label htmlFor="reusable" className="ml-2 block text-sm text-gray-700">
-                    Reusable
-                </label>
-            </div>
+                        <label htmlFor="reusable" className="ml-2 block text-sm text-gray-700">
+                            Keep in reusable tasks
+                        </label>
+                    </div>
+                </>
+            }
 
             <div className="flex justify-end space-x-2 pt-4">
                 <Button type="button" variant="outline" onClick={onCancel}>

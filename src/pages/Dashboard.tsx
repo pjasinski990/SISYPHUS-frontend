@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import Layout from "src/components/Layout";
 import { DailyPlan, dailyPlanService } from "../service/dailyPlanService";
-import { DailyPlanDashboard } from "src/components/DailyPlanDashboard";
-import { DropResult } from "react-beautiful-dnd";
-import { DraggableLocation } from "@hello-pangea/dnd";
-import { formatToIsoDate } from "src/lib/utils";
 import { Task, taskService } from "../service/taskService";
 import { useAuth } from "../context/AuthContext";
-import { TaskFormData } from "src/components/task/TaskForm";
+import { formatToIsoDate } from "src/lib/utils";
+import { DraggableLocation, DropResult } from "@hello-pangea/dnd";
+import { DailyPlanDashboard } from "src/components/DailyPlanDashboard";
 import { ReusableTaskPicker } from "src/components/ReusableTaskPicker";
+import { TaskFormData } from "src/components/library/TaskForm";
 
 const Dashboard: React.FC = () => {
     const [dailyPlan, setDailyPlan] = useState<DailyPlan | null>(null);
@@ -30,7 +29,7 @@ const Dashboard: React.FC = () => {
             }
         };
 
-        fetchData().then();
+        fetchData();
     }, []);
 
     const onDragEnd = async (result: DropResult) => {
@@ -38,9 +37,9 @@ const Dashboard: React.FC = () => {
         if (!isValidDragAction(source, destination) || !dailyPlan) {
             return;
         }
-        const newDailyPlan = moveTask(dailyPlan, source, destination!!);
-        setDailyPlan(newDailyPlan)
-        await dailyPlanService.updateDailyPlan(newDailyPlan)
+        const newDailyPlan = moveTask(dailyPlan, source, destination!);
+        setDailyPlan(newDailyPlan);
+        await dailyPlanService.updateDailyPlan(newDailyPlan);
     };
 
     const isValidDragAction = (source: DraggableLocation, destination: DraggableLocation | null | undefined) => {
@@ -49,7 +48,7 @@ const Dashboard: React.FC = () => {
         }
         return !(source.droppableId === destination.droppableId &&
             source.index === destination.index);
-    }
+    };
 
     const moveTask = (dailyPlan: DailyPlan, source: DraggableLocation, destination: DraggableLocation) => {
         const newDailyPlan: DailyPlan = { ...dailyPlan };
@@ -60,23 +59,23 @@ const Dashboard: React.FC = () => {
             const [movedTask] = sourceList.splice(source.index, 1);
             destList.splice(destination.index, 0, movedTask);
         }
-        return newDailyPlan
-    }
+        return newDailyPlan;
+    };
 
     const handleCreateTaskInTodo = async (taskData: TaskFormData) => {
         try {
             let newTask: Task = {
                 id: null,
                 ...taskData,
-                ownerUsername: username!!,
+                ownerUsername: username!,
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
             };
             if (taskData.reusable) {
                 newTask = await taskService.newTask(newTask);
-                setReusableTasks([...reusableTasks, newTask]);
+                setReusableTasks((prevTasks) => [...prevTasks, newTask]);
             }
-            const updatedDailyPlan = { ...dailyPlan, todo: [...dailyPlan!!.todo, newTask] } as DailyPlan;
+            const updatedDailyPlan = { ...dailyPlan, todo: [...dailyPlan?.todo || [], newTask] } as DailyPlan;
             setDailyPlan(updatedDailyPlan);
             await dailyPlanService.updateDailyPlan(updatedDailyPlan);
         } catch (error) {
@@ -87,20 +86,19 @@ const Dashboard: React.FC = () => {
     const handleAddReusableTaskToTodo = async (newTask: Task) => {
         try {
             if (!dailyPlan || !newTask.id || findTaskInDailyPlan(dailyPlan, newTask.id)) {
-                return
+                return;
             }
-            const updatedDailyPlan = { ...dailyPlan, todo: [...dailyPlan!!.todo, newTask] } as DailyPlan;
+            const updatedDailyPlan = { ...dailyPlan, todo: [...dailyPlan.todo, newTask] } as DailyPlan;
             setDailyPlan(updatedDailyPlan);
             await dailyPlanService.updateDailyPlan(updatedDailyPlan);
         } catch (error) {
             console.error('Failed to move task:', error);
         }
-    }
+    };
 
     const handleRemoveTaskFromDailyPlan = async (taskId: string) => {
         try {
-            const updatedDailyPlan = removeTaskFromDailyPlan(dailyPlan!!, taskId);
-
+            const updatedDailyPlan = removeTaskFromDailyPlan(dailyPlan!, taskId);
             setDailyPlan(updatedDailyPlan);
             await dailyPlanService.updateDailyPlan(updatedDailyPlan);
         } catch (error) {
@@ -110,7 +108,7 @@ const Dashboard: React.FC = () => {
 
     const handleEditTask = async (taskId: string, updatedTaskData: TaskFormData) => {
         try {
-            const taskToUpdate = findTaskInDailyPlan(dailyPlan!!, taskId);
+            const taskToUpdate = findTaskInDailyPlan(dailyPlan!, taskId);
             if (!taskToUpdate) {
                 console.log('Error: task not found');
                 return;
@@ -122,13 +120,52 @@ const Dashboard: React.FC = () => {
                 updatedAt: new Date().toISOString()
             };
 
-            const updatedDailyPlan = updateTaskInDailyPlan(dailyPlan!!, updatedTask);
+            const updatedDailyPlan = updateTaskInDailyPlan(dailyPlan!, updatedTask);
 
             setDailyPlan(updatedDailyPlan);
-            await taskService.updateTask(updatedTask);
+
+            if (updatedTask.reusable && updatedTask.id) {
+                await taskService.updateTask(updatedTask);
+                setReusableTasks((prevTasks) =>
+                    prevTasks.map(task => task.id === updatedTask.id ? updatedTask : task)
+                );
+            }
+
             await dailyPlanService.updateDailyPlan(updatedDailyPlan);
         } catch (error) {
             console.error('Failed to update task:', error);
+        }
+    };
+
+    const handleEditReusableTask = async (taskId: string, updatedTaskData: TaskFormData) => {
+        try {
+            const taskToUpdate = reusableTasks.find((task) => task.id === taskId);
+            if (!taskToUpdate) {
+                console.log('Error: task not found');
+                return;
+            }
+
+            const updatedTask: Task = {
+                ...taskToUpdate,
+                ...updatedTaskData,
+                updatedAt: new Date().toISOString()
+            };
+
+            setReusableTasks((prevTasks) =>
+                prevTasks.map(task => task.id === updatedTask.id ? updatedTask : task)
+            );
+            await taskService.updateTask(updatedTask);
+        } catch (error) {
+            console.error('Failed to update task:', error);
+        }
+    };
+
+    const handleRemoveReusableTask = async (taskId: string) => {
+        try {
+            await taskService.deleteTask(taskId);
+            setReusableTasks((prevTasks) => prevTasks.filter(task => task.id !== taskId));
+        } catch (error) {
+            console.error('Failed to remove task:', error);
         }
     };
 
@@ -158,7 +195,12 @@ const Dashboard: React.FC = () => {
         <Layout>
             <div className="flex gap-4 mt-4">
                 <div className="w-1/4">
-                    <ReusableTaskPicker tasks={reusableTasks} handleAddToTodo={handleAddReusableTaskToTodo}/>
+                    <ReusableTaskPicker
+                        tasks={reusableTasks}
+                        onAddToTodo={handleAddReusableTaskToTodo}
+                        onEditTask={handleEditReusableTask}
+                        onRemoveTask={handleRemoveReusableTask}
+                    />
                 </div>
                 <div className="w-3/4">
                     <DailyPlanDashboard

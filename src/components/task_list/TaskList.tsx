@@ -39,7 +39,7 @@ export const TaskList: React.FC<TaskListProps> = ({
                                                       onRemoveTask,
                                                   }) => {
     return (
-        <div className="bg-gray-50 dark:bg-slate-900 p-4 pb-2 rounded-lg min-h-[200px]">
+        <div className="bg-slate-50 dark:bg-slate-900 p-4 pb-2 rounded-lg min-h-[200px] shadow shadow-slate-200 dark:shadow-slate-950">
             <TaskListHeader title={title} />
             <DroppableTaskList droppableId={droppableId} tasks={tasks} onEditTask={onEditTask} onRemoveTask={onRemoveTask}/>
         </div>
@@ -55,7 +55,7 @@ export const ExtendableTaskList: React.FC<ExtendableTaskListProps> = ({
                                                                           onRemoveTask,
                                                                       }) => {
     return (
-        <div className="bg-gray-50 dark:bg-slate-900 p-4 pb-2 rounded-lg min-h-[200px]">
+        <div className="bg-slate-50 dark:bg-slate-900 p-4 pb-2 rounded-lg min-h-[200px] shadow shadow-slate-200 dark:shadow-slate-950">
             <TaskListHeader title={title} showAddButton={true} onAddTask={onAddTask} />
             <DroppableTaskList droppableId={droppableId} tasks={tasks} onEditTask={onEditTask} onRemoveTask={onRemoveTask}/>
         </div>
