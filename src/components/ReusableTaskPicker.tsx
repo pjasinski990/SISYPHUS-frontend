@@ -5,7 +5,7 @@ import { TaskItem } from "src/components/task/TaskItem";
 import { PlusButton } from "src/components/library/PlusButton";
 import { TaskFormData } from "src/components/library/TaskForm";
 import { TaskDialog } from "src/components/library/TaskDialog";
-import { ConfirmDialog } from "src/components/task/ConfirmDialog";
+import { ConfirmDialog } from "src/components/library/ConfirmDialog";
 
 interface ReusableTaskPickerProps {
     tasks: Task[];

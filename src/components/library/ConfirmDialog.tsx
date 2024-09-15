@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "src/components/ui/dialog";
 import { Button } from "src/components/ui/button";
 
@@ -19,6 +19,26 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                                                                 onCancel,
                                                                 children,
                                                             }) => {
+    useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                onConfirm();
+            } else if (event.key === 'Escape') {
+                event.preventDefault();
+                onCancel();
+            }
+        };
+
+        if (open) {
+            window.addEventListener('keydown', handleKeyDown);
+        }
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [open, onConfirm, onCancel]);
+
     return (
         <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onCancel()}>
             <DialogContent>

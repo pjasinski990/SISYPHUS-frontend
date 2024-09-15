@@ -6,7 +6,7 @@ import { DailyPlan } from "../../service/dailyPlanService";
 import { TaskFormData } from "src/components/library/TaskForm";
 import { Task } from "../../service/taskService";
 import { TaskDialog } from "src/components/library/TaskDialog";
-import { ConfirmDialog } from "src/components/task/ConfirmDialog";
+import { ConfirmDialog } from "src/components/library/ConfirmDialog";
 
 interface DailyPlanContentProps {
     dailyPlan: DailyPlan;

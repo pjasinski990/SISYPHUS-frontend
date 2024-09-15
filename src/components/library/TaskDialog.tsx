@@ -35,6 +35,7 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({
         };
 
         window.addEventListener('keydown', handleKeyDown);
+
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
