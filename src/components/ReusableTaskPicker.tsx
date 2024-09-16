@@ -6,7 +6,6 @@ import { PlusButton } from "src/components/library/PlusButton";
 import { TaskFormData } from "src/components/task/TaskForm";
 import { TaskDialog } from "src/components/task/TaskDialog";
 import { ConfirmDialog } from "src/components/library/ConfirmDialog";
-import { FoldingTaskItem } from "src/components/task/FoldingTaskItem";
 import { TaskPropertiesProvider } from "src/components/context/TaskPropertiesContext";
 
 interface ReusableTaskPickerProps {
@@ -75,7 +74,7 @@ export const ReusableTaskPicker: React.FC<ReusableTaskPickerProps> = ({
                                 isDraggable={false}
                                 isFoldable={true}
                             >
-                                <FoldingTaskItem task={task}/>
+                                <TaskItem task={task}/>
                                 <PlusButton label={""} onClick={() => onAddToTodo(task)}/>
                             </TaskPropertiesProvider>
                         </li>

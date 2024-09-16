@@ -4,8 +4,8 @@ import { DailyPlan } from "../service/dailyPlanService";
 import { DropResult } from "@hello-pangea/dnd";
 import { TaskFormData } from "src/components/task/TaskForm";
 import { DailyPlanContent } from "src/components/daily_plan/DailyPlanContent";
-import { TaskPropertiesProvider } from "src/components/context/TaskPropertiesContext";
- interface DailyPlanDashboardProps {
+
+interface DailyPlanDashboardProps {
     dailyPlan: DailyPlan | null;
     onTaskMove: (result: DropResult) => void;
     onAddTask: (task: TaskFormData) => void;
