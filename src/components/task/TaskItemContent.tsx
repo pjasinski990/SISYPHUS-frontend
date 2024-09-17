@@ -3,6 +3,8 @@ import React from "react";
 import { Button } from "src/components/ui/button";
 import { CircleMinus, Edit } from "lucide-react";
 import { useTaskProperties } from "src/components/context/TaskPropertiesContext";
+import { CSSTransition } from 'react-transition-group';
+import './TaskItemContent.css';
 
 interface TaskItemContentProps {
     task: Task;
@@ -41,22 +43,49 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                                                                     showMetadata = true,
                                                                 }) => {
     const categoryClass = categoryColors[task.category];
-    const categoryEditButtonClass = categoryHoverColors[task.category];
+    const categoryHoverClass = categoryHoverColors[task.category];
+    const defaultBorderClass = "border-2 border-transparent";
+    const hoverBorderClass = "hover:border-2 hover:border-gray-500 dark:hover:border-gray-300";
 
-    const { onTaskEdit, onTaskRemove } = useTaskProperties()
+    const { onTaskEdit, onTaskRemove } = useTaskProperties();
 
     return (
-        <div className={`p-4 mb-2 rounded shadow-md text-gray-800 dark:text-gray-100 ${categoryClass}`}>
+        <div
+            className={`p-4 mb-2 rounded shadow-md text-gray-800 dark:text-gray-100 ${categoryClass} ${defaultBorderClass} ${hoverBorderClass} cursor-pointer transition-all duration-200`}
+        >
             <div className="flex justify-between items-start">
                 <div>
                     <h4 className="font-semibold">{task.title}</h4>
-                    {showMetadata && <TaskMetadata task={task} />}
+                    <CSSTransition
+                        in={showMetadata}
+                        timeout={300}
+                        classNames="metadata"
+                        unmountOnExit
+                    >
+                        <TaskMetadata task={task} />
+                    </CSSTransition>
                 </div>
                 <div className="flex items-end">
-                    <Button variant="ghost" size="sm" onClick={() => onTaskEdit(task)} className={categoryEditButtonClass}>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onTaskEdit(task)}
+                        }
+                        className={categoryHoverClass}
+                    >
                         <Edit className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="sm" onClick={() => onTaskRemove(task)} className={categoryEditButtonClass}>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                            e.stopPropagation()
+                            onTaskRemove(task)}
+                        }
+                        className={categoryHoverClass}
+                    >
                         <CircleMinus className="h-4 w-4" />
                     </Button>
                 </div>

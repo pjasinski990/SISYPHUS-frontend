@@ -1,0 +1,23 @@
+.metadata-enter {
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+}
+
+.metadata-enter-active {
+    opacity: 1;
+    max-height: 500px;
+    transition: opacity 300ms, max-height 300ms;
+}
+
+.metadata-exit {
+    opacity: 1;
+    max-height: 500px;
+    overflow: hidden;
+}
+
+.metadata-exit-active {
+    opacity: 0;
+    max-height: 0;
+    transition: opacity 300ms, max-height 300ms;
+}

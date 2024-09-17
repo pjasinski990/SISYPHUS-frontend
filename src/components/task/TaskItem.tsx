@@ -75,7 +75,10 @@ const FoldableTaskItem: React.FC<TaskItemProps & { children: React.ReactNode }> 
     const [isFolded, setIsFolded] = React.useState(false);
 
     return (
-        <div onClick={() => setIsFolded(!isFolded)}>
+        <div
+            onClick={() => setIsFolded(!isFolded)}
+            className="cursor-pointer transition-colors duration-200"
+        >
             {React.cloneElement(children as React.ReactElement<any>, { showMetadata: !isFolded })}
         </div>
     );
