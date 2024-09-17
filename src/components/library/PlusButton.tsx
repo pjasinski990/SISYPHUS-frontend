@@ -3,18 +3,18 @@ import { Button } from "src/components/ui/button";
 import { PlusCircle } from "lucide-react";
 
 export const PlusButton: React.FC<{
-    label?: string,
-    onClick: () => void,
-}> = ({label, onClick}) => {
-
+    label?: string;
+    onClick: () => void;
+    className?: string;
+}> = ({ label, onClick, className }) => {
     return (
         <Button
             variant="outline"
             size="sm"
             onClick={onClick}
-            className="flex items-center bg-emerald-100 dark:bg-emerald-800 hover:bg-emerald-200 dark:hover:bg-emerald-700 transition-colors duration-100"
+            className={`flex items-center bg-emerald-100 dark:bg-emerald-800 hover:bg-emerald-200 dark:hover:bg-emerald-700 transition-colors duration-100 ${className}`}
         >
-            <PlusCircle className={`${label ? 'mr-1' : ''} h-4 w-4`} /> {label && label}
+            <PlusCircle className={`${label ? "mr-1" : ""} h-4 w-4`} /> {label && label}
         </Button>
-    )
-}
+    );
+};

@@ -194,7 +194,7 @@ const Dashboard: React.FC = () => {
     return (
         <Layout>
             <div className="flex gap-4 mt-4">
-                <div className="w-1/4">
+                <div className="w-2/5">
                     <ReusableTaskPicker
                         tasks={reusableTasks}
                         onAddToTodo={handleAddReusableTaskToTodo}
@@ -202,7 +202,7 @@ const Dashboard: React.FC = () => {
                         onRemoveTask={handleRemoveReusableTask}
                     />
                 </div>
-                <div className="w-3/4">
+                <div className="w-3/5">
                     <DailyPlanDashboard
                         dailyPlan={dailyPlan}
                         onTaskMove={onDragEnd}

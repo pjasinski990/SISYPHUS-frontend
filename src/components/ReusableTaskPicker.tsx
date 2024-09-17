@@ -39,14 +39,16 @@ export const ReusableTaskPicker: React.FC<ReusableTaskPickerProps> = ({
     };
 
     return (
-        <Card>
+        <Card className={"h-full overflow-auto"}>
             <TaskDialog
                 open={!!editingTask}
                 initialData={editingTask}
                 hideReusableState={true}
                 onSubmit={handleTaskFormSubmit}
-                onCancel={() => {setEditingTask(null);}}
-                title={'Edit Task'}
+                onCancel={() => {
+                    setEditingTask(null);
+                }}
+                title={"Edit Task"}
             />
 
             <ConfirmDialog
@@ -54,11 +56,11 @@ export const ReusableTaskPicker: React.FC<ReusableTaskPickerProps> = ({
                 title="Confirmation"
                 message="Remove this task from reusable tasks?"
                 onConfirm={handleConfirmRemoveTask}
-                onCancel={() => {setRemovingTask(null);}}
+                onCancel={() => {
+                    setRemovingTask(null);
+                }}
             >
-                {removingTask && (
-                    <TaskItem task={removingTask} isVanity={true}/>
-                )}
+                {removingTask && <TaskItem task={removingTask} isVanity={true} />}
             </ConfirmDialog>
 
             <CardHeader>
@@ -67,16 +69,22 @@ export const ReusableTaskPicker: React.FC<ReusableTaskPickerProps> = ({
             <CardContent>
                 <ul className="space-y-2">
                     {tasks.map((task) => (
-                        <li key={task.id} className="flex items-center justify-between p-2">
-                            <TaskPropertiesProvider
-                                onTaskEdit={() => setEditingTask(task)}
-                                onTaskRemove={() => setRemovingTask(task)}
-                                isDraggable={false}
-                                isFoldable={true}
-                            >
-                                <TaskItem task={task}/>
-                                <PlusButton label={""} onClick={() => onAddToTodo(task)}/>
-                            </TaskPropertiesProvider>
+                        <li key={task.id} className="p-2">
+                            <div className="flex items-center">
+                                <TaskPropertiesProvider
+                                    onTaskEdit={() => setEditingTask(task)}
+                                    onTaskRemove={() => setRemovingTask(task)}
+                                    isDraggable={false}
+                                    isFoldable={true}
+                                >
+                                    <TaskItem task={task} />
+                                </TaskPropertiesProvider>
+                                <PlusButton
+                                    label=""
+                                    onClick={() => onAddToTodo(task)}
+                                    className="ml-2"
+                                />
+                            </div>
                         </li>
                     ))}
                 </ul>

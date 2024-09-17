@@ -3,8 +3,8 @@ import React from "react";
 import { Button } from "src/components/ui/button";
 import { CircleMinus, Edit } from "lucide-react";
 import { useTaskProperties } from "src/components/context/TaskPropertiesContext";
-import { CSSTransition } from 'react-transition-group';
-import './TaskItemContent.css';
+import { CSSTransition } from "react-transition-group";
+import "./TaskItemContent.css";
 
 interface TaskItemContentProps {
     task: Task;
@@ -27,7 +27,7 @@ export const categoryHoverColors: Record<TaskCategory, string> = {
     [TaskCategory.YELLOW]: "hover:bg-yellow-200 dark:hover:bg-yellow-800",
     [TaskCategory.WHITE]: "hover:bg-gray-200 dark:hover:bg-gray-600",
     [TaskCategory.PINK]: "hover:bg-pink-200 dark:hover:bg-pink-900",
-}
+};
 
 export const TaskMetadata: React.FC<{ task: Task }> = ({ task }) => (
     <div className="text-xs mt-1 text-gray-600 dark:text-gray-300">
@@ -51,7 +51,7 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
 
     return (
         <div
-            className={`p-4 mb-2 rounded shadow-md text-gray-800 dark:text-gray-100 ${categoryClass} ${defaultBorderClass} ${hoverBorderClass} cursor-pointer transition-all duration-200`}
+            className={`flex-grow p-4 mb-2 rounded shadow-md text-gray-800 dark:text-gray-100 ${categoryClass} ${defaultBorderClass} ${hoverBorderClass} cursor-pointer transition-all duration-200`}
         >
             <div className="flex justify-between items-start">
                 <div>
@@ -71,8 +71,8 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                         size="sm"
                         onClick={(e) => {
                             e.stopPropagation();
-                            onTaskEdit(task)}
-                        }
+                            onTaskEdit(task);
+                        }}
                         className={categoryHoverClass}
                     >
                         <Edit className="h-4 w-4" />
@@ -81,9 +81,9 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                         variant="ghost"
                         size="sm"
                         onClick={(e) => {
-                            e.stopPropagation()
-                            onTaskRemove(task)}
-                        }
+                            e.stopPropagation();
+                            onTaskRemove(task);
+                        }}
                         className={categoryHoverClass}
                     >
                         <CircleMinus className="h-4 w-4" />
