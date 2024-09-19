@@ -10,9 +10,18 @@ interface TaskItemProps {
     task: Task;
     index?: number;
     isVanity?: boolean;
+    className?: string;
 }
 
-export const TaskItem: React.FC<TaskItemProps> = ({ task, index, isVanity = false }) => {
+export const TaskItem: React.FC<TaskItemProps> = ({ task, index, isVanity = false, className }) => {
+    return (
+        <div className={className}>
+            <TaskItemInternal task={task} index={index} isVanity={isVanity}/>
+        </div>
+    )
+};
+
+export const TaskItemInternal: React.FC<TaskItemProps> = ({ task, index, isVanity = false }) => {
     if (isVanity) {
         return ( <VanityTask task={task} /> );
     }

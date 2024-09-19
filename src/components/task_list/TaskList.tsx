@@ -20,7 +20,7 @@ export const TaskList: React.FC<TaskListProps> = ({
                                                       onAddTask,
                                                   }) => {
     return (
-        <div className="bg-slate-50 dark:bg-slate-900 p-4 pb-2 rounded-lg min-h-[200px] shadow shadow-slate-200 dark:shadow-slate-950">
+        <div className="bg-slate-50 dark:bg-slate-900 p-4 pb-2 rounded-lg min-h-[200px] shadow shadow-slate-200 dark:shadow-slate-950 w-96">
             <TaskListHeader title={title} showAddButton={showAddButton} onAddTask={onAddTask} />
             <DroppableTasks droppableId={droppableId} tasks={tasks}/>
         </div>

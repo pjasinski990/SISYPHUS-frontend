@@ -39,7 +39,7 @@ export const ReusableTaskPicker: React.FC<ReusableTaskPickerProps> = ({
     };
 
     return (
-        <Card className={"h-full overflow-auto"}>
+        <Card className={"h-full"}>
             <TaskDialog
                 open={!!editingTask}
                 initialData={editingTask}
@@ -77,7 +77,7 @@ export const ReusableTaskPicker: React.FC<ReusableTaskPickerProps> = ({
                                     isDraggable={false}
                                     isFoldable={true}
                                 >
-                                    <TaskItem task={task} />
+                                    <TaskItem task={task} className={"flex-grow"}/>
                                 </TaskPropertiesProvider>
                                 <PlusButton
                                     label=""
