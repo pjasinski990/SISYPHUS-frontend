@@ -8,11 +8,17 @@ import { DraggableLocation, DropResult } from "@hello-pangea/dnd";
 import { DailyPlanDashboard } from "src/components/DailyPlanDashboard";
 import { ReusableTaskPicker } from "src/components/ReusableTaskPicker";
 import { TaskFormData } from "src/components/task/TaskForm";
+import { SlidingPanel } from "src/components/library/SlidingPanel";
 
 const Dashboard: React.FC = () => {
     const [dailyPlan, setDailyPlan] = useState<DailyPlan | null>(null);
     const [reusableTasks, setReusableTasks] = useState<Task[]>([]);
+    const [isTaskPickerOpen, setIsTaskPickerOpen] = useState(true);
     const { username } = useAuth();
+
+    const toggleTaskPicker = () => {
+        setIsTaskPickerOpen(!isTaskPickerOpen);
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -193,16 +199,30 @@ const Dashboard: React.FC = () => {
 
     return (
         <Layout>
-            <div className="flex gap-4 mt-4">
-                <div className="w-96">
+            <div className="flex mt-4">
+                <SlidingPanel
+                    isOpen={isTaskPickerOpen}
+                    setIsOpen={toggleTaskPicker}
+                    width={500}
+                    height={800}
+                >
                     <ReusableTaskPicker
                         tasks={reusableTasks}
                         onAddToTodo={handleAddReusableTaskToTodo}
                         onEditTask={handleEditReusableTask}
                         onRemoveTask={handleRemoveReusableTask}
                     />
-                </div>
-                <div>
+                </SlidingPanel>
+
+                <div
+                    className={`transition-all duration-300 flex-1 ${
+                        isTaskPickerOpen ? 'ml-0' : 'ml-0'
+                    }`}
+                    style={{
+                        marginLeft: isTaskPickerOpen ? 300 : 40,
+                        transition: 'margin-left 0.3s ease-in-out',
+                    }}
+                >
                     <DailyPlanDashboard
                         dailyPlan={dailyPlan}
                         onTaskMove={onDragEnd}

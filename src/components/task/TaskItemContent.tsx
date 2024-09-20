@@ -37,8 +37,6 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
     const { onTaskEdit, onTaskRemove } = useTaskProperties();
     const iconSize = task.size === TaskSize.SMALL ? 8 : 16;
 
-    console.log(iconClass)
-
     return (
         <div
             className={`flex-grow w-full p-4 mb-2 rounded shadow-md text-gray-800 dark:text-gray-100 ${categoryColorClass} ${defaultBorderClass} ${categoryBorderColorClass} cursor-pointer transition-all duration-200`}

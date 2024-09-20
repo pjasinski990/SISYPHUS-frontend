@@ -39,7 +39,7 @@ export const ReusableTaskPicker: React.FC<ReusableTaskPickerProps> = ({
     };
 
     return (
-        <Card className={"h-full"}>
+        <Card className="flex flex-col overflow-auto h-[80vh] min-h-[200px]">
             <TaskDialog
                 open={!!editingTask}
                 initialData={editingTask}
@@ -66,7 +66,7 @@ export const ReusableTaskPicker: React.FC<ReusableTaskPickerProps> = ({
             <CardHeader>
                 <CardTitle>Reusable Tasks</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex-grow overflow-auto">
                 <ul className="space-y-1">
                     {tasks.map((task) => (
                         <li key={task.id}>
