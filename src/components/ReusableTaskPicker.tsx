@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "src/components/ui/card";
 import { Task } from "../service/taskService";
 import { TaskItem } from "src/components/task/TaskItem";
-import { PlusButton } from "src/components/library/PlusButton";
+import { ArrowRightButton } from "src/components/library/Buttons";
 import { TaskFormData } from "src/components/task/TaskForm";
 import { TaskDialog } from "src/components/task/TaskDialog";
 import { ConfirmDialog } from "src/components/library/ConfirmDialog";
@@ -67,22 +67,21 @@ export const ReusableTaskPicker: React.FC<ReusableTaskPickerProps> = ({
                 <CardTitle>Reusable Tasks</CardTitle>
             </CardHeader>
             <CardContent>
-                <ul className="space-y-2">
+                <ul className="space-y-1">
                     {tasks.map((task) => (
-                        <li key={task.id} className="p-2">
-                            <div className="flex items-center">
+                        <li key={task.id}>
+                            <div className="flex items-center content-between">
                                 <TaskPropertiesProvider
                                     onTaskEdit={() => setEditingTask(task)}
                                     onTaskRemove={() => setRemovingTask(task)}
                                     isDraggable={false}
                                     isFoldable={true}
                                 >
-                                    <TaskItem task={task} className={"flex-grow"}/>
+                                    <TaskItem task={task} className={"flex-grow mr-2"}/>
                                 </TaskPropertiesProvider>
-                                <PlusButton
+                                <ArrowRightButton
                                     label=""
                                     onClick={() => onAddToTodo(task)}
-                                    className="ml-2"
                                 />
                             </div>
                         </li>

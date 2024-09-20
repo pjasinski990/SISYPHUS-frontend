@@ -2,10 +2,18 @@
 module.exports = {
   darkMode: ["class"],
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
+      './pages/**/*.{ts,tsx}',
+      './components/**/*.{ts,tsx}',
+      './app/**/*.{ts,tsx}',
+      './src/**/*.{ts,tsx}',
+  ],
+  safelist: [
+    'border-4',
+    'hover:border-4',
+    {
+      pattern: /^(bg|border|stroke|fill)-(green|blue|red|yellow|gray|pink)-(100|200|300|400|500|600|700|800|900)$/,
+      variants: ['hover', 'dark', 'hover:dark', 'dark:hover'],
+    },
   ],
   prefix: "",
   theme: {

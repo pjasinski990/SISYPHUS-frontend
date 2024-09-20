@@ -1,7 +1,7 @@
 import React from "react";
 import { Droppable } from "@hello-pangea/dnd";
 import { Task } from "../../service/taskService";
-import { PlusButton } from "src/components/library/PlusButton";
+import { PlusButton } from "src/components/library/Buttons";
 import { TaskItem } from "src/components/task/TaskItem";
 
 interface TaskListProps {
@@ -50,7 +50,7 @@ const DroppableTasks: React.FC<{
                 <div
                     {...provided.droppableProps}
                     ref={provided.innerRef}
-                    className={`transition-colors duration-200 flex flex-col gap-0 ${snapshot.isDraggingOver ? "bg-slate-200 dark:bg-slate-700" : ""}`}
+                    className={`transition-colors duration-200 flex flex-col gap-1 ${snapshot.isDraggingOver ? "bg-slate-200 dark:bg-slate-700" : ""}`}
                 >
                     {tasks.map((task, index) => (
                         <TaskItem key={task.id} task={task} index={index}/>
