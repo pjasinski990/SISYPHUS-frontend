@@ -12,7 +12,7 @@ export const ArrowRightButton: React.FC<{
             variant="outline"
             size="sm"
             onClick={onClick}
-            className={`flex items-center bg-emerald-100 dark:bg-emerald-700 hover:bg-emerald-200 dark:hover:bg-emerald-600 transition-colors duration-100`}
+            className={`flex items-center px-2 py-8 bg-emerald-100 dark:bg-emerald-700 hover:bg-emerald-200 dark:hover:bg-emerald-600 transition-colors duration-100`}
         >
             <ArrowRight className={`${label ? "mr-1" : ""} h-4 w-4`} /> {label && label}
         </Button>

@@ -20,7 +20,7 @@ const Navigation: React.FC<NavigationProps> = ({ darkMode, toggleDarkMode }) => 
     };
 
     return (
-        <nav className="flex justify-between items-center p-4 bg-white dark:bg-gray-800 shadow">
+        <nav className="flex justify-between items-center px-4 py-2 bg-white dark:bg-gray-800 shadow">
             <RouterLink to="/" className="text-xl font-bold">mind=blown</RouterLink>
             <div className="flex items-center space-x-4">
                 {isAuthenticated && (

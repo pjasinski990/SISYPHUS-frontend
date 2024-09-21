@@ -49,7 +49,7 @@ export const ReusableTaskPicker: React.FC<ReusableTaskPickerProps> = ({
     };
 
     return (
-        <Card className="flex flex-col">
+        <Card className="flex flex-col min-h-[calc(100vh-100px)] min-w-[400px]">
             <TaskDialog
                 open={!!editingTask}
                 initialData={editingTask}
@@ -78,7 +78,8 @@ export const ReusableTaskPicker: React.FC<ReusableTaskPickerProps> = ({
             </CardHeader>
             <CardContent
                 ref={cardContentRef}
-                className="flex-grow max-h-[80vh] overflow-auto scrollbar-custom"
+                className="flex-grow max-h-[calc(100vh-200px)] overflow-auto scrollbar-custom"
+
             >
                 <ul className="space-y-1">
                     {tasks.map((task) => (

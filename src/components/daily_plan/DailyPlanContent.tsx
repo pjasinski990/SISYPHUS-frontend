@@ -78,6 +78,7 @@ export const DailyPlanContent: React.FC<DailyPlanContentProps> = ({
                         title="To Do"
                         tasks={dailyPlan.todo}
                         droppableId="todo"
+                        placeholderText={'empty! well done!'}
                         showAddButton={true}
                         onAddTask={handleAddTask}
                     />
@@ -87,6 +88,7 @@ export const DailyPlanContent: React.FC<DailyPlanContentProps> = ({
                         title="Done"
                         tasks={dailyPlan.done}
                         droppableId="done"
+                        placeholderText={'drag your done tasks here'}
                     />
                 </TaskPropertiesProvider>
             </div>
