@@ -20,7 +20,7 @@ export const TaskList: React.FC<TaskListProps> = ({
                                                       onAddTask,
                                                   }) => {
     return (
-        <div className="bg-slate-50 dark:bg-slate-900 p-4 pb-2 rounded-lg min-h-[200px] shadow shadow-slate-200 dark:shadow-slate-950 w-96">
+        <div className="bg-slate-50 dark:bg-slate-900 p-4 pb-2 rounded-lg min-h-[200px] shadow shadow-slate-200 dark:shadow-slate-950 w-96 max-h-[80vh] overflow-auto">
             <TaskListHeader title={title} showAddButton={showAddButton} onAddTask={onAddTask} />
             <DroppableTasks droppableId={droppableId} tasks={tasks}/>
         </div>
@@ -56,6 +56,9 @@ const DroppableTasks: React.FC<{
                         <TaskItem key={task.id} task={task} index={index}/>
                     ))}
                     {provided.placeholder}
+                    { (tasks.length === 0 && !snapshot.isDraggingOver) && <div className="h-[100px] flex items-center justify-center text-slate-300 dark:text-slate-700 font-mono bg-slate-50 dark:bg-slate-900">
+                        drop your tasks here
+                    </div>}
                 </div>
             )}
         </Droppable>

@@ -13,7 +13,6 @@ const ProfilePage: React.FC = () => {
                     <CardTitle>User Profile</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <p className="mb-4">Username: {username}</p>
                     <p className="mb-4">Hello, {username} 🫡</p>
                 </CardContent>
             </Card>

@@ -25,9 +25,11 @@ const Navigation: React.FC<NavigationProps> = ({ darkMode, toggleDarkMode }) => 
             <div className="flex items-center space-x-4">
                 {isAuthenticated && (
                     <>
-                        <RouterLink to="/profile" className="flex items-center space-x-2 text-sm">
-                            <User className="h-4 w-4"/>
-                            <span>{username}</span>
+                        <RouterLink to={"/profile"} className="flex items-center space-x-2 text-sm">
+                            <Button variant="ghost" size="sm" onClick={handleLogout} className="flex items-center space-x-2">
+                                <User className="h-4 w-4"/>
+                                <span>{username}</span>
+                            </Button>
                         </RouterLink>
                         <Button variant="ghost" size="sm" onClick={handleLogout} className="flex items-center space-x-2">
                             <LogOut className="h-4 w-4"/>

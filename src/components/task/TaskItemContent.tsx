@@ -39,7 +39,7 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
 
     return (
         <div
-            className={`flex-grow w-full p-4 mb-2 rounded shadow-md text-gray-800 dark:text-gray-100 ${categoryColorClass} ${defaultBorderClass} ${categoryBorderColorClass} cursor-pointer transition-all duration-200`}
+            className={`flex-grow w-full p-4 mb-2 rounded shadow-md text-gray-800 dark:text-gray-100 ${categoryColorClass} ${defaultBorderClass} ${categoryBorderColorClass} cursor-pointer transition-all duration-75`}
         >
             <div className="flex justify-between items-start">
                 <div className="flex-1 overflow-hidden">

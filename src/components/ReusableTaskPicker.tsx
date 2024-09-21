@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "src/components/ui/card";
 import { Task } from "../service/taskService";
 import { TaskItem } from "src/components/task/TaskItem";
@@ -24,6 +24,16 @@ export const ReusableTaskPicker: React.FC<ReusableTaskPickerProps> = ({
     const [editingTask, setEditingTask] = useState<Task | null>(null);
     const [removingTask, setRemovingTask] = useState<Task | null>(null);
 
+    const cardContentRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        if (cardContentRef.current) {
+            cardContentRef.current.scrollTo({
+                left: 0,
+                behavior: 'smooth'
+            });
+        }
+    }, [tasks]);
+
     const handleTaskFormSubmit = (taskData: TaskFormData) => {
         if (editingTask) {
             onEditTask(editingTask.id!, taskData);
@@ -39,7 +49,7 @@ export const ReusableTaskPicker: React.FC<ReusableTaskPickerProps> = ({
     };
 
     return (
-        <Card className="flex flex-col rounded-none">
+        <Card className="flex flex-col">
             <TaskDialog
                 open={!!editingTask}
                 initialData={editingTask}
@@ -60,13 +70,16 @@ export const ReusableTaskPicker: React.FC<ReusableTaskPickerProps> = ({
                     setRemovingTask(null);
                 }}
             >
-                {removingTask && <TaskItem task={removingTask} isVanity={true} />}
+                {removingTask && <TaskItem task={removingTask} isVanity={true}/>}
             </ConfirmDialog>
 
             <CardHeader>
                 <CardTitle>Reusable Tasks</CardTitle>
             </CardHeader>
-            <CardContent className="flex-grow overflow-auto">
+            <CardContent
+                ref={cardContentRef}
+                className="flex-grow max-h-[80vh] overflow-auto scrollbar-custom"
+            >
                 <ul className="space-y-1">
                     {tasks.map((task) => (
                         <li key={task.id}>
@@ -77,7 +90,7 @@ export const ReusableTaskPicker: React.FC<ReusableTaskPickerProps> = ({
                                     isDraggable={false}
                                     isFoldable={true}
                                 >
-                                    <TaskItem task={task} className={"flex-grow mr-2"}/>
+                                    <TaskItem task={task} className="flex-grow mr-2" />
                                 </TaskPropertiesProvider>
                                 <ArrowRightButton
                                     label=""

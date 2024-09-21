@@ -73,26 +73,22 @@ export const DailyPlanContent: React.FC<DailyPlanContentProps> = ({
     return (
         <DragDropContext onDragEnd={handleDragEnd}>
             <div className="flex gap-4">
-                <div className="flex-1">
-                    <TaskPropertiesProvider onTaskEdit={handleEditTask} onTaskRemove={handleRemoveTask} isDraggable={true} isFoldable={true}>
-                        <TaskList
-                            title="To Do"
-                            tasks={dailyPlan.todo}
-                            droppableId="todo"
-                            showAddButton={true}
-                            onAddTask={handleAddTask}
-                        />
-                    </TaskPropertiesProvider>
-                </div>
-                <div className="flex-1">
-                    <TaskPropertiesProvider onTaskEdit={handleEditTask} onTaskRemove={handleRemoveTask} isDraggable={true} isFoldable={true}>
-                        <TaskList
-                            title="Done"
-                            tasks={dailyPlan.done}
-                            droppableId="done"
-                        />
-                    </TaskPropertiesProvider>
-                </div>
+                <TaskPropertiesProvider onTaskEdit={handleEditTask} onTaskRemove={handleRemoveTask} isDraggable={true} isFoldable={true}>
+                    <TaskList
+                        title="To Do"
+                        tasks={dailyPlan.todo}
+                        droppableId="todo"
+                        showAddButton={true}
+                        onAddTask={handleAddTask}
+                    />
+                </TaskPropertiesProvider>
+                <TaskPropertiesProvider onTaskEdit={handleEditTask} onTaskRemove={handleRemoveTask} isDraggable={true} isFoldable={true}>
+                    <TaskList
+                        title="Done"
+                        tasks={dailyPlan.done}
+                        droppableId="done"
+                    />
+                </TaskPropertiesProvider>
             </div>
 
             <TaskDialog

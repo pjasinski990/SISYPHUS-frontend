@@ -9,6 +9,7 @@ import { DailyPlanDashboard } from "src/components/DailyPlanDashboard";
 import { ReusableTaskPicker } from "src/components/ReusableTaskPicker";
 import { TaskFormData } from "src/components/task/TaskForm";
 import { SlidingPanel } from "src/components/library/SlidingPanel";
+import { ChevronRight } from "lucide-react";
 
 const Dashboard: React.FC = () => {
     const [dailyPlan, setDailyPlan] = useState<DailyPlan | null>(null);
@@ -199,36 +200,41 @@ const Dashboard: React.FC = () => {
 
     return (
         <Layout>
-            <div className="flex mt-4">
-                <SlidingPanel
-                    isOpen={isTaskPickerOpen}
-                    setIsOpen={toggleTaskPicker}
-                    width={500}
-                >
-                    <ReusableTaskPicker
-                        tasks={reusableTasks}
-                        onAddToTodo={handleAddReusableTaskToTodo}
-                        onEditTask={handleEditReusableTask}
-                        onRemoveTask={handleRemoveReusableTask}
-                    />
-                </SlidingPanel>
+            <div>
+                <div className="flex h-full">
+                    <SlidingPanel
+                        isOpen={isTaskPickerOpen}
+                        setIsOpen={toggleTaskPicker}
+                        maxWidth={400}
+                    >
+                        <ReusableTaskPicker
+                            tasks={reusableTasks}
+                            onAddToTodo={handleAddReusableTaskToTodo}
+                            onEditTask={handleEditReusableTask}
+                            onRemoveTask={handleRemoveReusableTask}
+                        />
+                    </SlidingPanel>
 
-                <div
-                    className={`transition-all duration-300 flex-1 ${
-                        isTaskPickerOpen ? 'ml-0' : 'ml-0'
-                    }`}
-                    style={{
-                        marginLeft: isTaskPickerOpen ? 300 : 40,
-                        transition: 'margin-left 0.3s ease-in-out',
-                    }}
-                >
-                    <DailyPlanDashboard
-                        dailyPlan={dailyPlan}
-                        onTaskMove={onDragEnd}
-                        onEditTask={handleEditTask}
-                        onAddTask={handleCreateTaskInTodo}
-                        onRemoveTask={handleRemoveTaskFromDailyPlan}
-                    />
+                    <div className={`flex flex-1 transition-all duration-200 ${isTaskPickerOpen ? 'ml-4' : 'ml-0'}`}>
+                        <div
+                            onClick={() => toggleTaskPicker()}
+                            className="h-full w-8 bg-white hover:bg-slate-50 dark:bg-slate-950 hover:dark:bg-slate-900 flex items-center justify-center cursor-pointer"
+                        >
+                            <ChevronRight
+                                size={24}
+                                className={`text-gray-500 transition-transform duration-200 ${
+                                    isTaskPickerOpen ? 'rotate-0' : 'rotate-180'
+                                }`}
+                            />
+                        </div>
+                        <DailyPlanDashboard
+                            dailyPlan={dailyPlan}
+                            onTaskMove={onDragEnd}
+                            onEditTask={handleEditTask}
+                            onAddTask={handleCreateTaskInTodo}
+                            onRemoveTask={handleRemoveTaskFromDailyPlan}
+                        />
+                    </div>
                 </div>
             </div>
         </Layout>
