@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
-import { useSpring, animated } from 'react-spring';
+import { animated, useSpring } from 'react-spring';
 import { useDrag } from 'react-use-gesture';
+import { GripVertical } from "lucide-react";
 
 interface SlidingPanelProps {
     isOpen: boolean;
@@ -66,16 +67,18 @@ export const SlidingPanel: React.FC<SlidingPanelProps> = ({
                 boxShadow: '2px 0 5px rgba(0,0,0,0.3)',
             }}
         >
-            <div className="h-full overflow-auto pr-8">
+            <div className="h-full overflow-auto pr-6">
                 {children}
+                <div
+                    className="grabbing-bar absolute top-0 right-0 h-full w-8 cursor-ew-resize bg-gray-200 bg-opacity-80 flex items-center justify-center"
+                    style={{
+                        touchAction: 'none',
+                    }}
+                    {...bind()}
+                >
+                    <GripVertical size={24} className="text-gray-500"/>
+                </div>
             </div>
-            <div
-                className="grabbing-bar absolute top-0 right-0 h-full w-8 cursor-ew-resize bg-red-600 bg-opacity-80 border-l border-black border-opacity-20"
-                style={{
-                    touchAction: 'none',
-                }}
-                {...bind()}
-            />
         </animated.div>
     );
 };
