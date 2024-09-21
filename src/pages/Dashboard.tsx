@@ -204,7 +204,6 @@ const Dashboard: React.FC = () => {
                     isOpen={isTaskPickerOpen}
                     setIsOpen={toggleTaskPicker}
                     width={500}
-                    height={800}
                 >
                     <ReusableTaskPicker
                         tasks={reusableTasks}

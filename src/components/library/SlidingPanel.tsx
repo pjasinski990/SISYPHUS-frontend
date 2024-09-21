@@ -7,7 +7,7 @@ interface SlidingPanelProps {
     setIsOpen: (state: boolean) => void;
     children: React.ReactNode;
     width: number;
-    height: number;
+    height?: string;
 }
 
 export const SlidingPanel: React.FC<SlidingPanelProps> = ({
@@ -15,7 +15,7 @@ export const SlidingPanel: React.FC<SlidingPanelProps> = ({
                                                               setIsOpen,
                                                               children,
                                                               width = 400,
-                                                              height = 600,
+                                                              height = '85vh',
                                                           }) => {
     const panelRef = useRef<HTMLDivElement>(null);
 
@@ -47,27 +47,35 @@ export const SlidingPanel: React.FC<SlidingPanelProps> = ({
                 }
             }
         },
-        { axis: 'x', bounds: { left: isOpen? -width : 0, right: isOpen? 0 : width }, rubberband: false }
+        { axis: 'x', bounds: { left: isOpen? -width : 0, right: isOpen? 0 : width }, rubberband: true }
     );
 
     return (
         <animated.div
             ref={panelRef}
-            {...bind()}
+            className="overflow-hidden relative"
             style={{
-                x,
                 width,
-                height,
+                x,
+                height: '80vh',
                 position: 'absolute',
-                top: '50%',
-                left: 0,
-                transform: 'translateY(-50%) translateX(50px)',
+                top: '54%',
+                left: '50px',
+                transform: 'translateY(-50%)',
                 zIndex: 1000,
                 boxShadow: '2px 0 5px rgba(0,0,0,0.3)',
-                touchAction: 'none',
             }}
         >
-            {children}
+            <div className="h-full overflow-auto pr-8">
+                {children}
+            </div>
+            <div
+                className="grabbing-bar absolute top-0 right-0 h-full w-8 cursor-ew-resize bg-red-600 bg-opacity-80 border-l border-black border-opacity-20"
+                style={{
+                    touchAction: 'none',
+                }}
+                {...bind()}
+            />
         </animated.div>
     );
 };

@@ -39,7 +39,7 @@ export const ReusableTaskPicker: React.FC<ReusableTaskPickerProps> = ({
     };
 
     return (
-        <Card className="flex flex-col overflow-auto h-[80vh] min-h-[200px]">
+        <Card className="flex flex-col rounded-none">
             <TaskDialog
                 open={!!editingTask}
                 initialData={editingTask}
