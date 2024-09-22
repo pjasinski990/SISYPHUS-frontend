@@ -215,10 +215,10 @@ const Dashboard: React.FC = () => {
                         />
                     </SlidingPanel>
 
-                    <div className={`flex flex-1 transition-all duration-200 ${isTaskPickerOpen ? 'ml-4' : 'ml-0'}`}>
+                    <div className={`flex flex-1 transition-all duration-200`}>
                         <div
                             onClick={() => toggleTaskPicker()}
-                            className="h-full w-8 bg-white hover:bg-slate-50 dark:bg-slate-950 hover:dark:bg-slate-900 flex items-center justify-center cursor-pointer"
+                            className={`h-full w-8 bg-white hover:bg-slate-50 dark:bg-slate-950 hover:dark:bg-slate-900 flex items-center justify-center cursor-pointer ${isTaskPickerOpen ? 'mr-[20px]' : 'mr-[2px]'}`}
                         >
                             <ChevronRight
                                 size={24}

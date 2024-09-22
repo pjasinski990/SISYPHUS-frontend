@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { apiService } from "./apiService";
 
-interface AuthResponse {
+export interface AuthResponse {
     message: string;
     token: string | null;
     refreshToken: string | null;

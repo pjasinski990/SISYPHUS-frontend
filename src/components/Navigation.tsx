@@ -26,18 +26,18 @@ const Navigation: React.FC<NavigationProps> = ({ darkMode, toggleDarkMode }) => 
                 {isAuthenticated && (
                     <>
                         <RouterLink to={"/profile"} className="flex items-center space-x-2 text-sm">
-                            <Button variant="ghost" size="sm" onClick={handleLogout} className="flex items-center space-x-2">
+                            <Button variant="ghost" size="sm" className="flex items-center space-x-2 dark:hover:bg-slate-700">
                                 <User className="h-4 w-4"/>
                                 <span>{username}</span>
                             </Button>
                         </RouterLink>
-                        <Button variant="ghost" size="sm" onClick={handleLogout} className="flex items-center space-x-2">
+                        <Button variant="ghost" size="sm" onClick={handleLogout} className="flex items-center space-x-2 dark:hover:bg-slate-700">
                             <LogOut className="h-4 w-4"/>
                             <span>Logout</span>
                         </Button>
                     </>
                 )}
-                <Button variant="ghost" size="icon" onClick={toggleDarkMode}>
+                <Button variant="ghost" size="icon" onClick={toggleDarkMode} className={"dark:hover:bg-slate-700"}>
                     {darkMode
                         ? <Sun className="h-[1.2rem] w-[1.2rem]"/>
                         : <Moon className="h-[1.2rem] w-[1.2rem]"/>}

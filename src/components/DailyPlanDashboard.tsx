@@ -36,6 +36,10 @@ export const DailyPlanDashboard: React.FC<DailyPlanDashboardProps> = ({
             </CardContent>
         </Card>
     ) : (
-        <span>Loading Daily Plan...</span>
+        <Card>
+            <CardHeader>
+                Loading Daily Plan...
+            </CardHeader>
+        </Card>
     );
 };

@@ -6,7 +6,7 @@ import { Button } from "src/components/ui/button";
 import { Alert, AlertDescription } from "src/components/ui/alert";
 import Layout from "src/components/Layout";
 import { useAuth } from "src/components/context/AuthContext";
-import { AuthService, authService } from "../service/authService";
+import { AuthResponse, AuthService, authService } from "../service/authService";
 
 const LoginPage: React.FC = () => {
     const [isLogin, setIsLogin] = useState(true);
@@ -23,19 +23,23 @@ const LoginPage: React.FC = () => {
                 ? await authService.login(username, password)
                 : await authService.register(username, password);
 
-            const token = AuthService.extractToken(response);
-            const refreshToken = AuthService.extractRefreshToken(response);
-            await handleSuccessfulResponse(token, refreshToken);
+            if (isLogin) {
+                await handleSuccessfulLoginResponse(response);
+            } else {
+                await handleSuccessfulRegisterResponse(response);
+            }
         } catch (error) {
             if (error instanceof Error) {
-                setMessage(`Login error: ${error.message}`);
+                setMessage(`Error: ${error.message}`);
             } else {
                 setMessage('An unexpected error occurred.');
             }
         }
     };
 
-    const handleSuccessfulResponse = async(token: string, refreshToken: string) => {
+    const handleSuccessfulLoginResponse = async (response: AuthResponse) => {
+        const token = AuthService.extractToken(response);
+        const refreshToken = AuthService.extractRefreshToken(response);
         setToken(token);
         setRefreshToken(refreshToken);
         const tokenSet = await AuthService.waitForToken(token)
@@ -45,6 +49,14 @@ const LoginPage: React.FC = () => {
         else {
             setMessage(`Error logging in. Try again later.`)
         }
+    }
+
+    const handleSuccessfulRegisterResponse = async (response: AuthResponse) => {
+        setMessage(`${response.message}. Redirecting to login.`)
+        setTimeout(() => {
+            setIsLogin(true)
+            setMessage('')
+        }, 1000)
     }
 
     const toggleAuthMode = () => setIsLogin(!isLogin);
