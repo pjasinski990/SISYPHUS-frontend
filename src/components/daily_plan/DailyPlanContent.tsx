@@ -78,7 +78,7 @@ export const DailyPlanContent: React.FC<DailyPlanContentProps> = ({
                         title="To Do"
                         tasks={dailyPlan.todo}
                         droppableId="todo"
-                        placeholderText={'empty! well done!'}
+                        placeholderText={'empty. well done!'}
                         showAddButton={true}
                         onAddTask={handleAddTask}
                     />

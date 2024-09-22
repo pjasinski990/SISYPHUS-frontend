@@ -23,7 +23,7 @@ export const DailyPlanDashboard: React.FC<DailyPlanDashboardProps> = ({
     return dailyPlan ? (
         <Card>
             <CardHeader>
-                <CardTitle className="text-gray-800 dark:text-gray-200">{dailyPlan.day}</CardTitle>
+                <CardTitle className="text-gray-800 dark:text-gray-200 text-center">Today</CardTitle>
             </CardHeader>
             <CardContent>
                 <DailyPlanContent
