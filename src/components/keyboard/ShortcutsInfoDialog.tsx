@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Button } from 'src/components/ui/button';
 import { Keyboard } from 'lucide-react';
 import {
@@ -11,10 +11,29 @@ import {
     DialogTrigger,
 } from 'src/components/ui/dialog';
 import ShortcutsList from './ShortcutsList';
+import { Description } from "@radix-ui/react-dialog";
+import { Shortcut } from "src/components/context/ShortcutsContext";
+import { useRegisterShortcut } from "src/components/context/RegisterShortcutContext";
 
 const ShortcutsInfoDialog: React.FC = () => {
+    const [open, setOpen] = React.useState(false);
+
+    const openDialog = useCallback(() => {
+        setOpen(true);
+    }, []);
+
+    const addTaskShortcut: Shortcut = useMemo(() => ({
+        id: 'open-shortcut-info-dialog',
+        keys: ['Ctrl', '?'],
+        action: openDialog,
+        description: 'Open keyboard shortcuts dialog',
+        order: 2,
+    }), [openDialog]);
+
+    useRegisterShortcut(addTaskShortcut);
+
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <Button
                     variant="ghost"
@@ -29,10 +48,11 @@ const ShortcutsInfoDialog: React.FC = () => {
                 <DialogHeader>
                     <DialogTitle>Keyboard Shortcuts</DialogTitle>
                 </DialogHeader>
+                <Description />
                 <ShortcutsList />
                 <DialogFooter>
                     <DialogClose asChild>
-                        <Button>Close</Button>
+                        <Button onClick={() => setOpen(false)}>Close</Button>
                     </DialogClose>
                 </DialogFooter>
             </DialogContent>

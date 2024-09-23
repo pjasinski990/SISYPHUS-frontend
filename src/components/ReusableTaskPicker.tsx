@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "src/components/ui/card";
 import { Task } from "../service/taskService";
 import { TaskItem } from "src/components/task/TaskItem";
-import { ArrowRightButton } from "src/components/library/Buttons";
+import { ArrowRightButton, PlusButton } from "src/components/library/Buttons";
 import { TaskFormData } from "src/components/task/TaskForm";
 import { TaskDialog } from "src/components/task/TaskDialog";
 import { ConfirmDialog } from "src/components/library/ConfirmDialog";
@@ -14,6 +14,7 @@ import { useRegisterShortcut } from "src/components/context/RegisterShortcutCont
 
 export const ReusableTaskPicker: React.FC = () => {
     const [editingTask, setEditingTask] = useState<Task | null>(null);
+    const [isCreateTaskDialogOpen, setIsCreateTaskDialogOpen] = useState(false);
     const [removingTask, setRemovingTask] = useState<Task | null>(null);
     const addTaskToDailyPlan = useDailyPlan().onAddTask;
 
@@ -32,49 +33,60 @@ export const ReusableTaskPicker: React.FC = () => {
     }, [tasks]);
 
     const handleCreateTask = useCallback(() => {
-        // TODO implementation
+        setIsCreateTaskDialogOpen(true);
     }, []);
 
     const handleTaskFormSubmit = useCallback(
         async (taskData: TaskFormData) => {
             if (editingTask) {
-                onEditTask(editingTask.id!, taskData);
+                await onEditTask(editingTask.id!, taskData);
                 setEditingTask(null);
+            } else {
+                onCreateTask(taskData);
+                setIsCreateTaskDialogOpen(false);
             }
         },
-        [editingTask, onEditTask]
+        [editingTask, onCreateTask, onEditTask]
     );
+
+    const handleTaskFormCancel = useCallback(() => {
+        setIsCreateTaskDialogOpen(false);
+        setEditingTask(null);
+    }, []);
 
     const handleConfirmRemoveTask = useCallback(async () => {
         if (removingTask) {
-            onRemoveTask(removingTask.id!);
+            await onRemoveTask(removingTask.id!);
             setRemovingTask(null);
         }
-    }, [removingTask, onRemoveTask]);
+    }, [onRemoveTask, removingTask]);
+
+    const handleCancelRemoveTask = useCallback(() => {
+        setRemovingTask(null);
+    }, []);
 
     const addTaskShortcut: Shortcut = useMemo(
         () => ({
             id: 'add-task-reusable',
-            keys: ['Ctrl', 'N'],
+            keys: ['Ctrl', 'Shift', 'C'],
             action: handleCreateTask,
-            description: 'add a new task to reusable tasks',
+            description: 'Add a new task to reusable tasks',
             order: 1,
         }),
         [handleCreateTask]
     );
 
     useRegisterShortcut(addTaskShortcut);
+
     return (
         <Card className="flex flex-col min-h-[calc(100vh-100px)] min-w-[400px]">
             <TaskDialog
-                open={!!editingTask}
+                open={isCreateTaskDialogOpen || !!editingTask}
                 initialData={editingTask}
                 hideReusableState={true}
                 onSubmit={handleTaskFormSubmit}
-                onCancel={() => {
-                    setEditingTask(null);
-                }}
-                title={"Edit Task"}
+                onCancel={handleTaskFormCancel}
+                title={`${editingTask ? 'Edit reusable task' : 'Create reusable task'}`}
             />
 
             <ConfirmDialog
@@ -82,15 +94,14 @@ export const ReusableTaskPicker: React.FC = () => {
                 title="Confirmation"
                 message="Remove this task from reusable tasks?"
                 onConfirm={handleConfirmRemoveTask}
-                onCancel={() => {
-                    setRemovingTask(null);
-                }}
+                onCancel={handleCancelRemoveTask}
             >
                 {removingTask && <TaskItem task={removingTask} isVanity={true}/>}
             </ConfirmDialog>
 
-            <CardHeader>
+            <CardHeader className={'flex-row justify-between items-baseline'}>
                 <CardTitle>Reusable Tasks</CardTitle>
+                <PlusButton onClick={handleCreateTask} label={'Create'}/>
             </CardHeader>
             <CardContent
                 ref={cardContentRef}

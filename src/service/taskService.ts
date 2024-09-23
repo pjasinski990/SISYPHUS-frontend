@@ -32,7 +32,7 @@ class TaskService {
         return apiService.authenticatedGet(`/api/tasks/`);
     }
 
-    async newTask(task: Task): Promise<Task> {
+    async createTask(task: Task): Promise<Task> {
         return apiService.authenticatedPost(`/api/tasks/`, task);
     }
 

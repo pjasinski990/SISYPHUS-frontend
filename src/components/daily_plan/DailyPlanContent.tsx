@@ -13,7 +13,7 @@ import { useRegisterShortcut } from "src/components/context/RegisterShortcutCont
 import { Shortcut } from "src/components/context/ShortcutsContext";
 
 export const DailyPlanContent: React.FC<{dailyPlan: DailyPlan}> = ({ dailyPlan }) => {
-    const [isAddTaskDialogOpen, setIsCreateTaskDialogOpen] = useState(false);
+    const [isCreateTaskDialogOpen, setIsCreateTaskDialogOpen] = useState(false);
     const [editingTask, setEditingTask] = useState<Task | null>(null);
     const [removingTask, setRemovingTask] = useState<Task | null>(null);
 
@@ -35,17 +35,6 @@ export const DailyPlanContent: React.FC<{dailyPlan: DailyPlan}> = ({ dailyPlan }
         setRemovingTask(task);
     }, []);
 
-    const handleConfirmRemoveTask = useCallback(async () => {
-        if (removingTask) {
-            await onRemoveTask(removingTask.id!);
-            setRemovingTask(null);
-        }
-    }, [onRemoveTask, removingTask]);
-
-    const handleCancelRemoveTask = useCallback(() => {
-        setRemovingTask(null);
-    }, []);
-
     const handleTaskFormSubmit = useCallback(async (taskData: TaskFormData) => {
         if (editingTask) {
             await onEditTask(editingTask.id!, taskData);
@@ -61,11 +50,22 @@ export const DailyPlanContent: React.FC<{dailyPlan: DailyPlan}> = ({ dailyPlan }
         setEditingTask(null);
     }, []);
 
+    const handleConfirmRemoveTask = useCallback(async () => {
+        if (removingTask) {
+            await onRemoveTask(removingTask.id!);
+            setRemovingTask(null);
+        }
+    }, [onRemoveTask, removingTask]);
+
+    const handleCancelRemoveTask = useCallback(() => {
+        setRemovingTask(null);
+    }, []);
+
     const addTaskShortcut: Shortcut = useMemo(() => ({
         id: 'add-task-daily-plan',
-        keys: ['Ctrl', 'M'],
+        keys: ['Ctrl', 'C'],
         action: handleCreateTask,
-        description: 'add a new task to today\'s todo list',
+        description: 'Add a new task to today\'s todo list',
         order: 1,
     }), [handleCreateTask]);
 
@@ -95,12 +95,12 @@ export const DailyPlanContent: React.FC<{dailyPlan: DailyPlan}> = ({ dailyPlan }
             </div>
 
             <TaskDialog
-                open={isAddTaskDialogOpen || !!editingTask}
+                open={isCreateTaskDialogOpen || !!editingTask}
                 initialData={editingTask}
                 hideReusableState={true}
                 onSubmit={handleTaskFormSubmit}
                 onCancel={handleTaskFormCancel}
-                title={editingTask ? 'Edit Task' : 'Add New Task'}
+                title={editingTask ? 'Edit task' : 'Create task'}
             />
 
             <ConfirmDialog

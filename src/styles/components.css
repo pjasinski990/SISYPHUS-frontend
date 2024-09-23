@@ -1,7 +1,6 @@
-.bg-card {
-    @apply border-none;
-    @apply rounded-none !important;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 .scrollbar-custom::-webkit-scrollbar {
     width: 4px;
@@ -28,6 +27,36 @@
     background-color: #475569;
 }
 
-h3 {
-    font-size: 1.2rem !important;
+@layer components {
+    h3 {
+        font-size: 1.2rem !important;
+    }
+
+    button:not([role='combobox']) {
+        border: none;
+        border-radius: 0 !important;
+    }
+
+    .bg-card {
+        border: none;
+        border-radius: 0 !important;
+    }
+}
+
+@layer utilities {
+    div[role='dialog'] {
+        border: none;
+        border-radius: 16px;
+        padding: 32px;
+    }
+
+    .dark div[role='dialog'] {
+        border-radius: 16px;
+        padding: 32px;
+        border: 1px solid #334155;
+    }
+
+    input:focus {
+        outline: none;
+    }
 }

@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { TaskFormData } from "src/components/task/TaskForm";
 import { Task, taskService } from "../../service/taskService";
+import { useAuth } from "src/components/context/AuthContext";
 
 interface ReusableTasksContextType {
     reusableTasks: Task[],
@@ -13,6 +14,7 @@ const ReusableTasksContext = createContext<ReusableTasksContextType | undefined>
 
 export const ReusableTasksProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [reusableTasks, setReusableTasks] = useState<Task[]>([]);
+    const { username } = useAuth();
 
     const reusableTasksRef = useRef(reusableTasks);
     useEffect(() => {
@@ -32,9 +34,20 @@ export const ReusableTasksProvider: React.FC<{ children: React.ReactNode }> = ({
     }, []);
 
     const createTask = useCallback(async (taskData: TaskFormData) => {
-        // TODO implementation
-        return
-    }, []);
+        try {
+            let newTask: Task = {
+                id: null,
+                ...taskData,
+                ownerUsername: username!!,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+            }
+            const created = await taskService.createTask(newTask)
+            setReusableTasks([...reusableTasks, created])
+        } catch (err) {
+            console.error('Failed to create task', err);
+        }
+    }, [reusableTasks, username]);
 
     const editTask = useCallback(async (taskId: string, updatedTaskData: TaskFormData) => {
         try {

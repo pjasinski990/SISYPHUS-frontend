@@ -14,7 +14,11 @@ const ShortcutsList: React.FC = () => {
         ));
     };
 
-    const shortcutsSorted = shortcuts.sort(key => key.order ? key.order : 0);
+    const shortcutsSorted = shortcuts.sort((a, b) => {
+        const orderA = a.order ? a.order : 0;
+        const orderB = b.order ? b.order : 0;
+        return orderA - orderB;
+    });
     return (
         <div className="mt-4">
             <ul className="space-y-4">

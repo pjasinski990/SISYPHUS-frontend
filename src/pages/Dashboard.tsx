@@ -14,6 +14,10 @@ const Dashboard: React.FC = () => {
         setIsTaskPickerOpen(!isTaskPickerOpen);
     };
 
+    const shortcuts = {
+
+    }
+
     return (
         <Layout>
             <div>
