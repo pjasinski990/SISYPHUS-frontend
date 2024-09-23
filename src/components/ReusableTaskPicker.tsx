@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "src/components/ui/card";
 import { Task } from "../service/taskService";
 import { TaskItem } from "src/components/task/TaskItem";
@@ -9,6 +9,8 @@ import { ConfirmDialog } from "src/components/library/ConfirmDialog";
 import { TaskPropertiesProvider } from "src/components/context/TaskPropertiesContext";
 import { useDailyPlan } from "src/components/context/DailyPlanContext";
 import { useReusableTasks } from "src/components/context/ReusableTasksContext";
+import { Shortcut } from "src/components/context/ShortcutsContext";
+import { useRegisterShortcut } from "src/components/context/RegisterShortcutContext";
 
 export const ReusableTaskPicker: React.FC = () => {
     const [editingTask, setEditingTask] = useState<Task | null>(null);
@@ -29,6 +31,10 @@ export const ReusableTaskPicker: React.FC = () => {
         }
     }, [tasks]);
 
+    const handleCreateTask = () => {
+
+    }
+
     const handleTaskFormSubmit = (taskData: TaskFormData) => {
         if (editingTask) {
             onEditTask(editingTask.id!, taskData);
@@ -42,6 +48,16 @@ export const ReusableTaskPicker: React.FC = () => {
             setRemovingTask(null);
         }
     };
+
+    const addTaskShortcut: Shortcut = {
+        id: 'add-task-reusable',
+        keys: ['Ctrl', 'N'],
+        action: handleCreateTask,
+        description: 'add a new task to reusable tasks',
+        order: 1,
+    };
+
+    useRegisterShortcut(addTaskShortcut);
 
     return (
         <Card className="flex flex-col min-h-[calc(100vh-100px)] min-w-[400px]">
@@ -73,10 +89,9 @@ export const ReusableTaskPicker: React.FC = () => {
             </CardHeader>
             <CardContent
                 ref={cardContentRef}
-                className="flex-grow max-h-[calc(100vh-200px)] overflow-auto scrollbar-custom"
-
+                className="flex-grow max-h-[calc(100vh-200px)] overflow-y-auto overflow-x-clip scrollbar-custom"
             >
-                <ul className="space-y-1">
+                <ul className="space-y-1 ">
                     {tasks.map((task) => (
                         <li key={task.id}>
                             <div className="flex items-center content-between">

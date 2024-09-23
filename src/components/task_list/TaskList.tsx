@@ -9,8 +9,8 @@ interface TaskListProps {
     tasks: Task[];
     droppableId: string;
     placeholderText: string;
-    showAddButton?: boolean;
-    onAddTask?: () => void;
+    showCreateButton?: boolean;
+    onCreateTask?: () => void;
 }
 
 export const TaskList: React.FC<TaskListProps> = ({
@@ -18,12 +18,12 @@ export const TaskList: React.FC<TaskListProps> = ({
                                                       tasks,
                                                       droppableId,
                                                       placeholderText,
-                                                      showAddButton,
-                                                      onAddTask,
+                                                      showCreateButton,
+                                                      onCreateTask,
                                                   }) => {
     return (
         <div className="bg-slate-50 dark:bg-slate-900 p-4 pb-2 rounded-md min-h-[300px] shadow shadow-slate-200 dark:shadow-slate-950 w-96 max-h-[calc(100vh-200px)] overflow-auto">
-            <TaskListHeader title={title} showAddButton={showAddButton} onAddTask={onAddTask} />
+            <TaskListHeader title={title} showAddButton={showCreateButton} onAddTask={onCreateTask} />
             <DroppableTasks droppableId={droppableId} tasks={tasks} placeholderText={placeholderText}/>
         </div>
     );
@@ -65,7 +65,7 @@ const DroppableTasks: React.FC<{
                         <div
                             className={`h-[100px] flex items-center justify-center text-center font-mono ${
                                 (snapshot.isDraggingOver)
-                                    ? "text-transparent h-[0px]"
+                                    ? "text-transparent h-0"
                                     : "text-slate-300 dark:text-slate-700"
                             }`}
                         >

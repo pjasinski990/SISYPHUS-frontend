@@ -1,13 +1,14 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 type ModifierKey = 'Ctrl' | 'Shift' | 'Alt';
-type Key = ModifierKey | string;
+export type Key = ModifierKey | string;
 
 export interface Shortcut {
     id: string;
     keys: Key[];
     action: () => void;
     description?: string;
+    order?: number;
 }
 
 interface ShortcutsContextType {

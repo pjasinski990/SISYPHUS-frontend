@@ -1,8 +1,20 @@
 import React from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import { Button } from "src/components/ui/button";
-import { LogOut, Moon, Sun, User } from "lucide-react";
-import { useAuth } from "src/components/context/AuthContext";
+import { Button } from 'src/components/ui/button';
+import { LogOut, Moon, Sun, User, Keyboard } from 'lucide-react'; // Import Keyboard icon
+import { useAuth } from 'src/components/context/AuthContext';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+    DialogTrigger,
+    DialogFooter,
+    DialogClose,
+} from 'src/components/ui/dialog';
+import ShortcutsList from "src/components/keyboard/ShortcutsList";
+import ShortcutsInfoDialog from "src/components/keyboard/ShortcutsInfoDialog"; // Import Dialog components
 
 interface NavigationProps {
     darkMode: boolean;
@@ -10,8 +22,7 @@ interface NavigationProps {
 }
 
 const Navigation: React.FC<NavigationProps> = ({ darkMode, toggleDarkMode }) => {
-    const { isAuthenticated, username } = useAuth();
-    const { logout } = useAuth();
+    const { isAuthenticated, username, logout } = useAuth();
     const navigate = useNavigate();
 
     const handleLogout = () => {
@@ -23,24 +34,27 @@ const Navigation: React.FC<NavigationProps> = ({ darkMode, toggleDarkMode }) => 
         <nav className="flex justify-between items-center px-4 py-2 bg-white dark:bg-gray-800 shadow">
             <RouterLink to="/" className="text-xl font-bold">mind=blown</RouterLink>
             <div className="flex items-center space-x-4">
+                <ShortcutsInfoDialog/>
                 {isAuthenticated && (
                     <>
                         <RouterLink to={"/profile"} className="flex items-center space-x-2 text-sm">
                             <Button variant="ghost" size="sm" className="flex items-center space-x-2 dark:hover:bg-slate-700">
-                                <User className="h-4 w-4"/>
+                                <User className="h-4 w-4" />
                                 <span>{username}</span>
                             </Button>
                         </RouterLink>
                         <Button variant="ghost" size="sm" onClick={handleLogout} className="flex items-center space-x-2 dark:hover:bg-slate-700">
-                            <LogOut className="h-4 w-4"/>
+                            <LogOut className="h-4 w-4" />
                             <span>Logout</span>
                         </Button>
                     </>
                 )}
-                <Button variant="ghost" size="icon" onClick={toggleDarkMode} className={"dark:hover:bg-slate-700"}>
-                    {darkMode
-                        ? <Sun className="h-[1.2rem] w-[1.2rem]"/>
-                        : <Moon className="h-[1.2rem] w-[1.2rem]"/>}
+                <Button variant="ghost" size="icon" onClick={toggleDarkMode} className="dark:hover:bg-slate-700">
+                    {darkMode ? (
+                        <Sun className="h-[1.2rem] w-[1.2rem]" />
+                    ) : (
+                        <Moon className="h-[1.2rem] w-[1.2rem]" />
+                    )}
                     <span className="sr-only">Toggle theme</span>
                 </Button>
             </div>

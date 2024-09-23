@@ -14,7 +14,7 @@ import { useRegisterShortcut } from "src/components/context/RegisterShortcutCont
 import { Shortcut } from "src/components/context/ShortcutsContext";
 
 export const DailyPlanContent: React.FC<{dailyPlan: DailyPlan}> = ({ dailyPlan }) => {
-    const [isAddTaskDialogOpen, setIsAddTaskDialogOpen] = useState(false);
+    const [isAddTaskDialogOpen, setIsCreateTaskDialogOpen] = useState(false);
     const [editingTask, setEditingTask] = useState<Task | null>(null);
     const [removingTask, setRemovingTask] = useState<Task | null>(null);
 
@@ -24,8 +24,8 @@ export const DailyPlanContent: React.FC<{dailyPlan: DailyPlan}> = ({ dailyPlan }
         await onDragEnd(result);
     };
 
-    const handleAddTask = () => {
-        setIsAddTaskDialogOpen(true);
+    const handleCreateTask = () => {
+        setIsCreateTaskDialogOpen(true);
     };
 
     const handleEditTask = (task: Task) => {
@@ -53,20 +53,21 @@ export const DailyPlanContent: React.FC<{dailyPlan: DailyPlan}> = ({ dailyPlan }
             setEditingTask(null);
         } else {
             onCreateTask(taskData);
-            setIsAddTaskDialogOpen(false);
+            setIsCreateTaskDialogOpen(false);
         }
     };
 
     const handleTaskFormCancel = () => {
-        setIsAddTaskDialogOpen(false);
+        setIsCreateTaskDialogOpen(false);
         setEditingTask(null);
     };
 
     const addTaskShortcut: Shortcut = {
         id: 'add-task-daily-plan',
         keys: ['Ctrl', 'M'],
-        action: handleAddTask,
-        description: 'Add a new task',
+        action: handleCreateTask,
+        description: 'add a new task to today\'s todo list',
+        order: 1,
     };
 
     useRegisterShortcut(addTaskShortcut);
@@ -80,8 +81,8 @@ export const DailyPlanContent: React.FC<{dailyPlan: DailyPlan}> = ({ dailyPlan }
                         tasks={dailyPlan.todo}
                         droppableId="todo"
                         placeholderText={'empty. well done!'}
-                        showAddButton={true}
-                        onAddTask={handleAddTask}
+                        showCreateButton={true}
+                        onCreateTask={handleCreateTask}
                     />
                 </TaskPropertiesProvider>
                 <TaskPropertiesProvider onTaskEdit={handleEditTask} onTaskRemove={handleRemoveTask} isDraggable={true} isFoldable={true}>
