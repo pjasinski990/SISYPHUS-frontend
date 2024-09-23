@@ -1,18 +1,9 @@
 import React, { useEffect } from 'react';
+import { useShortcuts } from "src/components/context/ShortcutsContext";
 
-type ModifierKey = 'Ctrl' | 'Shift' | 'Alt';
-type Key = ModifierKey | string;
+const KeyboardShortcuts: React.FC = () => {
+    const { shortcuts } = useShortcuts();
 
-interface Shortcut {
-    keys: Key[];
-    action: () => void;
-}
-
-interface KeyboardShortcutsProps {
-    shortcuts: Shortcut[];
-}
-
-const KeyboardShortcuts: React.FC<KeyboardShortcutsProps> = ({ shortcuts }) => {
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             const { key, ctrlKey, shiftKey, altKey } = event;

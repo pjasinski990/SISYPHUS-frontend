@@ -5,8 +5,8 @@ import { AuthProvider, useAuth } from 'src/components/context/AuthContext';
 import LoginPage from './pages/LoginPage';
 import Dashboard from './pages/Dashboard';
 import ProfilePage from './pages/Profile';
-import KeyboardShortcutHandler from "src/components/keyboard/KeyboardShortcutHandler";
-
+import { ShortcutsProvider } from "src/components/context/ShortcutsContext";
+import KeyboardShortcuts from "src/components/keyboard/KeyboardShortcutHandler";
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { isAuthenticated } = useAuth();
     return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
@@ -60,9 +60,12 @@ const AppRoutes: React.FC = () => {
 const App: React.FC = () => {
     return (
         <AuthProvider>
-            <Router>
-                <AppRoutes />
-            </Router>
+            <ShortcutsProvider>
+                <KeyboardShortcuts/>
+                <Router>
+                    <AppRoutes />
+                </Router>
+            </ShortcutsProvider>
         </AuthProvider>
     );
 };

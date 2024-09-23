@@ -10,6 +10,8 @@ import { TaskPropertiesProvider } from "src/components/context/TaskPropertiesCon
 import { useDailyPlan } from "src/components/context/DailyPlanContext";
 import { DailyPlan } from "../../service/dailyPlanService";
 import KeyboardShortcutHandler from "src/components/keyboard/KeyboardShortcutHandler";
+import { useRegisterShortcut } from "src/components/context/RegisterShortcutContext";
+import { Shortcut } from "src/components/context/ShortcutsContext";
 
 export const DailyPlanContent: React.FC<{dailyPlan: DailyPlan}> = ({ dailyPlan }) => {
     const [isAddTaskDialogOpen, setIsAddTaskDialogOpen] = useState(false);
@@ -60,13 +62,17 @@ export const DailyPlanContent: React.FC<{dailyPlan: DailyPlan}> = ({ dailyPlan }
         setEditingTask(null);
     };
 
-    const shortcuts = [
-        { keys: ['Ctrl', 'M'], action: handleAddTask },
-    ];
+    const addTaskShortcut: Shortcut = {
+        id: 'add-task-daily-plan',
+        keys: ['Ctrl', 'M'],
+        action: handleAddTask,
+        description: 'Add a new task',
+    };
+
+    useRegisterShortcut(addTaskShortcut);
 
     return (
         <DragDropContext onDragEnd={handleDragEnd}>
-            <KeyboardShortcutHandler shortcuts={shortcuts}/>
             <div className="flex gap-4">
                 <TaskPropertiesProvider onTaskEdit={handleEditTask} onTaskRemove={handleRemoveTask} isDraggable={true} isFoldable={true}>
                     <TaskList
