@@ -9,7 +9,6 @@ import { ConfirmDialog } from "src/components/library/ConfirmDialog";
 import { TaskPropertiesProvider } from "src/components/context/TaskPropertiesContext";
 import { useDailyPlan } from "src/components/context/DailyPlanContext";
 import { DailyPlan } from "../../service/dailyPlanService";
-import KeyboardShortcutHandler from "src/components/keyboard/KeyboardShortcutHandler";
 import { useRegisterShortcut } from "src/components/context/RegisterShortcutContext";
 import { Shortcut } from "src/components/context/ShortcutsContext";
 

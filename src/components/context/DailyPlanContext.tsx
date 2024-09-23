@@ -5,6 +5,7 @@ import { TaskFormData } from 'src/components/task/TaskForm';
 import { DailyPlan, dailyPlanService } from "../../service/dailyPlanService";
 import { Task, taskService } from "../../service/taskService";
 import { useAuth } from "src/components/context/AuthContext";
+import { ObjectId } from "bson";
 
 interface DailyPlanContextType {
     dailyPlan: DailyPlan | null;
@@ -85,7 +86,7 @@ export const DailyPlanProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const createTask = async (taskData: TaskFormData) => {
         try {
             let newTask: Task = {
-                id: null,
+                id: new ObjectId().toHexString(),
                 ...taskData,
                 ownerUsername: username!,
                 createdAt: new Date().toISOString(),
