@@ -21,7 +21,7 @@ export const DraggableProvider: React.FC<{
     );
 };
 
-export const useDraggable = () => {
+export const useDraggable: () => DraggableContextType = () => {
     const context = useContext(DraggableContext);
     if (context === undefined) {
         throw new Error('useDraggable must be used within a DraggableProvider');

@@ -7,22 +7,22 @@ import { TaskFormData } from "src/components/task/TaskForm";
 import { TaskDialog } from "src/components/task/TaskDialog";
 import { ConfirmDialog } from "src/components/library/ConfirmDialog";
 import { TaskPropertiesProvider } from "src/components/context/TaskPropertiesContext";
+import { useDailyPlan } from "src/components/context/DailyPlanContext";
 
 interface ReusableTaskPickerProps {
     tasks: Task[];
-    onAddToTodo: (task: Task) => void;
     onEditTask: (taskId: string, updatedTask: TaskFormData) => void;
     onRemoveTask: (taskId: string) => void;
 }
 
 export const ReusableTaskPicker: React.FC<ReusableTaskPickerProps> = ({
                                                                           tasks,
-                                                                          onAddToTodo,
                                                                           onEditTask,
                                                                           onRemoveTask,
                                                                       }) => {
     const [editingTask, setEditingTask] = useState<Task | null>(null);
     const [removingTask, setRemovingTask] = useState<Task | null>(null);
+    const addTaskToDailyPlan = useDailyPlan().onAddTask;
 
     const cardContentRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
@@ -95,7 +95,7 @@ export const ReusableTaskPicker: React.FC<ReusableTaskPickerProps> = ({
                                 </TaskPropertiesProvider>
                                 <ArrowRightButton
                                     label=""
-                                    onClick={() => onAddToTodo(task)}
+                                    onClick={() => addTaskToDailyPlan(task)}
                                 />
                             </div>
                         </li>

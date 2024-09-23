@@ -2,34 +2,24 @@ import React, { useState } from 'react';
 import { DragDropContext, DropResult } from '@hello-pangea/dnd';
 import { TaskList } from "src/components/task_list/TaskList";
 import { TaskItem } from "src/components/task/TaskItem";
-import { DailyPlan } from "../../service/dailyPlanService";
 import { TaskFormData } from "src/components/task/TaskForm";
 import { Task } from "../../service/taskService";
 import { TaskDialog } from "src/components/task/TaskDialog";
 import { ConfirmDialog } from "src/components/library/ConfirmDialog";
 import { TaskPropertiesProvider } from "src/components/context/TaskPropertiesContext";
+import { useDailyPlan } from "src/components/context/DailyPlanContext";
+import { DailyPlan } from "../../service/dailyPlanService";
+import KeyboardShortcutHandler from "src/components/keyboard/KeyboardShortcutHandler";
 
-interface DailyPlanContentProps {
-    dailyPlan: DailyPlan;
-    onTaskMove: (result: DropResult) => void;
-    onAddTask: (task: TaskFormData) => void;
-    onEditTask: (taskId: string, updatedTask: TaskFormData) => void;
-    onRemoveTask: (taskId: string) => void;
-}
-
-export const DailyPlanContent: React.FC<DailyPlanContentProps> = ({
-                                                                      dailyPlan,
-                                                                      onTaskMove,
-                                                                      onAddTask,
-                                                                      onEditTask,
-                                                                      onRemoveTask,
-                                                                  }) => {
+export const DailyPlanContent: React.FC<{dailyPlan: DailyPlan}> = ({ dailyPlan }) => {
     const [isAddTaskDialogOpen, setIsAddTaskDialogOpen] = useState(false);
     const [editingTask, setEditingTask] = useState<Task | null>(null);
     const [removingTask, setRemovingTask] = useState<Task | null>(null);
 
-    const handleDragEnd = (result: DropResult) => {
-        onTaskMove(result);
+    const { onDragEnd , onCreateTask, onEditTask, onRemoveTask } = useDailyPlan()
+
+    const handleDragEnd = async (result: DropResult) => {
+        await onDragEnd(result);
     };
 
     const handleAddTask = () => {
@@ -44,9 +34,9 @@ export const DailyPlanContent: React.FC<DailyPlanContentProps> = ({
         setRemovingTask(task);
     };
 
-    const handleConfirmRemoveTask = () => {
+    const handleConfirmRemoveTask = async () => {
         if (removingTask) {
-            onRemoveTask(removingTask.id!);
+            await onRemoveTask(removingTask.id!);
             setRemovingTask(null);
         }
     };
@@ -55,12 +45,12 @@ export const DailyPlanContent: React.FC<DailyPlanContentProps> = ({
         setRemovingTask(null);
     };
 
-    const handleTaskFormSubmit = (taskData: TaskFormData) => {
+    const handleTaskFormSubmit = async (taskData: TaskFormData) => {
         if (editingTask) {
-            onEditTask(editingTask.id!, taskData);
+            await onEditTask(editingTask.id!, taskData);
             setEditingTask(null);
         } else {
-            onAddTask(taskData);
+            onCreateTask(taskData);
             setIsAddTaskDialogOpen(false);
         }
     };
@@ -70,8 +60,13 @@ export const DailyPlanContent: React.FC<DailyPlanContentProps> = ({
         setEditingTask(null);
     };
 
+    const shortcuts = [
+        { keys: ['Ctrl', 'M'], action: handleAddTask },
+    ];
+
     return (
         <DragDropContext onDragEnd={handleDragEnd}>
+            <KeyboardShortcutHandler shortcuts={shortcuts}/>
             <div className="flex gap-4">
                 <TaskPropertiesProvider onTaskEdit={handleEditTask} onTaskRemove={handleRemoveTask} isDraggable={true} isFoldable={true}>
                     <TaskList
@@ -96,7 +91,7 @@ export const DailyPlanContent: React.FC<DailyPlanContentProps> = ({
             <TaskDialog
                 open={isAddTaskDialogOpen || !!editingTask}
                 initialData={editingTask}
-                hideReusableState={!!editingTask}
+                hideReusableState={true}
                 onSubmit={handleTaskFormSubmit}
                 onCancel={handleTaskFormCancel}
                 title={editingTask ? 'Edit Task' : 'Add New Task'}

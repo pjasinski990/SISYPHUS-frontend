@@ -5,6 +5,7 @@ import { AuthProvider, useAuth } from 'src/components/context/AuthContext';
 import LoginPage from './pages/LoginPage';
 import Dashboard from './pages/Dashboard';
 import ProfilePage from './pages/Profile';
+import KeyboardShortcutHandler from "src/components/keyboard/KeyboardShortcutHandler";
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { isAuthenticated } = useAuth();

@@ -16,12 +16,12 @@ export const SlidingPanel: React.FC<SlidingPanelProps> = ({
                                                           }) => {
     const widthStyles = useSpring({
         width: isOpen ? maxWidth : 0,
-        config: { tension: 250, friction: 30 },
+        config: { tension: 300, friction: 30 },
     });
 
     const contentStyles = useSpring({
         opacity: isOpen ? 1 : 0,
-        config: { tension: 250, friction: 30 },
+        config: { tension: 300, friction: 30 },
     });
 
     return (

@@ -51,7 +51,7 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(({
         onSubmit(data);
     };
 
-    const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+    const handleKeyDown = (event: React.KeyboardEvent) => {
         if (event.key === 'Enter' && event.shiftKey) {
             event.stopPropagation();
         } else if (event.key === 'Enter') {
@@ -95,7 +95,7 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(({
                     control={control}
                     render={({ field }) => (
                         <Select onValueChange={field.onChange} value={field.value}>
-                            <SelectTrigger id="category">
+                            <SelectTrigger id="category" onKeyDown={handleKeyDown}>
                                 <SelectValue placeholder="Select category">{field.value}</SelectValue>
                             </SelectTrigger>
                             <SelectContent>
@@ -119,7 +119,7 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(({
                     control={control}
                     render={({ field }) => (
                         <Select onValueChange={field.onChange} value={field.value}>
-                            <SelectTrigger id="size">
+                            <SelectTrigger id="size" onKeyDown={handleKeyDown}>
                                 <SelectValue placeholder="Select size">{field.value}</SelectValue>
                             </SelectTrigger>
                             <SelectContent>
