@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { formatToIsoDate } from 'src/lib/utils';
 import { DraggableLocation, DropResult } from '@hello-pangea/dnd';
 import { TaskFormData } from 'src/components/task/TaskForm';
@@ -40,17 +40,7 @@ export const DailyPlanProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         fetchData().then();
     }, []);
 
-    const onDragEnd = async (result: DropResult) => {
-        const { source, destination } = result;
-        if (!isValidDragAction(source, destination) || !dailyPlan) {
-            return;
-        }
-        const newDailyPlan = moveTask(dailyPlan, source, destination!);
-        setDailyPlan(newDailyPlan);
-        await dailyPlanService.updateDailyPlan(newDailyPlan);
-    };
-
-    const isValidDragAction = (source: DraggableLocation, destination: DraggableLocation | null | undefined) => {
+    const isValidDragAction = useCallback((source: DraggableLocation, destination: DraggableLocation | null | undefined) => {
         if (!destination) {
             return false;
         }
@@ -58,9 +48,9 @@ export const DailyPlanProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             source.droppableId === destination.droppableId &&
             source.index === destination.index
         );
-    };
+    }, []);
 
-    const moveTask = (dailyPlan: DailyPlan, source: DraggableLocation, destination: DraggableLocation) => {
+    const moveTask = useCallback((dailyPlan: DailyPlan, source: DraggableLocation, destination: DraggableLocation) => {
         const newDailyPlan: DailyPlan = { ...dailyPlan };
         const sourceList = source.droppableId === 'todo' ? newDailyPlan.todo : newDailyPlan.done;
         const destList = destination.droppableId === 'todo' ? newDailyPlan.todo : newDailyPlan.done;
@@ -70,9 +60,19 @@ export const DailyPlanProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             destList.splice(destination.index, 0, movedTask);
         }
         return newDailyPlan;
-    };
+    }, []);
 
-    const removeTask = async (taskId: string) => {
+    const onDragEnd = useCallback(async (result: DropResult) => {
+        const { source, destination } = result;
+        if (!isValidDragAction(source, destination) || !dailyPlan) {
+            return;
+        }
+        const newDailyPlan = moveTask(dailyPlan, source, destination!);
+        setDailyPlan(newDailyPlan);
+        await dailyPlanService.updateDailyPlan(newDailyPlan);
+    }, [dailyPlan, isValidDragAction, moveTask]);
+
+    const removeTask = useCallback(async (taskId: string) => {
         try {
             if (!dailyPlan) return;
             const updatedDailyPlan = removeTaskFromDailyPlan(dailyPlan, taskId);
@@ -81,9 +81,9 @@ export const DailyPlanProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         } catch (error) {
             console.error('Failed to remove task:', error);
         }
-    };
+    }, [dailyPlan]);
 
-    const createTask = async (taskData: TaskFormData) => {
+    const createTask = useCallback(async (taskData: TaskFormData) => {
         try {
             let newTask: Task = {
                 id: new ObjectId().toHexString(),
@@ -98,9 +98,9 @@ export const DailyPlanProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         } catch (error) {
             console.error('Failed to create task:', error);
         }
-    };
+    }, [dailyPlan, username]);
 
-    const addTask = async (newTask: Task) => {
+    const addTask = useCallback(async (newTask: Task) => {
         try {
             if (!dailyPlan || !newTask.id || findTaskInDailyPlan(dailyPlan, newTask.id)) {
                 return;
@@ -111,9 +111,9 @@ export const DailyPlanProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         } catch (error) {
             console.error('Failed to move task:', error);
         }
-    };
+    }, [dailyPlan]);
 
-    const editTask = async (taskId: string, updatedTaskData: TaskFormData) => {
+    const editTask = useCallback(async (taskId: string, updatedTaskData: TaskFormData) => {
         try {
             if (!dailyPlan) return;
             const taskToUpdate = findTaskInDailyPlan(dailyPlan, taskId);
@@ -140,7 +140,7 @@ export const DailyPlanProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         } catch (error) {
             console.error('Failed to update task:', error);
         }
-    };
+    }, [dailyPlan]);
 
     const findTaskInDailyPlan = (dailyPlan: DailyPlan, taskId: string): Task | null => {
         return (

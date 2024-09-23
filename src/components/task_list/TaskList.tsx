@@ -65,7 +65,7 @@ const DroppableTasks: React.FC<{
                         <div
                             className={`h-[100px] flex items-center justify-center text-center font-mono ${
                                 (snapshot.isDraggingOver)
-                                    ? "text-transparent h-0"
+                                    ? "text-transparent h-[0px]"
                                     : "text-slate-300 dark:text-slate-700"
                             }`}
                         >

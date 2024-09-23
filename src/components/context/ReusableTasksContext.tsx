@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { TaskFormData } from "src/components/task/TaskForm";
 import { Task, taskService } from "../../service/taskService";
 
@@ -14,12 +14,15 @@ const ReusableTasksContext = createContext<ReusableTasksContextType | undefined>
 export const ReusableTasksProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [reusableTasks, setReusableTasks] = useState<Task[]>([]);
 
+    const reusableTasksRef = useRef(reusableTasks);
+    useEffect(() => {
+        reusableTasksRef.current = reusableTasks;
+    }, [reusableTasks]);
+
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [reusableTasksData] = await Promise.all([
-                    taskService.getTasks()
-                ]);
+                const reusableTasksData = await taskService.getTasks();
                 setReusableTasks(reusableTasksData);
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -28,11 +31,12 @@ export const ReusableTasksProvider: React.FC<{ children: React.ReactNode }> = ({
         fetchData().then();
     }, []);
 
-    const createTask = async (taskData: TaskFormData): Promise<void> => {
+    const createTask = useCallback(async (taskData: TaskFormData) => {
+        // TODO implementation
+        return
+    }, []);
 
-    }
-
-    const editTask = async (taskId: string, updatedTaskData: TaskFormData) => {
+    const editTask = useCallback(async (taskId: string, updatedTaskData: TaskFormData) => {
         try {
             const taskToUpdate = reusableTasks.find((task) => task.id === taskId);
             if (!taskToUpdate) {
@@ -53,25 +57,26 @@ export const ReusableTasksProvider: React.FC<{ children: React.ReactNode }> = ({
         } catch (error) {
             console.error('Failed to update task:', error);
         }
-    };
+    }, []);
 
-    const removeTask = async (taskId: string) => {
+    const removeTask = useCallback(async (taskId: string) => {
         try {
             await taskService.deleteTask(taskId);
             setReusableTasks((prevTasks) => prevTasks.filter(task => task.id !== taskId));
         } catch (error) {
             console.error('Failed to remove task:', error);
         }
-    };
+    }, []);
+
+    const contextValue = useMemo(() => ({
+        reusableTasks,
+        onCreateTask: createTask,
+        onEditTask: editTask,
+        onRemoveTask: removeTask,
+    }), [reusableTasks, createTask, editTask, removeTask]);
+
     return (
-        <ReusableTasksContext.Provider
-            value={{
-                reusableTasks: reusableTasks,
-                onCreateTask: createTask,
-                onEditTask: editTask,
-                onRemoveTask: removeTask,
-            }}
-        >
+        <ReusableTasksContext.Provider value={contextValue}>
             {children}
         </ReusableTasksContext.Provider>
     );

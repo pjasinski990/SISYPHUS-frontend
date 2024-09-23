@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "src/components/ui/card";
 import { Task } from "../service/taskService";
 import { TaskItem } from "src/components/task/TaskItem";
@@ -17,48 +17,53 @@ export const ReusableTaskPicker: React.FC = () => {
     const [removingTask, setRemovingTask] = useState<Task | null>(null);
     const addTaskToDailyPlan = useDailyPlan().onAddTask;
 
-    const rtContext = useReusableTasks()
-    const tasks = rtContext.reusableTasks
-    const { onCreateTask, onEditTask, onRemoveTask } = rtContext
+    const rtContext = useReusableTasks();
+    const tasks = rtContext.reusableTasks;
+    const { onCreateTask, onEditTask, onRemoveTask } = rtContext;
 
     const cardContentRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
         if (cardContentRef.current) {
             cardContentRef.current.scrollTo({
                 left: 0,
-                behavior: 'smooth'
+                behavior: 'smooth',
             });
         }
     }, [tasks]);
 
-    const handleCreateTask = () => {
+    const handleCreateTask = useCallback(() => {
+        // TODO implementation
+    }, []);
 
-    }
+    const handleTaskFormSubmit = useCallback(
+        async (taskData: TaskFormData) => {
+            if (editingTask) {
+                onEditTask(editingTask.id!, taskData);
+                setEditingTask(null);
+            }
+        },
+        [editingTask, onEditTask]
+    );
 
-    const handleTaskFormSubmit = (taskData: TaskFormData) => {
-        if (editingTask) {
-            onEditTask(editingTask.id!, taskData);
-            setEditingTask(null);
-        }
-    };
-
-    const handleConfirmRemoveTask = () => {
+    const handleConfirmRemoveTask = useCallback(async () => {
         if (removingTask) {
             onRemoveTask(removingTask.id!);
             setRemovingTask(null);
         }
-    };
+    }, [removingTask, onRemoveTask]);
 
-    const addTaskShortcut: Shortcut = {
-        id: 'add-task-reusable',
-        keys: ['Ctrl', 'N'],
-        action: handleCreateTask,
-        description: 'add a new task to reusable tasks',
-        order: 1,
-    };
+    const addTaskShortcut: Shortcut = useMemo(
+        () => ({
+            id: 'add-task-reusable',
+            keys: ['Ctrl', 'N'],
+            action: handleCreateTask,
+            description: 'add a new task to reusable tasks',
+            order: 1,
+        }),
+        [handleCreateTask]
+    );
 
     useRegisterShortcut(addTaskShortcut);
-
     return (
         <Card className="flex flex-col min-h-[calc(100vh-100px)] min-w-[400px]">
             <TaskDialog

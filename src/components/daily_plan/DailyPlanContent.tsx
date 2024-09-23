@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { DragDropContext, DropResult } from '@hello-pangea/dnd';
 import { TaskList } from "src/components/task_list/TaskList";
 import { TaskItem } from "src/components/task/TaskItem";
@@ -23,30 +23,30 @@ export const DailyPlanContent: React.FC<{dailyPlan: DailyPlan}> = ({ dailyPlan }
         await onDragEnd(result);
     };
 
-    const handleCreateTask = () => {
+    const handleCreateTask = useCallback(() => {
         setIsCreateTaskDialogOpen(true);
-    };
+    }, []);
 
-    const handleEditTask = (task: Task) => {
+    const handleEditTask = useCallback((task: Task) => {
         setEditingTask(task);
-    };
+    }, []);
 
-    const handleRemoveTask = (task: Task) => {
+    const handleRemoveTask = useCallback((task: Task) => {
         setRemovingTask(task);
-    };
+    }, []);
 
-    const handleConfirmRemoveTask = async () => {
+    const handleConfirmRemoveTask = useCallback(async () => {
         if (removingTask) {
             await onRemoveTask(removingTask.id!);
             setRemovingTask(null);
         }
-    };
+    }, [onRemoveTask, removingTask]);
 
-    const handleCancelRemoveTask = () => {
+    const handleCancelRemoveTask = useCallback(() => {
         setRemovingTask(null);
-    };
+    }, []);
 
-    const handleTaskFormSubmit = async (taskData: TaskFormData) => {
+    const handleTaskFormSubmit = useCallback(async (taskData: TaskFormData) => {
         if (editingTask) {
             await onEditTask(editingTask.id!, taskData);
             setEditingTask(null);
@@ -54,20 +54,20 @@ export const DailyPlanContent: React.FC<{dailyPlan: DailyPlan}> = ({ dailyPlan }
             onCreateTask(taskData);
             setIsCreateTaskDialogOpen(false);
         }
-    };
+    }, [editingTask, onCreateTask, onEditTask]);
 
-    const handleTaskFormCancel = () => {
+    const handleTaskFormCancel = useCallback(() => {
         setIsCreateTaskDialogOpen(false);
         setEditingTask(null);
-    };
+    }, []);
 
-    const addTaskShortcut: Shortcut = {
+    const addTaskShortcut: Shortcut = useMemo(() => ({
         id: 'add-task-daily-plan',
         keys: ['Ctrl', 'M'],
         action: handleCreateTask,
         description: 'add a new task to today\'s todo list',
         order: 1,
-    };
+    }), [handleCreateTask]);
 
     useRegisterShortcut(addTaskShortcut);
 
