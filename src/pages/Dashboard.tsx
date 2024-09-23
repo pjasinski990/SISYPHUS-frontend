@@ -1,65 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Layout from "src/components/Layout";
-import { Task, taskService } from "../service/taskService";
 import { DailyPlanDashboard } from "src/components/DailyPlanDashboard";
 import { ReusableTaskPicker } from "src/components/ReusableTaskPicker";
-import { TaskFormData } from "src/components/task/TaskForm";
 import { SlidingPanel } from "src/components/library/SlidingPanel";
 import { ChevronRight } from "lucide-react";
 import { DailyPlanProvider } from "src/components/context/DailyPlanContext";
+import { ReusableTasksProvider } from "src/components/context/ReusableTasksContext";
 
 const Dashboard: React.FC = () => {
-    const [reusableTasks, setReusableTasks] = useState<Task[]>([]);
     const [isTaskPickerOpen, setIsTaskPickerOpen] = useState(true);
 
     const toggleTaskPicker = () => {
         setIsTaskPickerOpen(!isTaskPickerOpen);
-    };
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const [reusableTasksData] = await Promise.all([
-                    taskService.getTasks()
-                ]);
-                setReusableTasks(reusableTasksData);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        };
-        fetchData().then();
-    }, []);
-
-    const handleEditReusableTask = async (taskId: string, updatedTaskData: TaskFormData) => {
-        try {
-            const taskToUpdate = reusableTasks.find((task) => task.id === taskId);
-            if (!taskToUpdate) {
-                console.log('Error: task not found');
-                return;
-            }
-
-            const updatedTask: Task = {
-                ...taskToUpdate,
-                ...updatedTaskData,
-                updatedAt: new Date().toISOString()
-            };
-
-            setReusableTasks((prevTasks) =>
-                prevTasks.map(task => task.id === updatedTask.id ? updatedTask : task)
-            );
-            await taskService.updateTask(updatedTask);
-        } catch (error) {
-            console.error('Failed to update task:', error);
-        }
-    };
-
-    const handleRemoveReusableTask = async (taskId: string) => {
-        try {
-            await taskService.deleteTask(taskId);
-            setReusableTasks((prevTasks) => prevTasks.filter(task => task.id !== taskId));
-        } catch (error) {
-            console.error('Failed to remove task:', error);
-        }
     };
 
     return (
@@ -72,11 +24,9 @@ const Dashboard: React.FC = () => {
                             setIsOpen={toggleTaskPicker}
                             maxWidth={400}
                         >
-                            <ReusableTaskPicker
-                                tasks={reusableTasks}
-                                onEditTask={handleEditReusableTask}
-                                onRemoveTask={handleRemoveReusableTask}
-                            />
+                            <ReusableTasksProvider>
+                                <ReusableTaskPicker/>
+                            </ReusableTasksProvider>
                         </SlidingPanel>
                         <div className={`flex flex-1 transition-all duration-200`}>
                             <div
