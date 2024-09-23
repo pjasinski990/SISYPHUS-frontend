@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import Layout from "src/components/Layout";
 import { DailyPlanDashboard } from "src/components/DailyPlanDashboard";
 import { ReusableTaskPicker } from "src/components/ReusableTaskPicker";
@@ -6,17 +6,25 @@ import { SlidingPanel } from "src/components/library/SlidingPanel";
 import { ChevronRight } from "lucide-react";
 import { DailyPlanProvider } from "src/components/context/DailyPlanContext";
 import { ReusableTasksProvider } from "src/components/context/ReusableTasksContext";
+import { useRegisterShortcut } from "src/components/context/RegisterShortcutContext";
+import { Shortcut } from "src/components/context/ShortcutsContext";
 
 const Dashboard: React.FC = () => {
     const [isTaskPickerOpen, setIsTaskPickerOpen] = useState(true);
 
-    const toggleTaskPicker = () => {
+    const toggleTaskPicker = useCallback(() => {
         setIsTaskPickerOpen(!isTaskPickerOpen);
-    };
+    }, [isTaskPickerOpen]);
 
-    const shortcuts = {
+    const toggleTaskPickerShortcut: Shortcut = useMemo(() => ({
+        id: 'toggle-reusable-tasks-picker',
+        keys: ['Shift', 'R'],
+        action: toggleTaskPicker,
+        description: 'Open keyboard shortcuts dialog',
+        order: 2,
+    }), [toggleTaskPicker]);
 
-    }
+    useRegisterShortcut(toggleTaskPickerShortcut)
 
     return (
         <Layout>

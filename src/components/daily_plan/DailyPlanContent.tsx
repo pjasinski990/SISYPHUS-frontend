@@ -63,7 +63,7 @@ export const DailyPlanContent: React.FC<{dailyPlan: DailyPlan}> = ({ dailyPlan }
 
     const addTaskShortcut: Shortcut = useMemo(() => ({
         id: 'add-task-daily-plan',
-        keys: ['Ctrl', 'C'],
+        keys: ['C'],
         action: handleCreateTask,
         description: 'Add a new task to today\'s todo list',
         order: 1,

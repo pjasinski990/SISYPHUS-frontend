@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
-type ModifierKey = 'Ctrl' | 'Shift' | 'Alt';
+type ModifierKey = 'Ctrl' | 'Shift' | 'Alt' | 'Meta';
 export type Key = ModifierKey | string;
 
 export interface Shortcut {
