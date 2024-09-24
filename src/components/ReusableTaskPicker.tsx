@@ -81,7 +81,7 @@ export const ReusableTaskPicker: React.FC = () => {
     useRegisterShortcut(addTaskShortcut);
 
     return (
-        <Card className="flex flex-col min-h-[calc(100vh-100px)]">
+        <Card className="flex flex-col min-h-[calc(100vh-150px)]">
             <TaskDialog
                 open={isCreateTaskDialogOpen || !!editingTask}
                 initialData={editingTask}
