@@ -7,11 +7,11 @@ import { TaskItem } from "src/components/task/TaskItem";
 interface TaskListProps {
     title: string;
     tasks: Task[];
-    droppableId?: string; // Made optional
+    droppableId?: string;
     placeholderText: string;
     showCreateButton?: boolean;
     onCreateTask?: () => void;
-    isDroppable?: boolean; // New prop to toggle droppable behavior
+    isDroppable?: boolean;
 }
 
 export const TaskList: React.FC<TaskListProps> = ({

@@ -107,7 +107,7 @@ export const ReusableTaskPicker: React.FC = () => {
             >
                 <TaskPropertiesProvider onTaskEdit={setEditingTask} onTaskRemove={setRemovingTask} isDraggable={false} isFoldable={true}>
                     <TaskExtensionProvider extraButtons={[{icon: ArrowRight, handler: addTaskToDailyPlan}]}>
-                        <div className={'mt-8'}>
+                        <div className={'mt-6'}>
                             <TaskList
                                 tasks={tasks}
                                 placeholderText={'reusable tasks. the building blocks of your monotone life.'}

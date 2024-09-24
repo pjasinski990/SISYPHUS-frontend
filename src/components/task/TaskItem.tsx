@@ -82,9 +82,14 @@ const DraggableTaskItem: React.FC<TaskItemProps & { children: React.ReactNode }>
 const FoldableTaskItem: React.FC<TaskItemProps & { children: React.ReactNode }> = ({ task, children }) => {
     const [isFolded, setIsFolded] = React.useState(false);
 
+    const handleContextMenu = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        event.preventDefault();
+        setIsFolded(prevState => !prevState);
+    };
+
     return (
         <div
-            onClick={() => setIsFolded(!isFolded)}
+            onContextMenu={handleContextMenu}
             className="cursor-pointer transition-colors duration-200"
         >
             {React.cloneElement(children as React.ReactElement<any>, { showMetadata: !isFolded })}

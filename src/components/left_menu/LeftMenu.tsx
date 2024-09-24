@@ -7,16 +7,26 @@ import React from "react";
 export const LeftMenu: React.FC = () => {
     return (
         <Tabs defaultValue="reusableTasks" className="h-full flex flex-col">
-            <TabsList>
-                <TabsTrigger value="reusableTasks">Reusable Tasks</TabsTrigger>
-                <TabsTrigger value="inbox">Inbox</TabsTrigger>
+            <TabsList className="rounded-none flex justify-start items-stretch p-0 bg-white dark:bg-slate-950 h-10">
+                <TabsTrigger
+                    value="reusableTasks"
+                    className="flex-1 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 data-[state=active]:shadow-none data-[state=inactive]:bg-slate-100 dark:data-[state=inactive]:bg-slate-800"
+                >
+                    Reusable Tasks
+                </TabsTrigger>
+                <TabsTrigger
+                    value="inbox"
+                    className="flex-1 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 data-[state=active]:shadow-none data-[state=inactive]:bg-slate-100 dark:data-[state=inactive]:bg-slate-800"
+                >
+                    Inbox
+                </TabsTrigger>
             </TabsList>
-            <TabsContent value="reusableTasks" className="flex-grow">
+            <TabsContent value="reusableTasks" className="flex-grow overflow-auto">
                 <ReusableTasksProvider>
                     <ReusableTaskPicker/>
                 </ReusableTasksProvider>
             </TabsContent>
-            <TabsContent value="inbox" className="flex-grow">
+            <TabsContent value="inbox" className="flex-grow overflow-auto">
                 <Inbox />
             </TabsContent>
         </Tabs>
