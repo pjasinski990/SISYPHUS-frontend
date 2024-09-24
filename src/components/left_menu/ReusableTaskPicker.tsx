@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Card, CardContent } from "src/components/ui/card";
-import { Task } from "../service/taskService";
+import { Task } from "../../service/taskService";
 import { TaskItem } from "src/components/task/TaskItem";
 import { TaskFormData } from "src/components/task/TaskForm";
 import { TaskDialog } from "src/components/task/TaskDialog";
