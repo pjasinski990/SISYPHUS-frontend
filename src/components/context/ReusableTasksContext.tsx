@@ -98,7 +98,7 @@ export const ReusableTasksProvider: React.FC<{ children: React.ReactNode }> = ({
 export const useReusableTasks = () => {
     const context = useContext(ReusableTasksContext);
     if (context === undefined) {
-        throw new Error('useDailyPlan must be used within a DailyPlanProvider');
+        throw new Error('useReusableTasks must be used within a ReusableTasksProvider');
     }
     return context;
 };

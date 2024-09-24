@@ -1,34 +1,117 @@
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "src/components/ui/tabs";
 import { ReusableTasksProvider } from "src/components/context/ReusableTasksContext";
 import { ReusableTaskPicker } from "src/components/left_menu/ReusableTaskPicker";
-import Inbox from "src/components/left_menu/Inbox";
-import React from "react";
+import { motion } from "framer-motion";
+import { Inbox } from "src/components/left_menu/Inbox";
 
-export const LeftMenu: React.FC = () => {
+export type TabValue = 'inbox' | 'reusableTasks';
+
+interface LeftMenuProps {
+    activeTab: TabValue;
+    onActiveTabChange: (tab: TabValue) => void;
+}
+
+export const LeftMenu: React.FC<LeftMenuProps> = ({ activeTab, onActiveTabChange }) => {
+    const tabOrder: Record<TabValue, number> = useMemo(() => ({
+        inbox: 0,
+        reusableTasks: 1,
+    }), []);
+
+    const [direction, setDirection] = useState(0);
+    const prevTabRef = useRef<TabValue>("inbox");
+
+    useEffect(() => {
+        const prevIndex = tabOrder[prevTabRef.current];
+        const newIndex = tabOrder[activeTab];
+
+        if (newIndex > prevIndex) {
+            setDirection(-1);
+        } else if (newIndex < prevIndex) {
+            setDirection(1);
+        } else {
+            setDirection(0);
+        }
+
+        prevTabRef.current = activeTab;
+    }, [activeTab, tabOrder]);
+
+    const handleTabChange = (value: string) => {
+        if (!(value in tabOrder)) {
+            console.warn(`Unknown tab value: ${value}`);
+            return;
+        }
+
+        const castedValue = value as TabValue;
+        onActiveTabChange(castedValue);
+    };
+
+    const variants = {
+        hidden: (direction: number) => ({
+            opacity: 0,
+            x: direction > 0 ? 200 : -200,
+        }),
+        visible: {
+            opacity: 1,
+            x: 0,
+        },
+    };
+
     return (
-        <Tabs defaultValue="reusableTasks" className="h-full flex flex-col">
+        <Tabs
+            value={activeTab}
+            onValueChange={handleTabChange}
+            className="h-full flex flex-col"
+        >
             <TabsList className="rounded-none flex justify-start items-stretch p-0 bg-white dark:bg-slate-950 h-10">
-                <TabsTrigger
-                    value="reusableTasks"
-                    className="flex-1 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 data-[state=active]:shadow-none data-[state=inactive]:bg-slate-100 dark:data-[state=inactive]:bg-slate-800"
-                >
-                    Reusable Tasks
-                </TabsTrigger>
                 <TabsTrigger
                     value="inbox"
                     className="flex-1 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 data-[state=active]:shadow-none data-[state=inactive]:bg-slate-100 dark:data-[state=inactive]:bg-slate-800"
                 >
                     Inbox
                 </TabsTrigger>
+                <TabsTrigger
+                    value="reusableTasks"
+                    className="flex-1 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 data-[state=active]:shadow-none data-[state=inactive]:bg-slate-100 dark:data-[state=inactive]:bg-slate-800"
+                >
+                    Reusable
+                </TabsTrigger>
             </TabsList>
-            <TabsContent value="reusableTasks" className="flex-grow overflow-auto">
-                <ReusableTasksProvider>
-                    <ReusableTaskPicker/>
-                </ReusableTasksProvider>
-            </TabsContent>
-            <TabsContent value="inbox" className="flex-grow overflow-auto">
-                <Inbox />
-            </TabsContent>
+
+            <div className="flex-grow overflow-hidden relative">
+                <TabsContent value="inbox" className="flex-grow overflow-auto">
+                    {activeTab === "inbox" && (
+                        <motion.div
+                            key="inbox"
+                            initial="hidden"
+                            animate="visible"
+                            variants={variants}
+                            custom={direction}
+                            transition={{ duration: 0.2 }}
+                            className="h-full"
+                        >
+                            <Inbox />
+                        </motion.div>
+                    )}
+                </TabsContent>
+                <TabsContent value="reusableTasks" className="flex-grow overflow-auto">
+                    {activeTab === "reusableTasks" && (
+                        <motion.div
+                            key="reusableTasks"
+                            initial="hidden"
+                            animate="visible"
+                            variants={variants}
+                            custom={direction}
+                            transition={{ duration: 0.2 }}
+                            className="h-full"
+                        >
+                            <ReusableTasksProvider>
+                                <ReusableTaskPicker />
+                            </ReusableTasksProvider>
+                        </motion.div>
+                    )}
+                </TabsContent>
+            </div>
         </Tabs>
     );
-}
+};

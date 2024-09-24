@@ -76,10 +76,10 @@ export const DailyPlanContent: React.FC<{dailyPlan: DailyPlan}> = ({ dailyPlan }
             <div className="flex gap-4">
                 <TaskPropertiesProvider onTaskEdit={handleEditTask} onTaskRemove={handleRemoveTask} isDraggable={true} isFoldable={true}>
                     <TaskList
-                        title="To Do"
+                        title="Todo"
                         tasks={dailyPlan.todo}
                         droppableId="todo"
-                        placeholderText={'empty. well done!'}
+                        placeholderNode={<span>empty. well done!</span>}
                         showCreateButton={true}
                         onCreateTask={handleCreateTask}
                     />
@@ -89,7 +89,7 @@ export const DailyPlanContent: React.FC<{dailyPlan: DailyPlan}> = ({ dailyPlan }
                         title="Done"
                         tasks={dailyPlan.done}
                         droppableId="done"
-                        placeholderText={'drag your done tasks here'}
+                        placeholderNode={<span>drop your done tasks here</span>}
                     />
                 </TaskPropertiesProvider>
             </div>

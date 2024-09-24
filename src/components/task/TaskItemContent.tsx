@@ -1,7 +1,7 @@
 import { Task, TaskSize } from "../../service/taskService";
 import React from "react";
 import { Button } from "src/components/ui/button";
-import { CircleMinus, Edit, Square } from "lucide-react";
+import { Edit, Square, Trash } from "lucide-react";
 import { useTaskProperties } from "src/components/context/TaskPropertiesContext";
 import { CSSTransition } from "react-transition-group";
 import "./TaskItemContent.css";
@@ -81,7 +81,7 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                         aria-label="Remove Task"
                         title="Remove Task"
                     >
-                        <CircleMinus className="h-4 w-4" />
+                        <Trash className="h-4 w-4" />
                     </Button>
                     {extraButtons.map((buttonConfig, index) => {
                         const IconComponent = buttonConfig.icon;

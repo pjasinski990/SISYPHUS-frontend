@@ -110,7 +110,12 @@ export const ReusableTaskPicker: React.FC = () => {
                         <div className={'mt-6'}>
                             <TaskList
                                 tasks={tasks}
-                                placeholderText={'reusable tasks. the building blocks of your monotone life.'}
+                                placeholderNode={
+                                    <>
+                                        <span>reusable tasks.</span>
+                                        <span>the building blocks of your monotone life.</span>
+                                    </>
+                                }
                                 title={'Reusable tasks'}
                                 isDroppable={false}
                                 showCreateButton={true}

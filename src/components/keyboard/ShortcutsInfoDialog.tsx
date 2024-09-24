@@ -44,7 +44,7 @@ const ShortcutsInfoDialog: React.FC = () => {
                     <span>Shortcuts</span>
                 </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-xl">
+            <DialogContent className="max-w-xl" aria-describedby={"list of shortcuts"}>
                 <DialogHeader>
                     <DialogTitle>Keyboard Shortcuts</DialogTitle>
                 </DialogHeader>

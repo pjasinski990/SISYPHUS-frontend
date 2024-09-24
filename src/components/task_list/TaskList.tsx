@@ -8,7 +8,7 @@ interface TaskListProps {
     title: string;
     tasks: Task[];
     droppableId?: string;
-    placeholderText: string;
+    placeholderNode: string | React.ReactNode;
     showCreateButton?: boolean;
     onCreateTask?: () => void;
     isDroppable?: boolean;
@@ -18,7 +18,7 @@ export const TaskList: React.FC<TaskListProps> = ({
                                                       title,
                                                       tasks,
                                                       droppableId,
-                                                      placeholderText,
+                                                      placeholderNode,
                                                       showCreateButton,
                                                       onCreateTask,
                                                       isDroppable = true,
@@ -27,9 +27,9 @@ export const TaskList: React.FC<TaskListProps> = ({
         <div className="bg-slate-50 dark:bg-slate-900 p-4 pb-2 rounded-md min-h-[300px] shadow shadow-slate-200 dark:shadow-slate-950 w-[350px] max-h-[calc(100vh-200px)] overflow-auto">
             <TaskListHeader title={title} showAddButton={showCreateButton} onAddTask={onCreateTask} />
             {isDroppable && droppableId ? (
-                <DroppableTasks droppableId={droppableId} tasks={tasks} placeholderText={placeholderText} />
+                <DroppableTasks droppableId={droppableId} tasks={tasks} placeholderNode={placeholderNode} />
             ) : (
-                <NonDroppableTasks tasks={tasks} placeholderText={placeholderText} />
+                <NonDroppableTasks tasks={tasks} placeholderNode={placeholderNode} />
             )}
         </div>
     );
@@ -51,8 +51,8 @@ const TaskListHeader: React.FC<{
 const DroppableTasks: React.FC<{
     droppableId: string;
     tasks: Task[];
-    placeholderText: string;
-}> = ({ droppableId, tasks, placeholderText }) => {
+    placeholderNode: string | React.ReactNode;
+}> = ({ droppableId, tasks, placeholderNode }) => {
     return (
         <Droppable droppableId={droppableId}>
             {(provided, snapshot) => (
@@ -68,8 +68,8 @@ const DroppableTasks: React.FC<{
                     ))}
                     {provided.placeholder}
                     {tasks.length === 0 && !snapshot.isDraggingOver && (
-                        <div className="h-[100px] flex items-center justify-center text-center font-mono text-slate-300 dark:text-slate-700">
-                            {placeholderText}
+                        <div className="h-[120px] flex flex-col space-y-2 items-center justify-center text-center font-mono text-slate-300 dark:text-slate-700 whitespace-pre-line">
+                            {placeholderNode}
                         </div>
                     )}
                 </div>
@@ -80,16 +80,16 @@ const DroppableTasks: React.FC<{
 
 const NonDroppableTasks: React.FC<{
     tasks: Task[];
-    placeholderText: string;
-}> = ({ tasks, placeholderText }) => {
+    placeholderNode: string | React.ReactNode;
+}> = ({ tasks, placeholderNode }) => {
     return (
         <div className="flex flex-col gap-1 min-h-[100px]">
             {tasks.map((task) => (
                 <TaskItem key={task.id} task={task} />
             ))}
             {tasks.length === 0 && (
-                <div className="h-[100px] flex items-center justify-center text-center font-mono text-slate-300 dark:text-slate-700">
-                    {placeholderText}
+                <div className="h-[120px] flex flex-col space-y-2 items-center justify-center text-center font-mono text-slate-300 dark:text-slate-700">
+                    {placeholderNode}
                 </div>
             )}
         </div>

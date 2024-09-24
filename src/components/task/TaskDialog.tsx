@@ -43,7 +43,7 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({
 
     return (
         <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onCancel()}>
-            <DialogContent>
+            <DialogContent aria-describedby={"task dialog"}>
                 <DialogHeader>
                     <DialogTitle>{title}</DialogTitle>
                 </DialogHeader>
