@@ -6,12 +6,17 @@ interface KbdKeyProps {
 
 const KbdKey: React.FC<KbdKeyProps> = ({ children }) => {
     return (
-        <kbd
-            className="inline-flex items-center px-2 py-1 text-xs font-mono text-gray-800 border border-gray-200 rounded-md shadow-sm"
-            style={{background: '#FFFFF8'}}
+        <div
+            className="bg-gray-200 rounded-md border-r-gray-400 border-gray-300 border-r-4 border-b-4 flex items-start"
+            style={{ borderTopLeftRadius: '6px' }}
         >
-            {children}
-        </kbd>
+            <kbd
+                className="inline-flex items-center px-2 pt-1 pb-0.5 text-xs font-mono text-gray-800 border border-gray-100 rounded-md shadow-sm"
+                style={{ background: '#FFFFF8' }}
+            >
+                {children}
+            </kbd>
+        </div>
     );
 };
 

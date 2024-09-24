@@ -1,8 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "src/components/ui/card";
+import { Card, CardContent } from "src/components/ui/card";
 import { Task } from "../service/taskService";
 import { TaskItem } from "src/components/task/TaskItem";
-import { ArrowRightButton, PlusButton } from "src/components/library/Buttons";
 import { TaskFormData } from "src/components/task/TaskForm";
 import { TaskDialog } from "src/components/task/TaskDialog";
 import { ConfirmDialog } from "src/components/library/ConfirmDialog";
@@ -11,6 +10,9 @@ import { useDailyPlan } from "src/components/context/DailyPlanContext";
 import { useReusableTasks } from "src/components/context/ReusableTasksContext";
 import { Shortcut } from "src/components/context/ShortcutsContext";
 import { useRegisterShortcut } from "src/components/context/RegisterShortcutContext";
+import { TaskList } from "src/components/task_list/TaskList";
+import { TaskExtensionProvider } from "src/components/context/TaskExtensionContext";
+import { ArrowRight } from "lucide-react";
 
 export const ReusableTaskPicker: React.FC = () => {
     const [editingTask, setEditingTask] = useState<Task | null>(null);
@@ -79,7 +81,7 @@ export const ReusableTaskPicker: React.FC = () => {
     useRegisterShortcut(addTaskShortcut);
 
     return (
-        <Card className="flex flex-col min-h-[calc(100vh-100px)] min-w-[400px]">
+        <Card className="flex flex-col min-h-[calc(100vh-100px)]">
             <TaskDialog
                 open={isCreateTaskDialogOpen || !!editingTask}
                 initialData={editingTask}
@@ -99,34 +101,24 @@ export const ReusableTaskPicker: React.FC = () => {
                 {removingTask && <TaskItem task={removingTask} isVanity={true}/>}
             </ConfirmDialog>
 
-            <CardHeader className={'flex-row justify-between items-baseline'}>
-                <CardTitle>Reusable Tasks</CardTitle>
-                <PlusButton onClick={handleCreateTask} label={'Create'}/>
-            </CardHeader>
             <CardContent
                 ref={cardContentRef}
-                className="flex-grow max-h-[calc(100vh-200px)] overflow-y-auto overflow-x-clip scrollbar-custom"
+                className="flex-grow h-full overflow-y-auto overflow-x-clip scrollbar-custom"
             >
-                <ul className="space-y-1 ">
-                    {tasks.map((task) => (
-                        <li key={task.id}>
-                            <div className="flex items-center content-between">
-                                <TaskPropertiesProvider
-                                    onTaskEdit={() => setEditingTask(task)}
-                                    onTaskRemove={() => setRemovingTask(task)}
-                                    isDraggable={false}
-                                    isFoldable={true}
-                                >
-                                    <TaskItem task={task} className="flex-grow mr-2" />
-                                </TaskPropertiesProvider>
-                                <ArrowRightButton
-                                    label=""
-                                    onClick={() => addTaskToDailyPlan(task)}
-                                />
-                            </div>
-                        </li>
-                    ))}
-                </ul>
+                <TaskPropertiesProvider onTaskEdit={setEditingTask} onTaskRemove={setRemovingTask} isDraggable={false} isFoldable={true}>
+                    <TaskExtensionProvider extraButtons={[{icon: ArrowRight, handler: addTaskToDailyPlan}]}>
+                        <div className={'mt-8'}>
+                            <TaskList
+                                tasks={tasks}
+                                placeholderText={'reusable tasks. the building blocks of your monotone life.'}
+                                title={'Reusable tasks'}
+                                isDroppable={false}
+                                showCreateButton={true}
+                                onCreateTask={handleCreateTask}
+                            />
+                        </div>
+                    </TaskExtensionProvider>
+                </TaskPropertiesProvider>
             </CardContent>
         </Card>
     );

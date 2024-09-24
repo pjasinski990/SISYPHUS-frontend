@@ -62,7 +62,6 @@ const TaskDispatcher: React.FC<TaskItemProps> = ({ task, index }) => {
             </DraggableTaskItem>
         );
     }
-
     return content;
 };
 

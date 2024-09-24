@@ -70,7 +70,7 @@ export const ReusableTasksProvider: React.FC<{ children: React.ReactNode }> = ({
         } catch (error) {
             console.error('Failed to update task:', error);
         }
-    }, []);
+    }, [reusableTasks]);
 
     const removeTask = useCallback(async (taskId: string) => {
         try {

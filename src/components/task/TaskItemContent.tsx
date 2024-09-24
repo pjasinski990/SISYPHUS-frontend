@@ -1,12 +1,12 @@
 import { Task, TaskSize } from "../../service/taskService";
 import React from "react";
 import { Button } from "src/components/ui/button";
-import { CircleMinus, Edit } from "lucide-react";
+import { CircleMinus, Edit, Square } from "lucide-react";
 import { useTaskProperties } from "src/components/context/TaskPropertiesContext";
 import { CSSTransition } from "react-transition-group";
-import { Square } from 'lucide-react';
 import "./TaskItemContent.css";
 import { categoryStyles } from "src/components/task/categoryShades";
+import { useTaskExtensions } from "src/components/context/TaskExtensionContext";
 
 interface TaskItemContentProps {
     task: Task;
@@ -23,9 +23,9 @@ export const TaskMetadata: React.FC<{ task: Task }> = ({ task }) => (
 );
 
 export const TaskItemContent: React.FC<TaskItemContentProps> = ({
-                                                             task,
-                                                             showMetadata = true,
-                                                         }) => {
+                                                                    task,
+                                                                    showMetadata = true,
+                                                                }) => {
     const {
         categoryColorClass,
         categoryHoverColorClass,
@@ -36,6 +36,8 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
     const defaultBorderClass = "border-4 border-transparent";
     const { onTaskEdit, onTaskRemove } = useTaskProperties();
     const iconSize = task.size === TaskSize.SMALL ? 8 : 16;
+
+    const { extraButtons } = useTaskExtensions();
 
     return (
         <div
@@ -54,7 +56,7 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                     />
                     <h4 className="font-semibold">{task.title}</h4>
                 </div>
-                <div className="flex items-end">
+                <div className="flex items-end space-x-2">
                     <Button
                         variant="ghost"
                         size="sm"
@@ -63,6 +65,8 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                             onTaskEdit(task);
                         }}
                         className={categoryHoverColorClass}
+                        aria-label="Edit Task"
+                        title="Edit Task"
                     >
                         <Edit className="h-4 w-4" />
                     </Button>
@@ -74,9 +78,30 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                             onTaskRemove(task);
                         }}
                         className={categoryHoverColorClass}
+                        aria-label="Remove Task"
+                        title="Remove Task"
                     >
                         <CircleMinus className="h-4 w-4" />
                     </Button>
+                    {extraButtons.map((buttonConfig, index) => {
+                        const IconComponent = buttonConfig.icon;
+                        return (
+                            <Button
+                                key={index}
+                                variant="ghost"
+                                size="sm"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    buttonConfig.handler(task);
+                                }}
+                                className={categoryHoverColorClass}
+                                aria-label={`Extension Button ${index + 1}`}
+                                title={`Extension Button ${index + 1}`}
+                            >
+                                <IconComponent className="h-4 w-4" />
+                            </Button>
+                        );
+                    })}
                 </div>
             </div>
             <CSSTransition

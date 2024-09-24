@@ -26,11 +26,11 @@ export const SlidingPanel: React.FC<SlidingPanelProps> = ({
 
     return (
         <animated.div
-            className="relative bg-white dark:bg-slate-950 h-full flex-shrink-0 overflow-hidden"
+            className="bg-white dark:bg-slate-950 h-full"
             style={widthStyles}
         >
             <animated.div
-                className="h-full overflow-auto"
+                className="h-full overflow-hidden"
                 style={{
                     ...contentStyles,
                     pointerEvents: isOpen ? 'auto' : 'none',

@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "src/components/ui/button";
-import { ArrowRight, PlusCircle } from "lucide-react";
+import { ArrowRight, Copy, PlusCircle } from "lucide-react";
+import { Task } from "../../service/taskService";
 
 export const ArrowRightButton: React.FC<{
     label?: string;

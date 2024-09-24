@@ -7,10 +7,11 @@ import { TaskItem } from "src/components/task/TaskItem";
 interface TaskListProps {
     title: string;
     tasks: Task[];
-    droppableId: string;
+    droppableId?: string; // Made optional
     placeholderText: string;
     showCreateButton?: boolean;
     onCreateTask?: () => void;
+    isDroppable?: boolean; // New prop to toggle droppable behavior
 }
 
 export const TaskList: React.FC<TaskListProps> = ({
@@ -20,11 +21,16 @@ export const TaskList: React.FC<TaskListProps> = ({
                                                       placeholderText,
                                                       showCreateButton,
                                                       onCreateTask,
+                                                      isDroppable = true,
                                                   }) => {
     return (
-        <div className="bg-slate-50 dark:bg-slate-900 p-4 pb-2 rounded-md min-h-[300px] shadow shadow-slate-200 dark:shadow-slate-950 w-96 max-h-[calc(100vh-200px)] overflow-auto">
+        <div className="bg-slate-50 dark:bg-slate-900 p-4 pb-2 rounded-md min-h-[300px] shadow shadow-slate-200 dark:shadow-slate-950 w-[350px] max-h-[calc(100vh-200px)] overflow-auto">
             <TaskListHeader title={title} showAddButton={showCreateButton} onAddTask={onCreateTask} />
-            <DroppableTasks droppableId={droppableId} tasks={tasks} placeholderText={placeholderText}/>
+            {isDroppable && droppableId ? (
+                <DroppableTasks droppableId={droppableId} tasks={tasks} placeholderText={placeholderText} />
+            ) : (
+                <NonDroppableTasks tasks={tasks} placeholderText={placeholderText} />
+            )}
         </div>
     );
 };
@@ -37,7 +43,7 @@ const TaskListHeader: React.FC<{
     return (
         <div className="flex justify-between items-center mb-2 min-h-[48px]">
             <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-200">{title}</h3>
-            {showAddButton && onAddTask && ( <PlusButton label='Create' onClick={onAddTask}/> )}
+            {showAddButton && onAddTask && <PlusButton label="Create" onClick={onAddTask} />}
         </div>
     );
 };
@@ -61,19 +67,31 @@ const DroppableTasks: React.FC<{
                         <TaskItem key={task.id} task={task} index={index} />
                     ))}
                     {provided.placeholder}
-                    {tasks.length === 0 && (
-                        <div
-                            className={`h-[100px] flex items-center justify-center text-center font-mono ${
-                                (snapshot.isDraggingOver)
-                                    ? "text-transparent h-[0px]"
-                                    : "text-slate-300 dark:text-slate-700"
-                            }`}
-                        >
+                    {tasks.length === 0 && !snapshot.isDraggingOver && (
+                        <div className="h-[100px] flex items-center justify-center text-center font-mono text-slate-300 dark:text-slate-700">
                             {placeholderText}
                         </div>
                     )}
                 </div>
             )}
         </Droppable>
+    );
+};
+
+const NonDroppableTasks: React.FC<{
+    tasks: Task[];
+    placeholderText: string;
+}> = ({ tasks, placeholderText }) => {
+    return (
+        <div className="flex flex-col gap-1 min-h-[100px]">
+            {tasks.map((task) => (
+                <TaskItem key={task.id} task={task} />
+            ))}
+            {tasks.length === 0 && (
+                <div className="h-[100px] flex items-center justify-center text-center font-mono text-slate-300 dark:text-slate-700">
+                    {placeholderText}
+                </div>
+            )}
+        </div>
     );
 };
