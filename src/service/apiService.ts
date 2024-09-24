@@ -1,6 +1,8 @@
 import axios, { AxiosInstance, AxiosResponse, AxiosRequestConfig } from 'axios';
 import { AuthService } from './authService';
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
 class ApiService {
     private api: AxiosInstance;
 
@@ -109,4 +111,4 @@ class ApiService {
     }
 }
 
-export const apiService = new ApiService('http://localhost:8080');
+export const apiService = new ApiService(API_BASE_URL!!);

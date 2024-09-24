@@ -12,7 +12,7 @@ export class AuthService {
 
     public async authRequest(endpoint: string, username: string, password: string): Promise<AuthResponse> {
         try {
-            return await apiService.post<AuthResponse>(`http://localhost:8080${endpoint}`, {username, password});
+            return await apiService.post<AuthResponse>(endpoint, {username, password});
         } catch (error) {
             this.handleAuthError(error)
         }

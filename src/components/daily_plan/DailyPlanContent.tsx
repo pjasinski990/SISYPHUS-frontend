@@ -89,7 +89,7 @@ export const DailyPlanContent: React.FC<{dailyPlan: DailyPlan}> = ({ dailyPlan }
                         title="Done"
                         tasks={dailyPlan.done}
                         droppableId="done"
-                        placeholderNode={<span>drop your done tasks here</span>}
+                        placeholderNode={<span>drop your done tasks here.</span>}
                     />
                 </TaskPropertiesProvider>
             </div>

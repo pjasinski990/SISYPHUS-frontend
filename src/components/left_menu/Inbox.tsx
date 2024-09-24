@@ -111,7 +111,7 @@ export const Inbox: React.FC = () => {
                                     <span>throw all of your concerns inside.</span>
                                 </>
                             }
-                            title={'Reusable tasks'}
+                            title={'Inbox'}
                             isDroppable={false}
                             showCreateButton={true}
                             onCreateTask={handleCreateTask}
