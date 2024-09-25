@@ -21,7 +21,8 @@ export interface Task {
     size: TaskSize;
     title: string;
     description: string;
-    reusable: boolean;
+    listName: string;
+    duration: string; // ISO-8601 format (PT2H30M)
     createdAt: string;
     updatedAt: string;
     startTime: string;

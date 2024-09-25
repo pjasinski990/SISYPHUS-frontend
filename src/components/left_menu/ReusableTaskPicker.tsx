@@ -85,7 +85,6 @@ export const ReusableTaskPicker: React.FC = () => {
             <TaskDialog
                 open={isCreateTaskDialogOpen || !!editingTask}
                 initialData={editingTask}
-                hideReusableState={true}
                 onSubmit={handleTaskFormSubmit}
                 onCancel={handleTaskFormCancel}
                 title={`${editingTask ? 'Edit reusable task' : 'Create reusable task'}`}

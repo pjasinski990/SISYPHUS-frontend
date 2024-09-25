@@ -36,7 +36,7 @@ const Dashboard: React.FC = () => {
         id: 'open-inbox',
         keys: ['1'],
         action: () => openTab('inbox'),
-        description: 'Open Inbox tab and show panel',
+        description: 'Switch to inbox panel',
         order: 3,
     }), [openTab]);
 
@@ -44,7 +44,7 @@ const Dashboard: React.FC = () => {
         id: 'open-reusable-tasks',
         keys: ['2'],
         action: () => openTab('reusableTasks'),
-        description: 'Open Reusable Tasks tab and show panel',
+        description: 'Switch to reusable tasks panel',
         order: 4,
     }), [openTab]);
 

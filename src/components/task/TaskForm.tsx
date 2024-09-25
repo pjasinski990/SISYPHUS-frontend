@@ -12,22 +12,21 @@ export interface TaskFormData {
     description: string;
     category: TaskCategory;
     size: TaskSize;
+    listName: string;
     startTime: string;
-    reusable: boolean;
+    duration: string;
 }
 
 interface TaskFormProps {
     initialData?: Task;
     onSubmit: (task: TaskFormData) => void;
     onCancel: () => void;
-    hideReusableState?: boolean;
 }
 
 export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(({
                                                                         initialData,
                                                                         onSubmit,
                                                                         onCancel,
-                                                                        hideReusableState = false
                                                                     }, ref) => {
     const { register, handleSubmit, control, formState: { errors } } = useForm<TaskFormData>({
         defaultValues: initialData ? {
@@ -35,15 +34,17 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(({
             description: initialData.description,
             category: initialData.category,
             size: initialData.size,
+            listName: initialData.listName,
+            duration: initialData.duration,
             startTime: initialData.startTime,
-            reusable: initialData.reusable,
         } : {
             title: '',
             description: '',
             category: TaskCategory.WHITE,
             size: TaskSize.SMALL,
+            listName: 'INBOX',
+            duration: '',
             startTime: '',
-            reusable: false,
         }
     });
 
@@ -150,28 +151,6 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(({
                     type="time"
                 />
             </div>
-
-            {hideReusableState ||
-                <>
-                    <div className="flex items-center">
-                        <Controller
-                            name="reusable"
-                            control={control}
-                            render={({ field }) => (
-                                <Checkbox
-                                    checked={field.value}
-                                    onCheckedChange={field.onChange}
-                                    id="reusable"
-                                    className="w-6 h-6 ml-1"
-                                />
-                            )}
-                        />
-                        <label htmlFor="reusable" className="ml-2 block text-sm text-gray-700">
-                            Keep in reusable tasks
-                        </label>
-                    </div>
-                </>
-            }
 
             <div className="flex justify-end space-x-2 pt-4">
                 <Button type="button" variant="outline" onClick={onCancel}>

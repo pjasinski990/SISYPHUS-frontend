@@ -97,7 +97,6 @@ export const DailyPlanContent: React.FC<{dailyPlan: DailyPlan}> = ({ dailyPlan }
             <TaskDialog
                 open={isCreateTaskDialogOpen || !!editingTask}
                 initialData={editingTask}
-                hideReusableState={true}
                 onSubmit={handleTaskFormSubmit}
                 onCancel={handleTaskFormCancel}
                 title={editingTask ? 'Edit task' : 'Create task'}

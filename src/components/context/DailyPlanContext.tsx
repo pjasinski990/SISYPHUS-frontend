@@ -131,11 +131,6 @@ export const DailyPlanProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             const updatedDailyPlan = updateTaskInDailyPlan(dailyPlan, updatedTask);
 
             setDailyPlan(updatedDailyPlan);
-
-            if (updatedTask.reusable && updatedTask.id) {
-                await taskService.updateTask(updatedTask);
-            }
-
             await dailyPlanService.updateDailyPlan(updatedDailyPlan);
         } catch (error) {
             console.error('Failed to update task:', error);

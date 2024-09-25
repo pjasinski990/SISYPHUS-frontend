@@ -6,7 +6,6 @@ import { Task } from "../../service/taskService";
 interface TaskDialogProps {
     open: boolean;
     initialData?: Task | null;
-    hideReusableState?: boolean;
     onSubmit: (taskData: TaskFormData) => void;
     onCancel: () => void;
     title: string;
@@ -15,7 +14,6 @@ interface TaskDialogProps {
 export const TaskDialog: React.FC<TaskDialogProps> = ({
                                                           open,
                                                           initialData,
-                                                          hideReusableState = false,
                                                           onSubmit,
                                                           onCancel,
                                                           title,
@@ -52,7 +50,6 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({
                     initialData={initialData || undefined}
                     onSubmit={onSubmit}
                     onCancel={onCancel}
-                    hideReusableState={hideReusableState}
                 />
             </DialogContent>
         </Dialog>
