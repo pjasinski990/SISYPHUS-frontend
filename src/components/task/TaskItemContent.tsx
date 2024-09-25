@@ -14,11 +14,13 @@ interface TaskItemContentProps {
 }
 
 export const TaskMetadata: React.FC<{ task: Task }> = ({ task }) => (
-    <div className="text-xs mt-1 text-gray-900 dark:text-gray-100">
-        <p className="text-sm pb-2">{task.description}</p>
-        <span className="mr-2">Category: {task.category}</span>
-        <span className="mr-2">Size: {task.size}</span>
-        {task.startTime && <span>Start: {task.startTime}</span>}
+    <div className={`text-xs mt-1 text-gray-900 dark:text-gray-100`}>
+        <div className={'p-2'}>
+            <p className="text-sm pb-2">{task.description}</p>
+            <span className="mr-2">Category: {task.category}</span>
+            <span className="mr-2">Size: {task.size}</span>
+            {task.startTime && <span>Start: {task.startTime}</span>}
+        </div>
     </div>
 );
 
@@ -35,28 +37,30 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
 
     const defaultBorderClass = "border-4 border-transparent";
     const { onTaskEdit, onTaskRemove } = useTaskProperties();
-    const iconSize = task.size === TaskSize.SMALL ? 8 : 16;
+    const iconSize = task.size === TaskSize.SMALL ? 10 : 20;
 
     const { extraButtons } = useTaskExtensions();
 
     return (
         <div
-            className={`flex-grow w-full p-4 mb-2 rounded shadow-md text-gray-950 dark:text-gray-100 ${categoryColorClass} ${defaultBorderClass} ${categoryBorderColorClass} cursor-pointer transition-all duration-75`}
+            className={`flex-grow w-full p-0.5 rounded shadow-md text-gray-950 dark:text-gray-100 ${categoryColorClass} ${defaultBorderClass} ${categoryBorderColorClass} cursor-pointer transition-all duration-75`}
         >
             <div className="flex justify-between items-start">
-                <div className="flex-1 overflow-hidden">
+                <div className="flex-1 flex pt-2">
                     <Square
                         size={iconSize}
                         style={{
-                            marginTop: task.size === TaskSize.BIG ? '3px' : '8px',
-                            marginLeft: task.size === TaskSize.BIG ? '0px' : '3px',
+                            marginTop: task.size === TaskSize.BIG ? '0px' : '5px',
+                            marginLeft: task.size === TaskSize.BIG ? '0px' : '4px',
                         }}
-                        className={`float-left mr-2 ${iconClass}`}
+                        className={`mr-2 self-start ${iconClass}`}
                         fill="currentColor"
                     />
-                    <h4 className="font-semibold">{task.title}</h4>
+                    <h4 className="font-semibold leading-snug">
+                        {task.title}
+                    </h4>
                 </div>
-                <div className="flex items-end space-x-2">
+                <div className="flex items-start space-x-2">
                     <Button
                         variant="ghost"
                         size="sm"

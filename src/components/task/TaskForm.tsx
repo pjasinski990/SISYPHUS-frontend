@@ -48,6 +48,11 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(({
     });
 
     const onFormSubmit = (data: TaskFormData) => {
+        if (data.startTime) {
+            if (!data.startTime.includes(':')) {
+                data.startTime += ':00';
+            }
+        }
         onSubmit(data);
     };
 
