@@ -3,55 +3,58 @@ import { TaskFormData } from "src/components/task/TaskForm";
 import { Task, taskService } from "../../service/taskService";
 import { useAuth } from "src/components/context/AuthContext";
 
-interface ReusableTasksContextType {
-    reusableTasks: Task[],
+interface TaskInteractionProviderType {
+    tasks: Task[],
     onRemoveTask: (taskId: string) => Promise<void>;
     onCreateTask: (task: TaskFormData) => void;
     onEditTask: (taskId: string, updatedTaskData: TaskFormData) => Promise<void>;
 }
 
-const ReusableTasksContext = createContext<ReusableTasksContextType | undefined>(undefined);
+const TaskInteractionProvider = createContext<TaskInteractionProviderType | undefined>(undefined);
 
-export const ReusableTasksProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [reusableTasks, setReusableTasks] = useState<Task[]>([]);
+export const TaskInteractionContext: React.FC<{ children: React.ReactNode, listName: string }> = ({ children, listName }) => {
+    const [tasks, setTasks] = useState<Task[]>([]);
     const { username } = useAuth();
 
-    const reusableTasksRef = useRef(reusableTasks);
+    const tasksRef = useRef(tasks);
     useEffect(() => {
-        reusableTasksRef.current = reusableTasks;
-    }, [reusableTasks]);
+        tasksRef.current = tasks;
+    }, [tasks]);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const reusableTasksData = await taskService.getTasks();
-                setReusableTasks(reusableTasksData);
+                const taskData = await taskService.getTasksList(listName);
+                setTasks(taskData);
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
         };
         fetchData().then();
-    }, []);
+    }, [listName]);
 
     const createTask = useCallback(async (taskData: TaskFormData) => {
+        if (!username) {
+            throw Error('Error retrieving username');
+        }
         try {
             let newTask: Task = {
                 id: null,
                 ...taskData,
-                ownerUsername: username!!,
+                ownerUsername: username,
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
             }
             const created = await taskService.createTask(newTask)
-            setReusableTasks([...reusableTasks, created])
+            setTasks([...tasks, created])
         } catch (err) {
             console.error('Failed to create task', err);
         }
-    }, [reusableTasks, username]);
+    }, [tasks, username]);
 
     const editTask = useCallback(async (taskId: string, updatedTaskData: TaskFormData) => {
         try {
-            const taskToUpdate = reusableTasks.find((task) => task.id === taskId);
+            const taskToUpdate = tasks.find((task) => task.id === taskId);
             if (!taskToUpdate) {
                 console.log('Error: task not found');
                 return;
@@ -63,42 +66,42 @@ export const ReusableTasksProvider: React.FC<{ children: React.ReactNode }> = ({
                 updatedAt: new Date().toISOString()
             };
 
-            setReusableTasks((prevTasks) =>
+            setTasks((prevTasks) =>
                 prevTasks.map(task => task.id === updatedTask.id ? updatedTask : task)
             );
             await taskService.updateTask(updatedTask);
         } catch (error) {
             console.error('Failed to update task:', error);
         }
-    }, [reusableTasks]);
+    }, [tasks]);
 
     const removeTask = useCallback(async (taskId: string) => {
         try {
             await taskService.deleteTask(taskId);
-            setReusableTasks((prevTasks) => prevTasks.filter(task => task.id !== taskId));
+            setTasks((prevTasks) => prevTasks.filter(task => task.id !== taskId));
         } catch (error) {
             console.error('Failed to remove task:', error);
         }
     }, []);
 
     const contextValue = useMemo(() => ({
-        reusableTasks,
+        tasks,
         onCreateTask: createTask,
         onEditTask: editTask,
         onRemoveTask: removeTask,
-    }), [reusableTasks, createTask, editTask, removeTask]);
+    }), [tasks, createTask, editTask, removeTask]);
 
     return (
-        <ReusableTasksContext.Provider value={contextValue}>
+        <TaskInteractionProvider.Provider value={contextValue}>
             {children}
-        </ReusableTasksContext.Provider>
+        </TaskInteractionProvider.Provider>
     );
 };
 
-export const useReusableTasks = () => {
-    const context = useContext(ReusableTasksContext);
+export const useTaskInteraction = () => {
+    const context = useContext(TaskInteractionProvider);
     if (context === undefined) {
-        throw new Error('useReusableTasks must be used within a ReusableTasksProvider');
+        throw new Error('useTasksInteraction must be used within an TaskInteractionProvider');
     }
     return context;
 };

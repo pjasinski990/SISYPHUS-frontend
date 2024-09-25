@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "src/components/ui/card";
 import { DailyPlanContent } from "src/components/daily_plan/DailyPlanContent";
 import { useDailyPlan } from "src/components/context/DailyPlanContext";
+import { LoadingPlaceholder } from "src/components/library/LoadingPlaceholder";
 
 export const DailyPlanDashboard: React.FC = () => {
     const { dailyPlan } = useDailyPlan()
@@ -18,7 +19,7 @@ export const DailyPlanDashboard: React.FC = () => {
     ) : (
         <Card>
             <CardHeader>
-                Loading Daily Plan...
+                <LoadingPlaceholder />
             </CardHeader>
         </Card>
     );

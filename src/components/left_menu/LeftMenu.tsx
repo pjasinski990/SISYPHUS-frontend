@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "src/components/ui/tabs";
-import { ReusableTasksProvider } from "src/components/context/ReusableTasksContext";
 import { ReusableTaskPicker } from "src/components/left_menu/ReusableTaskPicker";
 import { motion } from "framer-motion";
 import { Inbox } from "src/components/left_menu/Inbox";
+import { TaskInteractionContext } from "src/components/context/TaskInteractionContext";
 
 export type TabValue = 'inbox' | 'reusableTasks';
 
@@ -105,9 +105,9 @@ export const LeftMenu: React.FC<LeftMenuProps> = ({ activeTab, onActiveTabChange
                             transition={{ duration: 0.2 }}
                             className="h-full"
                         >
-                            <ReusableTasksProvider>
+                            <TaskInteractionContext listName={"REUSABLE"}>
                                 <ReusableTaskPicker />
-                            </ReusableTasksProvider>
+                            </TaskInteractionContext>
                         </motion.div>
                     )}
                 </TabsContent>

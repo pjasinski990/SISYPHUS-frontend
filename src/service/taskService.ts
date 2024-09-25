@@ -33,6 +33,10 @@ class TaskService {
         return apiService.authenticatedGet(`/api/tasks/`);
     }
 
+    async getTasksList(listName: string): Promise<Task[]> {
+        return apiService.authenticatedGet(`/api/tasks/list`, { params: { listName } });
+    }
+
     async createTask(task: Task): Promise<Task> {
         return apiService.authenticatedPost(`/api/tasks/`, task);
     }

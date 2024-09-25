@@ -7,7 +7,7 @@ import { useRegisterShortcut } from "src/components/context/RegisterShortcutCont
 import { Shortcut } from "src/components/context/ShortcutsContext";
 import { LeftMenu, TabValue } from "src/components/left_menu/LeftMenu";
 import { SlidingPanelToggleRibbon } from "src/components/library/SlidingPanelToggleRibbon";
-import { InboxTasksProvider } from "src/components/context/InboxContext";
+import { TaskInteractionContext } from "src/components/context/TaskInteractionContext";
 
 const Dashboard: React.FC = () => {
     const [isLeftMenuOpen, setIsLeftMenuOpen] = useState(true);
@@ -61,12 +61,12 @@ const Dashboard: React.FC = () => {
                         setIsOpen={setIsLeftMenuOpen}
                         maxWidth={400}
                     >
-                        <InboxTasksProvider>
+                        <TaskInteractionContext listName={'INBOX'}>
                             <LeftMenu
                                 activeTab={activeTab}
                                 onActiveTabChange={setActiveTab}
                             />
-                        </InboxTasksProvider>
+                        </TaskInteractionContext>
                     </SlidingPanel>
                     <div className="flex flex-1 transition-all duration-200">
                         <SlidingPanelToggleRibbon toggleOpen={toggleLeftMenu} isOpen={isLeftMenuOpen} />

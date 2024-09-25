@@ -7,12 +7,12 @@ import { TaskDialog } from "src/components/task/TaskDialog";
 import { ConfirmDialog } from "src/components/library/ConfirmDialog";
 import { TaskPropertiesProvider } from "src/components/context/TaskPropertiesContext";
 import { useDailyPlan } from "src/components/context/DailyPlanContext";
-import { useReusableTasks } from "src/components/context/ReusableTasksContext";
 import { Shortcut } from "src/components/context/ShortcutsContext";
 import { useRegisterShortcut } from "src/components/context/RegisterShortcutContext";
 import { TaskList } from "src/components/task_list/TaskList";
 import { TaskExtensionProvider } from "src/components/context/TaskExtensionContext";
 import { ArrowRight } from "lucide-react";
+import { useTaskInteraction } from "src/components/context/TaskInteractionContext";
 
 export const ReusableTaskPicker: React.FC = () => {
     const [editingTask, setEditingTask] = useState<Task | null>(null);
@@ -20,9 +20,7 @@ export const ReusableTaskPicker: React.FC = () => {
     const [removingTask, setRemovingTask] = useState<Task | null>(null);
     const addTaskToDailyPlan = useDailyPlan().onAddTask;
 
-    const rtContext = useReusableTasks();
-    const tasks = rtContext.reusableTasks;
-    const { onCreateTask, onEditTask, onRemoveTask } = rtContext;
+    const { tasks, onCreateTask, onEditTask, onRemoveTask } = useTaskInteraction()
 
     const cardContentRef = useRef<HTMLDivElement>(null);
     useEffect(() => {

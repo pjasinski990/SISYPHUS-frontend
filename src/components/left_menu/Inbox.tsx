@@ -9,16 +9,14 @@ import { ConfirmDialog } from "src/components/library/ConfirmDialog";
 import { TaskItem } from "src/components/task/TaskItem";
 import { TaskPropertiesProvider } from "src/components/context/TaskPropertiesContext";
 import { TaskList } from "src/components/task_list/TaskList";
-import { useInbox } from "src/components/context/InboxContext";
+import { useTaskInteraction } from "src/components/context/TaskInteractionContext";
 
 export const Inbox: React.FC = () => {
     const [editingTask, setEditingTask] = useState<Task | null>(null);
     const [isCreateTaskDialogOpen, setIsCreateTaskDialogOpen] = useState(false);
     const [removingTask, setRemovingTask] = useState<Task | null>(null);
 
-    const inboxContext = useInbox();
-    const tasks = inboxContext.inboxTasks;
-    const { onCreateTask, onEditTask, onRemoveTask } = inboxContext;
+    const { tasks, onCreateTask, onEditTask, onRemoveTask } = useTaskInteraction()
 
     const cardContentRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
