@@ -34,6 +34,7 @@ class TaskService {
     }
 
     async getTasksList(listName: string): Promise<Task[]> {
+        console.log(`calling api get for tasks ${listName}`)
         return apiService.authenticatedGet(`/api/tasks/list`, { params: { listName } });
     }
 

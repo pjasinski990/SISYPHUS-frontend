@@ -90,7 +90,9 @@ export const LeftMenu: React.FC<LeftMenuProps> = ({ activeTab, onActiveTabChange
                             transition={{ duration: 0.2 }}
                             className="h-full"
                         >
-                            <Inbox />
+                            <TaskInteractionContext listName={'INBOX'}>
+                                <Inbox />
+                            </TaskInteractionContext>
                         </motion.div>
                     )}
                 </TabsContent>

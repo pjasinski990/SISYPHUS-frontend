@@ -13,7 +13,7 @@ interface TaskItemContentProps {
     showMetadata?: boolean;
 }
 
-export const TaskMetadata: React.FC<{ task: Task }> = ({ task }) => (
+export const TaskDetails: React.FC<{ task: Task }> = ({ task }) => (
     <div className={`text-xs mt-1 dark:text-gray-100`}>
         <div className={'p-2 flex flex-col items-end'}>
             {task.startTime && <span>Start: {task.startTime}</span>}
@@ -44,7 +44,7 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
 
     return (
         <div
-            className={`flex-grow w-full p-0.5 rounded shadow-md text-gray-950 dark:text-gray-100 ${categoryColorClass} ${defaultBorderClass} ${categoryBorderColorClass} cursor-pointer transition-all duration-75`}
+            className={`task-item-content flex-grow w-full p-0.5 rounded shadow-md text-gray-950 dark:text-gray-100 ${categoryColorClass} ${defaultBorderClass} ${categoryBorderColorClass} cursor-pointer transition-all duration-75`}
         >
             <div className="flex justify-between items-start">
                 <div className="flex-1 flex pt-2">
@@ -62,7 +62,7 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                         {task.title}
                     </h4>
                 </div>
-                <div className="flex items-start space-x-2">
+                <div className="flex items-start space-x-1">
                     <Button
                         variant="ghost"
                         size="sm"
@@ -70,7 +70,7 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                             e.stopPropagation();
                             onTaskEdit(task);
                         }}
-                        className={categoryHoverColorClass}
+                        className={`${categoryHoverColorClass} task-item-button`}
                         aria-label="Edit Task"
                         title="Edit Task"
                     >
@@ -83,7 +83,7 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                             e.stopPropagation();
                             onTaskRemove(task);
                         }}
-                        className={categoryHoverColorClass}
+                        className={`${categoryHoverColorClass} task-item-button`}
                         aria-label="Remove Task"
                         title="Remove Task"
                     >
@@ -100,7 +100,7 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                                     e.stopPropagation();
                                     buttonConfig.handler(task);
                                 }}
-                                className={categoryHoverColorClass}
+                                className={`${categoryHoverColorClass} taskItemButton`}
                                 aria-label={`Extension Button ${index + 1}`}
                                 title={`Extension Button ${index + 1}`}
                             >
@@ -119,7 +119,7 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                 classNames="metadata"
                 unmountOnExit
             >
-                <TaskMetadata task={task}/>
+                <TaskDetails task={task}/>
             </CSSTransition>
         </div>
     );

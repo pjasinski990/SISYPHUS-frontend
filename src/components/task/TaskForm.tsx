@@ -4,7 +4,6 @@ import { Controller, useForm } from "react-hook-form";
 import { Input } from "src/components/ui/input";
 import { Textarea } from "src/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "src/components/ui/select";
-import { Checkbox } from "src/components/ui/checkbox";
 import { Button } from "src/components/ui/button";
 
 export interface TaskFormData {
@@ -19,12 +18,14 @@ export interface TaskFormData {
 
 interface TaskFormProps {
     initialData?: Task;
+    listName: string,
     onSubmit: (task: TaskFormData) => void;
     onCancel: () => void;
 }
 
 export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(({
                                                                         initialData,
+                                                                        listName,
                                                                         onSubmit,
                                                                         onCancel,
                                                                     }, ref) => {
@@ -42,26 +43,21 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(({
             description: '',
             category: TaskCategory.WHITE,
             size: TaskSize.SMALL,
-            listName: 'INBOX',
             duration: '',
             startTime: '',
         }
     });
 
     const onFormSubmit = (data: TaskFormData) => {
-        if (data.startTime) {
-            if (!data.startTime.includes(':')) {
-                data.startTime += ':00';
-            }
-        }
+        data.listName = listName;
         onSubmit(data);
     };
 
     const handleKeyDown = (event: React.KeyboardEvent) => {
         if (event.key === 'Enter' && event.shiftKey) {
-            event.stopPropagation();
-        } else if (event.key === 'Enter') {
             event.preventDefault();
+        } else if (event.key === 'Enter') {
+            event.stopPropagation();
         }
     };
 

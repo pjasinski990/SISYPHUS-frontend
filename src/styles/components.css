@@ -41,6 +41,10 @@
         border: none;
         border-radius: 0 !important;
     }
+
+    .task-item-content .task-item-button {
+        @apply px-2.5
+    }
 }
 
 @layer utilities {

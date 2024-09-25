@@ -78,6 +78,7 @@ export const Inbox: React.FC = () => {
         <Card className="flex flex-col min-h-[calc(100vh-150px)]">
             <TaskDialog
                 open={isCreateTaskDialogOpen || !!editingTask}
+                listName={'INBOX'}
                 initialData={editingTask}
                 onSubmit={handleTaskFormSubmit}
                 onCancel={handleTaskFormCancel}

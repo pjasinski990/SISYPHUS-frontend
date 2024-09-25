@@ -25,6 +25,7 @@ export const TaskInteractionContext: React.FC<{ children: React.ReactNode, listN
         const fetchData = async () => {
             try {
                 const taskData = await taskService.getTasksList(listName);
+                console.log(`fetched tasks for list ${listName}: ${taskData.map(task => task.id).join(",")}`);
                 setTasks(taskData);
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -46,11 +47,12 @@ export const TaskInteractionContext: React.FC<{ children: React.ReactNode, listN
                 updatedAt: new Date().toISOString(),
             }
             const created = await taskService.createTask(newTask)
+            console.log(`created task ${created}\nfor list: ${listName}`)
             setTasks([...tasks, created])
         } catch (err) {
             console.error('Failed to create task', err);
         }
-    }, [tasks, username]);
+    }, [listName, tasks, username]);
 
     const editTask = useCallback(async (taskId: string, updatedTaskData: TaskFormData) => {
         try {

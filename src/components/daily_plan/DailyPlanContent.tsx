@@ -96,6 +96,7 @@ export const DailyPlanContent: React.FC<{dailyPlan: DailyPlan}> = ({ dailyPlan }
 
             <TaskDialog
                 open={isCreateTaskDialogOpen || !!editingTask}
+                listName={'DAILY_TODO'}
                 initialData={editingTask}
                 onSubmit={handleTaskFormSubmit}
                 onCancel={handleTaskFormCancel}

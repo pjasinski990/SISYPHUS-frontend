@@ -5,6 +5,7 @@ import { Task } from "../../service/taskService";
 
 interface TaskDialogProps {
     open: boolean;
+    listName: string;
     initialData?: Task | null;
     onSubmit: (taskData: TaskFormData) => void;
     onCancel: () => void;
@@ -13,6 +14,7 @@ interface TaskDialogProps {
 
 export const TaskDialog: React.FC<TaskDialogProps> = ({
                                                           open,
+                                                          listName,
                                                           initialData,
                                                           onSubmit,
                                                           onCancel,
@@ -47,6 +49,7 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({
                 </DialogHeader>
                 <TaskForm
                     ref={formRef}
+                    listName={listName}
                     initialData={initialData || undefined}
                     onSubmit={onSubmit}
                     onCancel={onCancel}
