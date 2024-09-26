@@ -9,7 +9,7 @@ import { Shortcut } from "src/components/context/ShortcutsContext";
 
 export const Inbox: React.FC = () => {
     const tasks = useTaskLists('INBOX').tasks;
-    const { openCreateTaskDialog, openEditTaskDialog, createTask, editTask, removeTask } = useTaskInteraction()
+    const { openCreateTaskDialog } = useTaskInteraction()
 
     const cardContentRef = useRef<HTMLDivElement>(null);
     useEffect(() => {

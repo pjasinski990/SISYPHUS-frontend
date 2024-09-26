@@ -10,9 +10,6 @@ interface TaskInteractionProviderType {
     openCreateTaskDialog: () => void;
     openEditTaskDialog: (task: Task) => void;
     openRemoveTaskDialog: (task: Task) => void;
-    removeTask: (taskId: string) => Promise<void>,
-    createTask: (task: TaskFormData) => void,
-    editTask: (taskId: string, updatedTaskData: TaskFormData) => Promise<void>,
 }
 
 const TaskInteractionContext = createContext<TaskInteractionProviderType | undefined>(undefined);
