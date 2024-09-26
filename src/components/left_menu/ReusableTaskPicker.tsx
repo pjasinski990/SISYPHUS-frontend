@@ -7,16 +7,16 @@ import { TaskList } from "src/components/task_list/TaskList";
 import { TaskExtensionProvider } from "src/components/context/TaskExtensionContext";
 import { ArrowRight } from "lucide-react";
 import { useTaskInteraction } from "src/components/context/TaskInteractionContext";
-import { useTaskLists } from "src/components/context/TaskListsContext";
+import { useTaskList } from "src/components/context/TaskListsContext";
 import { Task } from "../../service/taskService";
 
 export const ReusableTaskPicker: React.FC = () => {
-    const todoContext = useTaskLists('DAILY_TODO')
+    const todoContext = useTaskList('DAILY_TODO')
     const addTaskToDailyPlan = (newTask: Task) => {
         todoContext.setTasks([...todoContext.tasks, newTask])
     }
 
-    const tasks = useTaskLists('REUSABLE').tasks
+    const tasks = useTaskList('REUSABLE').tasks
     const { openCreateTaskDialog } = useTaskInteraction()
 
     const cardContentRef = useRef<HTMLDivElement>(null);

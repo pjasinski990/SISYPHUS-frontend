@@ -2,13 +2,12 @@ import React, { useCallback, useMemo, useState } from 'react';
 import Layout from "src/components/Layout";
 import { DailyPlanDashboard } from "src/components/daily_plan/DailyPlanDashboard";
 import { SlidingPanel } from "src/components/library/SlidingPanel";
-import { DailyPlanProvider } from "src/components/context/DailyPlanContext";
 import { useRegisterShortcut } from "src/components/context/RegisterShortcutContext";
 import { Shortcut } from "src/components/context/ShortcutsContext";
 import { LeftMenu, TabValue } from "src/components/left_menu/LeftMenu";
 import { SlidingPanelToggleRibbon } from "src/components/library/SlidingPanelToggleRibbon";
-import { DragDropContext } from "@hello-pangea/dnd";
 import { TaskListsProvider } from "src/components/context/TaskListsContext";
+import { TaskDragDropProvider } from "src/components/context/TaskDragDropContext";
 
 const Dashboard: React.FC = () => {
     const [isLeftMenuOpen, setIsLeftMenuOpen] = useState(true);
@@ -59,28 +58,24 @@ const Dashboard: React.FC = () => {
     return (
         <Layout>
             <div className="flex h-full">
-                <DragDropContext onDragEnd={() => {}}>
-                    <DailyPlanProvider>
+                <TaskListsProvider listNames={['INBOX', 'REUSABLE', 'DAILY_TODO', 'DAILY_DONE']}>
+                    <TaskDragDropProvider listNames={['DAILY_TODO', 'DAILY_DONE']}>
                         <SlidingPanel
                             isOpen={isLeftMenuOpen}
                             setIsOpen={setIsLeftMenuOpen}
                             maxWidth={400}
                         >
-                            <TaskListsProvider listNames={['INBOX', 'REUSABLE']}>
-                                <LeftMenu
-                                    activeTab={activeTab}
-                                    onActiveTabChange={setActiveTab}
-                                />
-                            </TaskListsProvider>
+                            <LeftMenu
+                                activeTab={activeTab}
+                                onActiveTabChange={setActiveTab}
+                            />
                         </SlidingPanel>
                         <div className="flex flex-1 transition-all duration-200">
                             <SlidingPanelToggleRibbon toggleOpen={toggleLeftMenu} isOpen={isLeftMenuOpen} />
-                            <TaskListsProvider listNames={['todo', 'done']}>
-                                <DailyPlanDashboard />
-                            </TaskListsProvider>
+                            <DailyPlanDashboard />
                         </div>
-                    </DailyPlanProvider>
-                </DragDropContext>
+                    </TaskDragDropProvider>
+                </TaskListsProvider>
             </div>
         </Layout>
     );

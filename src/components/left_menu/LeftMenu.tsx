@@ -4,7 +4,7 @@ import { ReusableTaskPicker } from "src/components/left_menu/ReusableTaskPicker"
 import { motion } from "framer-motion";
 import { Inbox } from "src/components/left_menu/Inbox";
 import { TaskInteractionProvider } from "src/components/context/TaskInteractionContext";
-import { useTaskLists } from "src/components/context/TaskListsContext";
+import { useTaskList } from "src/components/context/TaskListsContext";
 
 export type TabValue = 'inbox' | 'reusableTasks';
 
@@ -17,8 +17,8 @@ export const LeftMenu: React.FC<LeftMenuProps> = ({ activeTab, onActiveTabChange
     const [direction, setDirection] = useState(0);
     const prevTabRef = useRef<TabValue>("inbox");
 
-    const inboxContext = useTaskLists('INBOX')
-    const reusableContext = useTaskLists('REUSABLE')
+    const inboxContext = useTaskList('INBOX')
+    const reusableContext = useTaskList('REUSABLE')
 
     const tabOrder: Record<TabValue, number> = useMemo(() => ({
         inbox: 0,

@@ -3,12 +3,12 @@ import { Card, CardContent } from "src/components/ui/card";
 import { TaskPropertiesProvider } from "src/components/context/TaskPropertiesContext";
 import { TaskList } from "src/components/task_list/TaskList";
 import { useTaskInteraction } from "src/components/context/TaskInteractionContext";
-import { useTaskLists } from "src/components/context/TaskListsContext";
+import { useTaskList } from "src/components/context/TaskListsContext";
 import { useRegisterShortcut } from "src/components/context/RegisterShortcutContext";
 import { Shortcut } from "src/components/context/ShortcutsContext";
 
 export const Inbox: React.FC = () => {
-    const tasks = useTaskLists('INBOX').tasks;
+    const tasks = useTaskList('INBOX').tasks;
     const { openCreateTaskDialog } = useTaskInteraction()
 
     const cardContentRef = useRef<HTMLDivElement>(null);
@@ -41,7 +41,7 @@ export const Inbox: React.FC = () => {
                 className="flex-grow h-full overflow-y-auto overflow-x-clip scrollbar-custom"
             >
                 <div className={'mt-6'}>
-                    <TaskPropertiesProvider isDraggable={true} isFoldable={true}>
+                    <TaskPropertiesProvider isDraggable={false} isFoldable={true}>
                         <TaskList
                             tasks={tasks}
                             placeholderNode={
@@ -51,8 +51,8 @@ export const Inbox: React.FC = () => {
                                 </>
                             }
                             title={'Inbox'}
-                            droppableId={'inbox'}
-                            isDroppable={true}
+                            droppableId={'INBOX'}
+                            isDroppable={false}
                             showCreateButton={true}
                             onCreateTask={openCreateTaskDialog}
                         />
