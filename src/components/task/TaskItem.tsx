@@ -42,12 +42,12 @@ const VanityTask: React.FC<TaskItemProps> = ({task}) => {
 }
 
 const TaskDispatcher: React.FC<TaskItemProps> = ({ task, index }) => {
-    const { isDraggable, isFoldable } = useTaskProperties();
+    const { isDraggable, isFoldable, initiallyFolded } = useTaskProperties();
 
     let content = <TaskItemContent task={task} />;
 
     if (isFoldable) {
-        content = <FoldableTaskItem task={task}>{content}</FoldableTaskItem>;
+        content = <FoldableTaskItem task={task} initiallyFolded={initiallyFolded}>{content}</FoldableTaskItem>;
     }
 
     if (isDraggable) {
@@ -77,8 +77,8 @@ const DraggableTaskItem: React.FC<TaskItemProps & { children: React.ReactNode }>
     );
 };
 
-const FoldableTaskItem: React.FC<TaskItemProps & { children: React.ReactNode }> = ({ task, children }) => {
-    const [isFolded, setIsFolded] = React.useState(false);
+const FoldableTaskItem: React.FC<TaskItemProps & { initiallyFolded: boolean | 'unfolded', children: React.ReactNode }> = ({ initiallyFolded, children }) => {
+    const [isFolded, setIsFolded] = React.useState(initiallyFolded);
 
     const handleContextMenu = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         event.preventDefault();

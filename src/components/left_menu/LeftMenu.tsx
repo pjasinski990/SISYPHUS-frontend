@@ -115,7 +115,7 @@ export const LeftMenu: React.FC<LeftMenuProps> = ({ activeTab, onActiveTabChange
                             className="h-full"
                         >
                             <TaskInteractionProvider listName={"REUSABLE"} tasks={reusableContext.tasks} setTasks={reusableContext.setTasks}>
-                                <TaskPropertiesProvider isDraggable={false} isFoldable={true}>
+                                <TaskPropertiesProvider isDraggable={false} isFoldable={true} initiallyFolded={true}>
                                     <ReusableTaskPicker />
                                 </TaskPropertiesProvider>
                             </TaskInteractionProvider>

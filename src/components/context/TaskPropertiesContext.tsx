@@ -3,6 +3,7 @@ import React, { createContext, useContext } from "react";
 interface TaskPropertiesContextType {
     isDraggable: boolean;
     isFoldable: boolean;
+    initiallyFolded: boolean;
 }
 
 const TaskPropertiesContext = createContext<TaskPropertiesContextType | undefined>(undefined);
@@ -10,10 +11,11 @@ const TaskPropertiesContext = createContext<TaskPropertiesContextType | undefine
 export const TaskPropertiesProvider: React.FC<{
     isDraggable: boolean;
     isFoldable: boolean;
+    initiallyFolded?: boolean;
     children: React.ReactNode
-}> = ({ isDraggable, isFoldable, children }) => {
+}> = ({ isDraggable, isFoldable, initiallyFolded = false, children }) => {
     return (
-        <TaskPropertiesContext.Provider value={{ isDraggable, isFoldable }}>
+        <TaskPropertiesContext.Provider value={{ isDraggable, isFoldable, initiallyFolded }}>
             {children}
         </TaskPropertiesContext.Provider>
     );

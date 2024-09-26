@@ -17,7 +17,7 @@ export const DailyPlanContent: React.FC = () => {
                 </TaskPropertiesProvider>
             </TaskInteractionProvider>
             <TaskInteractionProvider listName={'DAILY_DONE'} tasks={doneContext.tasks} setTasks={doneContext.setTasks}>
-                <TaskPropertiesProvider isDraggable={true} isFoldable={true}>
+                <TaskPropertiesProvider isDraggable={true} isFoldable={true} initiallyFolded={true}>
                     <TaskList
                         title="Done"
                         tasks={doneContext.tasks}

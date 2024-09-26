@@ -21,6 +21,7 @@ export const TaskDetails: React.FC<{ task: Task }> = ({ task }) => (
             <span className={'pb-2'}>Size: {task.size}</span>
             <span>Created: {task.createdAt}</span>
             <span>Updated: {task.updatedAt}</span>
+            <span>Finished: {task.finishedAt}</span>
         </div>
     </div>
 );
@@ -55,7 +56,7 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                             marginLeft: task.size === TaskSize.BIG ? '2px' : '7px',
                             marginRight: task.size === TaskSize.BIG ? '4px' : '7px',
                         }}
-                        className={`mr-2 inline self-start ${iconClass}`}
+                        className={`mr-2 inline flex-shrink-0 self-start ${iconClass}`}
                         fill="currentColor"
                     />
                     <h4 className="font-semibold leading-snug">
