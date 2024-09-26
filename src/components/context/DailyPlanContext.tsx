@@ -57,6 +57,9 @@ export const DailyPlanProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
         if (sourceList && destList) {
             const [movedTask] = sourceList.splice(source.index, 1);
+            if (destination?.droppableId === 'done') {
+                movedTask.finishedAt = new Date().toISOString()
+            }
             destList.splice(destination.index, 0, movedTask);
         }
         return newDailyPlan;
@@ -90,7 +93,8 @@ export const DailyPlanProvider: React.FC<{ children: React.ReactNode }> = ({ chi
                 ...taskData,
                 ownerUsername: username!,
                 createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString()
+                updatedAt: new Date().toISOString(),
+                finishedAt: null,
             };
             const updatedDailyPlan = { ...dailyPlan, todo: [...dailyPlan?.todo || [], newTask] } as DailyPlan;
             setDailyPlan(updatedDailyPlan);

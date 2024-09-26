@@ -8,6 +8,8 @@ import { Shortcut } from "src/components/context/ShortcutsContext";
 import { LeftMenu, TabValue } from "src/components/left_menu/LeftMenu";
 import { SlidingPanelToggleRibbon } from "src/components/library/SlidingPanelToggleRibbon";
 import { TaskInteractionContext } from "src/components/context/TaskInteractionContext";
+import { DraggableWrapper } from "src/components/library/DraggableWrapper";
+import { DragDropContext } from "@hello-pangea/dnd";
 
 const Dashboard: React.FC = () => {
     const [isLeftMenuOpen, setIsLeftMenuOpen] = useState(true);
@@ -58,22 +60,24 @@ const Dashboard: React.FC = () => {
     return (
         <Layout>
             <div className="flex h-full">
-                <DailyPlanProvider>
-                    <SlidingPanel
-                        isOpen={isLeftMenuOpen}
-                        setIsOpen={setIsLeftMenuOpen}
-                        maxWidth={400}
-                    >
-                        <LeftMenu
-                            activeTab={activeTab}
-                            onActiveTabChange={setActiveTab}
-                        />
-                    </SlidingPanel>
-                    <div className="flex flex-1 transition-all duration-200">
-                        <SlidingPanelToggleRibbon toggleOpen={toggleLeftMenu} isOpen={isLeftMenuOpen} />
-                        <DailyPlanDashboard />
-                    </div>
-                </DailyPlanProvider>
+                <DragDropContext onDragEnd={() => {}}>
+                    <DailyPlanProvider>
+                        <SlidingPanel
+                            isOpen={isLeftMenuOpen}
+                            setIsOpen={setIsLeftMenuOpen}
+                            maxWidth={400}
+                        >
+                            <LeftMenu
+                                activeTab={activeTab}
+                                onActiveTabChange={setActiveTab}
+                            />
+                        </SlidingPanel>
+                        <div className="flex flex-1 transition-all duration-200">
+                            <SlidingPanelToggleRibbon toggleOpen={toggleLeftMenu} isOpen={isLeftMenuOpen} />
+                            <DailyPlanDashboard />
+                        </div>
+                    </DailyPlanProvider>
+                </DragDropContext>
             </div>
         </Layout>
     );

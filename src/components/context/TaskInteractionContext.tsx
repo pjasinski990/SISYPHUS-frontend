@@ -45,6 +45,7 @@ export const TaskInteractionContext: React.FC<{ children: React.ReactNode, listN
                 ownerUsername: username,
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
+                finishedAt: null,
             }
             const created = await taskService.createTask(newTask)
             console.log(`created task ${created}\nfor list: ${listName}`)

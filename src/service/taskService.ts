@@ -22,10 +22,11 @@ export interface Task {
     title: string;
     description: string;
     listName: string;
+    startTime: string;
     duration: string; // ISO-8601 format (PT2H30M)
     createdAt: string;
     updatedAt: string;
-    startTime: string;
+    finishedAt: string | null;
 }
 
 class TaskService {

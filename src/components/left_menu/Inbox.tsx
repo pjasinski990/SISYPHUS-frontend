@@ -99,8 +99,8 @@ export const Inbox: React.FC = () => {
                 ref={cardContentRef}
                 className="flex-grow h-full overflow-y-auto overflow-x-clip scrollbar-custom"
             >
-                <TaskPropertiesProvider onTaskEdit={setEditingTask} onTaskRemove={setRemovingTask} isDraggable={false} isFoldable={true}>
-                    <div className={'mt-6'}>
+                <div className={'mt-6'}>
+                    <TaskPropertiesProvider onTaskEdit={setEditingTask} onTaskRemove={setRemovingTask} isDraggable={true} isFoldable={true}>
                         <TaskList
                             tasks={tasks}
                             placeholderNode={
@@ -110,12 +110,13 @@ export const Inbox: React.FC = () => {
                                 </>
                             }
                             title={'Inbox'}
-                            isDroppable={false}
+                            droppableId={'inbox'}
+                            isDroppable={true}
                             showCreateButton={true}
                             onCreateTask={handleCreateTask}
                         />
-                    </div>
-                </TaskPropertiesProvider>
+                    </TaskPropertiesProvider>
+                </div>
             </CardContent>
         </Card>
     );

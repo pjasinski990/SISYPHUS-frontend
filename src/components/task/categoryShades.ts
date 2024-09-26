@@ -54,13 +54,13 @@ const categoryShades: Record<TaskCategory, CategoryShades> = {
     },
     [TaskCategory.WHITE]: {
         lightBg: "gray-100",
-        darkBg: "gray-500",
+        darkBg: "gray-600",
         lightHoverBg: "gray-200",
         darkHoverBg: "gray-600",
         lightBorderHover: "gray-200",
         darkBorderHover: "gray-400",
-        lightIcon: "gray-400",
-        darkIcon: "gray-300",
+        lightIcon: "gray-300",
+        darkIcon: "gray-200",
     },
     [TaskCategory.PINK]: {
         lightBg: "pink-100",
