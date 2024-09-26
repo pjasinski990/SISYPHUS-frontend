@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Inbox } from "src/components/left_menu/Inbox";
 import { TaskInteractionProvider } from "src/components/context/TaskInteractionContext";
 import { useTaskList } from "src/components/context/TaskListsContext";
+import { TaskPropertiesProvider } from "src/components/context/TaskPropertiesContext";
 
 export type TabValue = 'inbox' | 'reusableTasks';
 
@@ -95,7 +96,9 @@ export const LeftMenu: React.FC<LeftMenuProps> = ({ activeTab, onActiveTabChange
                             className="h-full"
                         >
                             <TaskInteractionProvider listName={'INBOX'} tasks={inboxContext.tasks} setTasks={inboxContext.setTasks}>
-                                <Inbox />
+                                <TaskPropertiesProvider isDraggable={true} isFoldable={true}>
+                                    <Inbox />
+                                </TaskPropertiesProvider>
                             </TaskInteractionProvider>
                         </motion.div>
                     )}
@@ -112,7 +115,9 @@ export const LeftMenu: React.FC<LeftMenuProps> = ({ activeTab, onActiveTabChange
                             className="h-full"
                         >
                             <TaskInteractionProvider listName={"REUSABLE"} tasks={reusableContext.tasks} setTasks={reusableContext.setTasks}>
-                                <ReusableTaskPicker />
+                                <TaskPropertiesProvider isDraggable={false} isFoldable={true}>
+                                    <ReusableTaskPicker />
+                                </TaskPropertiesProvider>
                             </TaskInteractionProvider>
                         </motion.div>
                     )}

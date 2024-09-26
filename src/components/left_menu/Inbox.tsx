@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import { Card, CardContent } from "src/components/ui/card";
-import { TaskPropertiesProvider } from "src/components/context/TaskPropertiesContext";
 import { TaskList } from "src/components/task_list/TaskList";
 import { useTaskInteraction } from "src/components/context/TaskInteractionContext";
 import { useTaskList } from "src/components/context/TaskListsContext";
@@ -41,22 +40,19 @@ export const Inbox: React.FC = () => {
                 className="flex-grow h-full overflow-y-auto overflow-x-clip scrollbar-custom"
             >
                 <div className={'mt-6'}>
-                    <TaskPropertiesProvider isDraggable={false} isFoldable={true}>
-                        <TaskList
-                            tasks={tasks}
-                            placeholderNode={
-                                <>
-                                    <span>inbox.</span>
-                                    <span>throw all of your concerns inside.</span>
-                                </>
-                            }
-                            title={'Inbox'}
-                            droppableId={'INBOX'}
-                            isDroppable={false}
-                            showCreateButton={true}
-                            onCreateTask={openCreateTaskDialog}
-                        />
-                    </TaskPropertiesProvider>
+                    <TaskList
+                        title={'Inbox'}
+                        tasks={tasks}
+                        droppableId={'INBOX'}
+                        showCreateButton={true}
+                        onCreateTask={openCreateTaskDialog}
+                        placeholderNode={
+                            <>
+                                <span>inbox.</span>
+                                <span>throw all of your concerns inside.</span>
+                            </>
+                        }
+                    />
                 </div>
             </CardContent>
         </Card>

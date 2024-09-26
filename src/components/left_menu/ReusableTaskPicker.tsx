@@ -48,25 +48,23 @@ export const ReusableTaskPicker: React.FC = () => {
                 ref={cardContentRef}
                 className="flex-grow h-full overflow-y-auto overflow-x-clip scrollbar-custom"
             >
-                <TaskPropertiesProvider isDraggable={false} isFoldable={true}>
-                    <TaskExtensionProvider extraButtons={[{icon: ArrowRight, handler: addTaskToDailyPlan}]}>
-                        <div className={'mt-6'}>
-                            <TaskList
-                                tasks={tasks}
-                                placeholderNode={
-                                    <>
-                                        <span>reusable tasks.</span>
-                                        <span>the building blocks of your monotone life.</span>
-                                    </>
-                                }
-                                title={'Reusable tasks'}
-                                isDroppable={false}
-                                showCreateButton={true}
-                                onCreateTask={openCreateTaskDialog}
-                            />
-                        </div>
-                    </TaskExtensionProvider>
-                </TaskPropertiesProvider>
+                <TaskExtensionProvider extraButtons={[{icon: ArrowRight, handler: addTaskToDailyPlan}]}>
+                    <div className={'mt-6'}>
+                        <TaskList
+                            tasks={tasks}
+                            placeholderNode={
+                                <>
+                                    <span>reusable tasks.</span>
+                                    <span>the building blocks of your monotone life.</span>
+                                </>
+                            }
+                            title={'Reusable tasks'}
+                            isDroppable={false}
+                            showCreateButton={true}
+                            onCreateTask={openCreateTaskDialog}
+                        />
+                    </div>
+                </TaskExtensionProvider>
             </CardContent>
         </Card>
     );

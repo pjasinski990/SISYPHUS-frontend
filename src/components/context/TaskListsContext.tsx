@@ -42,7 +42,7 @@ export const TaskListsProvider: React.FC<TaskListsProviderProps> = ({ children, 
 
         listNames.forEach(listName => {
             if (!tasksLists[listName]) {
-                fetchTasksForList(listName);
+                fetchTasksForList(listName).then();
             }
         });
     }, [listNames, tasksLists]);

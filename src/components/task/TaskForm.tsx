@@ -72,6 +72,7 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(({
                     {...register("title", { required: "Title is required" })}
                     placeholder="Task Title"
                     onKeyDown={handleKeyDown}
+                    autoComplete={'off'}
                 />
                 {errors.title && <p className="mt-1 text-sm text-red-600">{errors.title.message}</p>}
             </div>
