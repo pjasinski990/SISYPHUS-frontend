@@ -7,21 +7,22 @@ import { Task } from "../../service/taskService";
 import { TaskDialog } from "src/components/task/TaskDialog";
 import { ConfirmDialog } from "src/components/library/ConfirmDialog";
 import { TaskPropertiesProvider } from "src/components/context/TaskPropertiesContext";
-import { useDailyPlan } from "src/components/context/DailyPlanContext";
-import { DailyPlan } from "../../service/dailyPlanService";
 import { useRegisterShortcut } from "src/components/context/RegisterShortcutContext";
 import { Shortcut } from "src/components/context/ShortcutsContext";
+import { TaskInteractionProvider } from "src/components/context/TaskInteractionContext";
+import { useTaskLists } from "src/components/context/TaskListsContext";
 
-export const DailyPlanContent: React.FC<{dailyPlan: DailyPlan}> = ({ dailyPlan }) => {
+export const DailyPlanContent: React.FC = () => {
     const [isCreateTaskDialogOpen, setIsCreateTaskDialogOpen] = useState(false);
     const [editingTask, setEditingTask] = useState<Task | null>(null);
     const [removingTask, setRemovingTask] = useState<Task | null>(null);
 
-    const { onDragEnd , onCreateTask, onEditTask, onRemoveTask } = useDailyPlan()
+    const todoContext = useTaskLists('DAILY_TODO')
+    const doneContext = useTaskLists('DAILY_DONE')
 
-    const handleDragEnd = async (result: DropResult) => {
-        await onDragEnd(result);
-    };
+    const handleDragEnd = useCallback(async (result: DropResult) => {
+        // await onDragEnd(result);
+    }, []);
 
     const handleCreateTask = useCallback(() => {
         setIsCreateTaskDialogOpen(true);
@@ -36,14 +37,14 @@ export const DailyPlanContent: React.FC<{dailyPlan: DailyPlan}> = ({ dailyPlan }
     }, []);
 
     const handleTaskFormSubmit = useCallback(async (taskData: TaskFormData) => {
-        if (editingTask) {
-            await onEditTask(editingTask.id!, taskData);
-            setEditingTask(null);
-        } else {
-            onCreateTask(taskData);
-            setIsCreateTaskDialogOpen(false);
-        }
-    }, [editingTask, onCreateTask, onEditTask]);
+        // if (editingTask) {
+        //     await onEditTask(editingTask.id!, taskData);
+        //     setEditingTask(null);
+        // } else {
+        //     onCreateTask(taskData);
+        //     setIsCreateTaskDialogOpen(false);
+        // }
+    }, []);
 
     const handleTaskFormCancel = useCallback(() => {
         setIsCreateTaskDialogOpen(false);
@@ -51,11 +52,11 @@ export const DailyPlanContent: React.FC<{dailyPlan: DailyPlan}> = ({ dailyPlan }
     }, []);
 
     const handleConfirmRemoveTask = useCallback(async () => {
-        if (removingTask) {
-            await onRemoveTask(removingTask.id!);
-            setRemovingTask(null);
-        }
-    }, [onRemoveTask, removingTask]);
+        // if (removingTask) {
+        //     await onRemoveTask(removingTask.id!);
+        //     setRemovingTask(null);
+        // }
+    }, []);
 
     const handleCancelRemoveTask = useCallback(() => {
         setRemovingTask(null);
@@ -74,20 +75,22 @@ export const DailyPlanContent: React.FC<{dailyPlan: DailyPlan}> = ({ dailyPlan }
     return (
         <DragDropContext onDragEnd={handleDragEnd}>
             <div className="flex gap-4">
-                <TaskPropertiesProvider onTaskEdit={handleEditTask} onTaskRemove={handleRemoveTask} isDraggable={true} isFoldable={true}>
-                    <TaskList
-                        title="Todo"
-                        tasks={dailyPlan.todo}
-                        droppableId="todo"
-                        placeholderNode={<span>empty. well done!</span>}
-                        showCreateButton={true}
-                        onCreateTask={handleCreateTask}
-                    />
-                </TaskPropertiesProvider>
-                <TaskPropertiesProvider onTaskEdit={handleEditTask} onTaskRemove={handleRemoveTask} isDraggable={true} isFoldable={true}>
+                <TaskInteractionProvider listName={'DAILY_TODO'} tasks={todoContext.tasks} setTasks={todoContext.setTasks}>
+                    <TaskPropertiesProvider isDraggable={true} isFoldable={true}>
+                        <TaskList
+                            title="Todo"
+                            tasks={todoContext.tasks}
+                            droppableId="todo"
+                            placeholderNode={<span>empty. well done!</span>}
+                            showCreateButton={true}
+                            onCreateTask={handleCreateTask}
+                        />
+                    </TaskPropertiesProvider>
+                </TaskInteractionProvider>
+                <TaskPropertiesProvider isDraggable={true} isFoldable={true}>
                     <TaskList
                         title="Done"
-                        tasks={dailyPlan.done}
+                        tasks={doneContext.tasks}
                         droppableId="done"
                         placeholderNode={<span>drop your done tasks here.</span>}
                     />

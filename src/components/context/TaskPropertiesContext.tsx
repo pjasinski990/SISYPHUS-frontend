@@ -1,9 +1,6 @@
 import React, { createContext, useContext } from "react";
-import { Task } from "../../service/taskService";
 
 interface TaskPropertiesContextType {
-    onTaskEdit: (task: Task) => void;
-    onTaskRemove: (task: Task) => void;
     isDraggable: boolean;
     isFoldable: boolean;
 }
@@ -11,14 +8,12 @@ interface TaskPropertiesContextType {
 const TaskPropertiesContext = createContext<TaskPropertiesContextType | undefined>(undefined);
 
 export const TaskPropertiesProvider: React.FC<{
-    onTaskEdit: (task: Task) => void;
-    onTaskRemove: (task: Task) => void;
     isDraggable: boolean;
     isFoldable: boolean;
     children: React.ReactNode
-}> = ({ onTaskEdit, onTaskRemove, isDraggable, isFoldable, children }) => {
+}> = ({ isDraggable, isFoldable, children }) => {
     return (
-        <TaskPropertiesContext.Provider value={{ onTaskEdit, onTaskRemove: onTaskRemove, isDraggable, isFoldable }}>
+        <TaskPropertiesContext.Provider value={{ isDraggable, isFoldable }}>
             {children}
         </TaskPropertiesContext.Provider>
     );

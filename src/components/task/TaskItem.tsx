@@ -33,8 +33,6 @@ export const TaskItemInternal: React.FC<TaskItemProps> = ({ task, index, isVanit
 const VanityTask: React.FC<TaskItemProps> = ({task}) => {
     return (
         <TaskPropertiesProvider
-            onTaskEdit={() => {}}
-            onTaskRemove={() => {}}
             isDraggable={false}
             isFoldable={false}
         >

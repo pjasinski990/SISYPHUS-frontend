@@ -2,11 +2,11 @@ import { Task, TaskSize } from "../../service/taskService";
 import React from "react";
 import { Button } from "src/components/ui/button";
 import { Edit, Square, Trash } from "lucide-react";
-import { useTaskProperties } from "src/components/context/TaskPropertiesContext";
 import { CSSTransition } from "react-transition-group";
 import "./TaskItemContent.css";
 import { categoryStyles } from "src/components/task/categoryShades";
 import { useTaskExtensions } from "src/components/context/TaskExtensionContext";
+import { useTaskInteraction } from "src/components/context/TaskInteractionContext";
 
 interface TaskItemContentProps {
     task: Task;
@@ -37,7 +37,7 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
     } = categoryStyles[task.category];
 
     const defaultBorderClass = "border-4 border-transparent";
-    const { onTaskEdit, onTaskRemove } = useTaskProperties();
+    const { openEditTaskDialog, openRemoveTaskDialog } = useTaskInteraction()
     const iconSize = task.size === TaskSize.SMALL ? 10 : 20;
 
     const { extraButtons } = useTaskExtensions();
@@ -68,7 +68,7 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                         size="sm"
                         onClick={(e) => {
                             e.stopPropagation();
-                            onTaskEdit(task);
+                            openEditTaskDialog(task);
                         }}
                         className={`${categoryHoverColorClass} task-item-button`}
                         aria-label="Edit Task"
@@ -81,7 +81,7 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                         size="sm"
                         onClick={(e) => {
                             e.stopPropagation();
-                            onTaskRemove(task);
+                            openRemoveTaskDialog(task);
                         }}
                         className={`${categoryHoverColorClass} task-item-button`}
                         aria-label="Remove Task"

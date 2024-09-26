@@ -3,7 +3,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "src/components/ui/tabs
 import { ReusableTaskPicker } from "src/components/left_menu/ReusableTaskPicker";
 import { motion } from "framer-motion";
 import { Inbox } from "src/components/left_menu/Inbox";
-import { TaskInteractionContext } from "src/components/context/TaskInteractionContext";
+import { TaskInteractionProvider } from "src/components/context/TaskInteractionContext";
+import { useTaskLists } from "src/components/context/TaskListsContext";
 
 export type TabValue = 'inbox' | 'reusableTasks';
 
@@ -13,13 +14,16 @@ interface LeftMenuProps {
 }
 
 export const LeftMenu: React.FC<LeftMenuProps> = ({ activeTab, onActiveTabChange }) => {
+    const [direction, setDirection] = useState(0);
+    const prevTabRef = useRef<TabValue>("inbox");
+
+    const inboxContext = useTaskLists('INBOX')
+    const reusableContext = useTaskLists('REUSABLE')
+
     const tabOrder: Record<TabValue, number> = useMemo(() => ({
         inbox: 0,
         reusableTasks: 1,
     }), []);
-
-    const [direction, setDirection] = useState(0);
-    const prevTabRef = useRef<TabValue>("inbox");
 
     useEffect(() => {
         const prevIndex = tabOrder[prevTabRef.current];
@@ -90,9 +94,9 @@ export const LeftMenu: React.FC<LeftMenuProps> = ({ activeTab, onActiveTabChange
                             transition={{ duration: 0.2 }}
                             className="h-full"
                         >
-                            <TaskInteractionContext listName={'INBOX'}>
+                            <TaskInteractionProvider listName={'INBOX'} tasks={inboxContext.tasks} setTasks={inboxContext.setTasks}>
                                 <Inbox />
-                            </TaskInteractionContext>
+                            </TaskInteractionProvider>
                         </motion.div>
                     )}
                 </TabsContent>
@@ -107,9 +111,9 @@ export const LeftMenu: React.FC<LeftMenuProps> = ({ activeTab, onActiveTabChange
                             transition={{ duration: 0.2 }}
                             className="h-full"
                         >
-                            <TaskInteractionContext listName={"REUSABLE"}>
+                            <TaskInteractionProvider listName={"REUSABLE"} tasks={reusableContext.tasks} setTasks={reusableContext.setTasks}>
                                 <ReusableTaskPicker />
-                            </TaskInteractionContext>
+                            </TaskInteractionProvider>
                         </motion.div>
                     )}
                 </TabsContent>
