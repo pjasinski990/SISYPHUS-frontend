@@ -3,7 +3,7 @@ import { Textarea, TextareaProps } from 'src/components/ui/textarea';
 import Fuse from 'fuse.js';
 import { Emoji } from "@emoji-mart/data";
 import { fetchEmojis } from "src/lib/emojiData";
-import { Input } from "src/components/ui/input";
+import ReactMarkdown from 'react-markdown';
 
 interface EmojiTextareaProps extends TextareaProps {
     value: string;
@@ -205,6 +205,17 @@ export const EmojiTextarea: React.FC<EmojiTextareaProps> = ({ value, onChange, .
                 onKeyDown={handleKeyDown}
                 className="w-full"
             />
+            <div className="mt-2 p-4 bg-slate-200 dark:bg-slate-900 rounded-lg min-h-[50px]">
+                {text.length === 0 ? (
+                    <small className="text-slate-500 dark:text-slate-400 font-mono">
+                        description preview
+                    </small>
+                ) : (
+                    <ReactMarkdown className="prose dark:prose-invert">
+                        {text}
+                    </ReactMarkdown>
+                )}
+            </div>
             {showSuggestions && filteredEmojis.length > 0 && (
                 <ul
                     className="

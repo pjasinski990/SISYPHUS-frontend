@@ -60,7 +60,33 @@
         border: 1px solid #334155;
     }
 
-    input:focus {
-        outline: none;
+    .prose h1 {
+        font-size: 1.4rem;
+    }
+
+    .prose h2 {
+        font-size: 1.3rem;
+    }
+
+    .prose h3 {
+        font-size: 1.0rem;
+    }
+
+    .prose h1, .prose h2, .prose h3, .prose h4 {
+        @apply mt-4;
+        @apply mb-2;
+    }
+
+    .prose p {
+        @apply my-0;
+        font-size: 0.9rem;
+    }
+    .prose ul {
+        @apply my-1;
+        font-size: 0.9rem;
+    }
+
+    .prose li {
+        @apply py-0 my-0;
     }
 }

@@ -7,6 +7,7 @@ import "./TaskItemContent.css";
 import { categoryStyles } from "src/components/task/categoryShades";
 import { useTaskExtensions } from "src/components/context/TaskExtensionContext";
 import { useTaskInteraction } from "src/components/context/TaskInteractionContext";
+import ReactMarkdown from "react-markdown";
 
 interface TaskItemContentProps {
     task: Task;
@@ -31,12 +32,14 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                                                                     showMetadata = true,
                                                                 }) => {
     const {
-        categoryColorClass,
-        categoryHoverColorClass,
+        categoryMarkerColorClass,
+        categoryBgColorClass,
+        categoryBgHoverColorClass,
         categoryBorderColorClass,
         iconClass,
     } = categoryStyles[task.category];
 
+    console.log(categoryMarkerColorClass)
     const defaultBorderClass = "border-4 border-transparent";
     const { openEditTaskDialog, openRemoveTaskDialog } = useTaskInteraction()
     const iconSize = task.size === TaskSize.SMALL ? 10 : 20;
@@ -45,7 +48,7 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
 
     return (
         <div
-            className={`task-item-content flex-grow w-full p-0.5 rounded shadow-md text-gray-950 dark:text-gray-100 ${categoryColorClass} ${defaultBorderClass} ${categoryBorderColorClass} cursor-pointer transition-all duration-75`}
+            className={`task-item-content flex-grow w-full p-0.5 rounded shadow-md text-gray-950 dark:text-gray-100 ${categoryBgColorClass} ${defaultBorderClass} ${categoryBorderColorClass} cursor-pointer transition-all duration-75`}
         >
             <div className="flex justify-between items-start">
                 <div className="flex-1 flex pt-2">
@@ -71,7 +74,7 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                             e.stopPropagation();
                             openEditTaskDialog(task);
                         }}
-                        className={`${categoryHoverColorClass} task-item-button`}
+                        className={`${categoryBgHoverColorClass} task-item-button`}
                         aria-label="Edit Task"
                         title="Edit Task"
                     >
@@ -84,7 +87,7 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                             e.stopPropagation();
                             openRemoveTaskDialog(task);
                         }}
-                        className={`${categoryHoverColorClass} task-item-button`}
+                        className={`${categoryBgHoverColorClass} task-item-button`}
                         aria-label="Remove Task"
                         title="Remove Task"
                     >
@@ -101,7 +104,7 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                                     e.stopPropagation();
                                     buttonConfig.handler(task);
                                 }}
-                                className={`${categoryHoverColorClass} taskItemButton`}
+                                className={`${categoryBgHoverColorClass} taskItemButton`}
                                 aria-label={`Extension Button ${index + 1}`}
                                 title={`Extension Button ${index + 1}`}
                             >
@@ -111,8 +114,10 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                     })}
                 </div>
             </div>
-            <div>
-                <p className="text-sm p-2">{task.description}</p>
+            <div className={`${categoryMarkerColorClass} prose dark:prose-invert px-2`}>
+                <ReactMarkdown>
+                    {task.description}
+                </ReactMarkdown>
             </div>
             <CSSTransition
                 in={showMetadata}

@@ -8,11 +8,9 @@ module.exports = {
       './src/**/*.{ts,tsx}',
   ],
   safelist: [
-    'border-4',
-    'hover:border-4',
     {
-      pattern: /^(bg|border|stroke|fill)-(green|blue|red|yellow|gray|pink)-(100|200|300|400|500|600|700|800|900)$/,
-      variants: ['hover', 'dark', 'hover:dark', 'dark:hover'],
+      pattern: /^(bg|border|stroke|fill|text)-(green|blue|red|yellow|gray|pink)-(50|100|200|300|400|500|600|700|800|900|950)$/,
+      variants: ['hover', 'dark', 'hover:dark', 'dark:hover', 'marker', 'marker:dark', 'dark:marker'],
     },
   ],
   prefix: "",
@@ -81,5 +79,8 @@ module.exports = {
       },
     },
   },
-  plugins: [ require("tailwindcss-animate") ],
+  plugins: [
+      require("tailwindcss-animate"),
+      require("@tailwindcss/typography")
+  ],
 }
