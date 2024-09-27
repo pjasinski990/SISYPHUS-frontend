@@ -89,4 +89,36 @@
     .prose li {
         @apply py-0 my-0;
     }
+
+    .prose code {
+        background: rgba(0, 0, 0, 0.2);
+        font-weight: unset;
+        padding: 2px 2px 1px;
+    }
+
+    .dark .prose code {
+        background: rgba(0, 0, 0, 0.35);
+    }
+
+    .prose pre {
+        background: rgba(0, 0, 0, 0.5);
+        @apply my-2;
+    }
+
+    .dark .prose pre {
+        background: rgba(0, 0, 0, 0.5);
+        @apply my-2;
+    }
+
+    .prose pre code {
+        background: transparent;
+    }
+
+    .dark .prose pre code {
+        background: transparent;
+    }
+
+    .prose code::before, .prose code::after {
+        display: none;
+    }
 }

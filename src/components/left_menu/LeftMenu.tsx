@@ -71,13 +71,13 @@ export const LeftMenu: React.FC<LeftMenuProps> = ({ activeTab, onActiveTabChange
             <TabsList className="rounded-none flex justify-start items-stretch p-0 bg-white dark:bg-slate-950 h-10">
                 <TabsTrigger
                     value="inbox"
-                    className="flex-1 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 data-[state=active]:shadow-none data-[state=inactive]:bg-slate-100 dark:data-[state=inactive]:bg-slate-800"
+                    className="flex-1 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 data-[state=active]:shadow-none data-[state=inactive]:bg-slate-100 dark:data-[state=inactive]:bg-slate-900"
                 >
                     Inbox
                 </TabsTrigger>
                 <TabsTrigger
                     value="reusableTasks"
-                    className="flex-1 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 data-[state=active]:shadow-none data-[state=inactive]:bg-slate-100 dark:data-[state=inactive]:bg-slate-800"
+                    className="flex-1 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-950 data-[state=active]:shadow-none data-[state=inactive]:bg-slate-100 dark:data-[state=inactive]:bg-slate-900"
                 >
                     Reusable
                 </TabsTrigger>

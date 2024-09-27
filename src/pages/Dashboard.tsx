@@ -3,10 +3,8 @@ import Layout from "src/components/Layout";
 import { TaskListsProvider } from "src/components/context/TaskListsContext";
 import { TaskDragDropProvider } from "src/components/context/TaskDragDropContext";
 import { DashboardContent } from "src/components/DashboardContent";
-import { fetchEmojis } from "src/lib/emojiData";
 
 const Dashboard: React.FC = () => {
-    fetchEmojis().then(res => {console.log(res)})
     return (
         <Layout>
             <div className="flex h-full">

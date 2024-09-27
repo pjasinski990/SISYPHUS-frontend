@@ -39,7 +39,6 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
         iconClass,
     } = categoryStyles[task.category];
 
-    console.log(categoryMarkerColorClass)
     const defaultBorderClass = "border-4 border-transparent";
     const { openEditTaskDialog, openRemoveTaskDialog } = useTaskInteraction()
     const iconSize = task.size === TaskSize.SMALL ? 10 : 20;

@@ -151,7 +151,10 @@ export const TaskInteractionProvider: React.FC<{
                 initialData={editingTask}
                 onSubmit={handleTaskFormSubmit}
                 onCancel={handleTaskFormCancel}
-                title={`${editingTask ? 'Edit inbox task' : 'Create inbox task'}`}
+                title={`${editingTask ?
+                    `Edit ${listName.replace(/[^a-zA-Z]+/g, ' ').toLowerCase()} task` :
+                    `Create ${listName.replace(/[^a-zA-Z]+/g, ' ').toLowerCase()} task`
+                }`}
             />
 
             <ConfirmDialog
