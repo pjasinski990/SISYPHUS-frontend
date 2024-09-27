@@ -27,8 +27,6 @@ export const TaskListsProvider: React.FC<TaskListsProviderProps> = ({ children, 
         const fetchTasksForList = async (listName: string) => {
             try {
                 const taskData = await taskService.getTasksList(listName);
-                console.log(`Fetched tasks for list "${listName}": ${taskData.map(task => task.id).join(", ")}`);
-
                 if (isMounted.current) {
                     setTasksLists(prev => ({
                         ...prev,

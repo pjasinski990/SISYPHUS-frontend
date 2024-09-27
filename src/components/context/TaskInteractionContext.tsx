@@ -34,7 +34,6 @@ export const TaskInteractionProvider: React.FC<{
         const fetchData = async () => {
             try {
                 const taskData = await taskService.getTasksList(listName);
-                console.log(`fetched tasks for list ${listName}: ${taskData.map(task => task.id).join(",")}`);
                 setTasks(taskData);
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -57,18 +56,17 @@ export const TaskInteractionProvider: React.FC<{
                 finishedAt: null,
             }
             const created = await taskService.createTask(newTask)
-            console.log(`created task ${created}\nfor list: ${listName}`)
             setTasks([...tasks, created])
         } catch (err) {
             console.error('Failed to create task', err);
         }
-    }, [listName, setTasks, tasks, username]);
+    }, [setTasks, tasks, username]);
 
     const editTask = useCallback(async (taskId: string, updatedTaskData: TaskFormData) => {
         try {
             const taskToUpdate = tasks.find((task) => task.id === taskId);
             if (!taskToUpdate) {
-                console.log('Error: task not found');
+                console.error('Error: task not found');
                 return;
             }
 
