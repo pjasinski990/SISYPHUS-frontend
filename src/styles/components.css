@@ -91,6 +91,7 @@
 
     .prose li {
         @apply py-0 my-0;
+        line-height: 1.4rem;
     }
 
     .prose code {

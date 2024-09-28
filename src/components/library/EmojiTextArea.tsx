@@ -4,6 +4,7 @@ import Fuse from 'fuse.js';
 import { Emoji } from '@emoji-mart/data';
 import { fetchEmojis } from 'src/lib/emojiData';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface EmojiTextareaProps extends TextareaProps {
     value: string;
@@ -276,7 +277,10 @@ export const EmojiTextarea: React.FC<EmojiTextareaProps> = ({
                         description preview
                     </small>
                 ) : (
-                    <ReactMarkdown className="prose dark:prose-invert p-2">
+                    <ReactMarkdown
+                        className="prose dark:prose-invert p-2"
+                        remarkPlugins={[remarkGfm]}
+                    >
                         {text}
                     </ReactMarkdown>
                 )}

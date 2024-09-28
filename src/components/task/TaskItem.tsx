@@ -98,20 +98,20 @@ const FoldableTaskItem: React.FC<
 > = ({ initiallyFolded, children }) => {
     const [isFolded, setIsFolded] = React.useState(initiallyFolded);
 
-    const handleContextMenu = (
+    const handleDoubleClick = (
         event: React.MouseEvent<HTMLDivElement, MouseEvent>
     ) => {
-        event.preventDefault();
+        event.preventDefault(); // Optional: Prevent any default double-click behavior
         setIsFolded(prevState => !prevState);
     };
 
     return (
         <div
-            onContextMenu={handleContextMenu}
+            onDoubleClick={handleDoubleClick}
             className="cursor-pointer transition-colors duration-200"
         >
-            {React.cloneElement(children as React.ReactElement<any>, {
-                showMetadata: !isFolded,
+            {React.cloneElement(children as React.ReactElement, {
+                showDetails: !isFolded,
             })}
         </div>
     );

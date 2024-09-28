@@ -1,10 +1,10 @@
-.metadata-enter {
+.task-details-enter {
     opacity: 0;
     max-height: 0;
     overflow: hidden;
 }
 
-.metadata-enter-active {
+.task-details-enter-active {
     opacity: 1;
     max-height: 500px;
     transition:
@@ -12,16 +12,34 @@
         max-height 300ms;
 }
 
-.metadata-exit {
+.task-details-exit {
     opacity: 1;
     max-height: 500px;
     overflow: hidden;
 }
 
-.metadata-exit-active {
+.task-details-exit-active {
     opacity: 0;
     max-height: 0;
     transition:
         opacity 300ms,
         max-height 300ms;
+}
+
+.context-menu-enter {
+    opacity: 0;
+}
+
+.context-menu-enter-active {
+    opacity: 1;
+    transition: opacity 100ms ease-in-out;
+}
+
+.context-menu-exit {
+    opacity: 1;
+}
+
+.context-menu-exit-active {
+    opacity: 0;
+    transition: opacity 100ms ease-in-out;
 }
