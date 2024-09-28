@@ -10,6 +10,7 @@ import { useTaskInteraction } from 'src/components/context/TaskInteractionContex
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { TaskDetailsDialog } from './TaskDetailsDialog';
+import { ContextMenu } from 'src/components/task/TaskContextMenu';
 
 interface TaskItemContentProps {
     task: Task;
@@ -18,14 +19,12 @@ interface TaskItemContentProps {
 
 export const TaskDetails: React.FC<{ task: Task }> = ({ task }) => (
     <>
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-            {task.description}
-        </ReactMarkdown>
-        <div className={`text-xs mt-1 dark:text-gray-100`}>
-            <div className={'p-2 flex flex-col items-end'}>
+        <TaskDescription task={task} />
+        <div className="text-xs mt-1 dark:text-gray-100">
+            <div className="p-2 flex flex-col items-end">
                 {task.startTime && <span>Start: {task.startTime}</span>}
                 <span>Category: {task.category}</span>
-                <span className={'pb-2'}>Size: {task.size}</span>
+                <span className="pb-2">Size: {task.size}</span>
                 <span>Created: {task.createdAt}</span>
                 <span>Updated: {task.updatedAt}</span>
                 <span>Finished: {task.finishedAt}</span>
@@ -34,12 +33,25 @@ export const TaskDetails: React.FC<{ task: Task }> = ({ task }) => (
     </>
 );
 
+const TaskDescription: React.FC<{ task: Task }> = ({ task }) => {
+    const { categoryMarkerColorClass } = categoryStyles[task.category];
+
+    return (
+        <div
+            className={`${categoryMarkerColorClass} prose dark:prose-invert px-2`}
+        >
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {task.description}
+            </ReactMarkdown>
+        </div>
+    );
+};
+
 export const TaskItemContent: React.FC<TaskItemContentProps> = ({
     task,
     showDetails = true,
 }) => {
     const {
-        categoryMarkerColorClass,
         categoryBgColorClass,
         categoryBgHoverColorClass,
         categoryBorderColorClass,
@@ -106,6 +118,11 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
 
     return (
         <>
+            <TaskDetailsDialog
+                task={task}
+                open={showDetailsDialog}
+                onClose={() => setShowDetailsDialog(false)}
+            />
             <div
                 onContextMenu={handleContextMenu}
                 className={`task-item-content relative flex-grow w-full p-0.5 rounded shadow-md text-gray-950 dark:text-gray-100 ${categoryBgColorClass} ${defaultBorderClass} ${categoryBorderColorClass} cursor-pointer transition-all duration-75`}
@@ -116,7 +133,9 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                             size={iconSize}
                             style={{
                                 marginTop:
-                                    task.size === TaskSize.BIG ? '' : '8px',
+                                    task.size === TaskSize.BIG
+                                        ? undefined
+                                        : '8px',
                                 marginLeft:
                                     task.size === TaskSize.BIG ? '2px' : '7px',
                                 marginRight:
@@ -183,45 +202,22 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                     classNames="task-details"
                     unmountOnExit
                 >
-                    <div
-                        className={`${categoryMarkerColorClass} prose dark:prose-invert px-2`}
-                    >
-                        <TaskDetails task={task} />
-                    </div>
+                    <>
+                        <TaskDescription task={task} />
+                        <div className="text-sm p-2 flex flex-col items-end">
+                            {task.startTime && (
+                                <span>Start: {task.startTime}</span>
+                            )}
+                        </div>
+                    </>
                 </CSSTransition>
-                <CSSTransition
-                    in={showContextMenu}
-                    timeout={100}
-                    classNames="context-menu"
-                    unmountOnExit
-                >
-                    <div
-                        className="context-menu fixed bg-white border border-gray-300 rounded shadow-md z-50 w-36"
-                        style={{
-                            top: contextMenuPosition.y,
-                            left: contextMenuPosition.x,
-                        }}
-                        onClick={e => e.stopPropagation()}
-                    >
-                        <Button
-                            onClick={e => {
-                                e.stopPropagation();
-                                setShowDetailsDialog(true);
-                                setShowContextMenu(false);
-                            }}
-                            className="w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors duration-100"
-                        >
-                            Show Details
-                        </Button>
-                    </div>
-                </CSSTransition>
-            </div>
-            {showDetailsDialog && (
-                <TaskDetailsDialog
-                    task={task}
-                    onClose={() => setShowDetailsDialog(false)}
+                <ContextMenu
+                    show={showContextMenu}
+                    position={contextMenuPosition}
+                    onClose={() => setShowContextMenu(false)}
+                    onShowDetails={() => setShowDetailsDialog(true)}
                 />
-            )}
+            </div>
         </>
     );
 };

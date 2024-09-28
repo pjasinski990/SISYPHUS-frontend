@@ -25,21 +25,3 @@
         opacity 300ms,
         max-height 300ms;
 }
-
-.context-menu-enter {
-    opacity: 0;
-}
-
-.context-menu-enter-active {
-    opacity: 1;
-    transition: opacity 100ms ease-in-out;
-}
-
-.context-menu-exit {
-    opacity: 1;
-}
-
-.context-menu-exit-active {
-    opacity: 0;
-    transition: opacity 100ms ease-in-out;
-}

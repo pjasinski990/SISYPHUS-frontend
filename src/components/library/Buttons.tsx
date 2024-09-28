@@ -31,6 +31,7 @@ export const PlusButton: React.FC<{
             size="sm"
             onClick={onClick}
             className={`flex items-center bg-emerald-100 dark:bg-emerald-700 hover:bg-emerald-200 dark:hover:bg-emerald-600 transition-colors duration-100`}
+            aria-label={`${label}`}
         >
             <PlusCircle className={`${label ? 'mr-1' : ''} h-4 w-4`} />{' '}
             {label && label}

@@ -101,7 +101,7 @@ const FoldableTaskItem: React.FC<
     const handleDoubleClick = (
         event: React.MouseEvent<HTMLDivElement, MouseEvent>
     ) => {
-        event.preventDefault(); // Optional: Prevent any default double-click behavior
+        event.preventDefault();
         setIsFolded(prevState => !prevState);
     };
 
