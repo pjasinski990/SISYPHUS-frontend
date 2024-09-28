@@ -126,4 +126,23 @@
     .prose code::after {
         display: none;
     }
+
+    .prose blockquote {
+        @apply my-4;
+        @apply py-2;
+        @apply border-slate-500;
+        font-style: normal;
+        background: rgba(0, 0, 0, 0.04);
+    }
+
+    .dark .prose blockquote {
+        @apply my-4;
+        @apply border-slate-400;
+        background: rgba(0, 0, 0, 0.25);
+    }
+
+    .prose blockquote p::before,
+    .prose blockquote p::after {
+        display: none;
+    }
 }

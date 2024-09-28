@@ -6,7 +6,10 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { DragDropContext } from '@hello-pangea/dnd';
 import { Shortcut } from 'src/components/context/ShortcutsContext';
 import { useRegisterShortcut } from 'src/components/context/RegisterShortcutContext';
-import { useTaskDragAndDrop } from 'src/components/context/TaskDragDropContext';
+import {
+    TaskDragDropProvider,
+    useTaskDragAndDrop,
+} from 'src/components/context/TaskDragDropContext';
 
 export const DashboardContent: React.FC = () => {
     const [isLeftMenuOpen, setIsLeftMenuOpen] = useState(true);
@@ -68,24 +71,26 @@ export const DashboardContent: React.FC = () => {
     useRegisterShortcut(openReusableTasksShortcut);
 
     return (
-        <DragDropContext onDragEnd={onDragEnd}>
-            <SlidingPanel
-                isOpen={isLeftMenuOpen}
-                setIsOpen={setIsLeftMenuOpen}
-                maxWidth={400}
-            >
-                <LeftMenu
-                    activeTab={activeTab}
-                    onActiveTabChange={setActiveTab}
-                />
-            </SlidingPanel>
-            <div className="flex flex-1 transition-all duration-200">
-                <SlidingPanelToggleRibbon
-                    toggleOpen={toggleLeftMenu}
+        <TaskDragDropProvider listNames={['DAILY_TODO', 'DAILY_DONE', 'INBOX']}>
+            <DragDropContext onDragEnd={onDragEnd}>
+                <SlidingPanel
                     isOpen={isLeftMenuOpen}
-                />
-                <DailyPlanDashboard />
-            </div>
-        </DragDropContext>
+                    setIsOpen={setIsLeftMenuOpen}
+                    maxWidth={400}
+                >
+                    <LeftMenu
+                        activeTab={activeTab}
+                        onActiveTabChange={setActiveTab}
+                    />
+                </SlidingPanel>
+                <div className="flex flex-1 transition-all duration-200">
+                    <SlidingPanelToggleRibbon
+                        toggleOpen={toggleLeftMenu}
+                        isOpen={isLeftMenuOpen}
+                    />
+                    <DailyPlanDashboard />
+                </div>
+            </DragDropContext>
+        </TaskDragDropProvider>
     );
 };
