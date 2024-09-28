@@ -21,9 +21,9 @@ export const EmojiInput: React.FC<EmojiInputProps> = ({
     const inputRef = useRef<HTMLInputElement>(null);
     const [emojiList, setEmojiList] = useState<Emoji[]>([]);
     const fuse = useRef<Fuse<Emoji> | null>(null);
-
     const [selectedIndex, setSelectedIndex] = useState<number>(-1);
     const listItemRefs = useRef<(HTMLLIElement | null)[]>([]);
+    const N_EMOJIS_PROPOSED = 32;
 
     useEffect(() => {
         setText(value || '');
@@ -78,7 +78,9 @@ export const EmojiInput: React.FC<EmojiInputProps> = ({
             const query = match[1];
             if (query.length > 0 && fuse.current) {
                 const results = fuse.current.search(query);
-                const emojis = results.slice(0, 12).map(result => result.item);
+                const emojis = results
+                    .slice(0, N_EMOJIS_PROPOSED)
+                    .map(result => result.item);
                 setFilteredEmojis(emojis);
                 setShowSuggestions(emojis.length > 0);
                 setSelectedIndex(emojis.length > 0 ? 0 : -1);

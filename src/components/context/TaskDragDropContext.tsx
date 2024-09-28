@@ -43,9 +43,17 @@ export const TaskDragDropProvider: React.FC<{
             const sourceContext = taskLists[source.droppableId];
             const destContext = taskLists[destination!!.droppableId];
 
-            const [movedTask] = sourceContext.tasks.splice(source.index, 1);
+            let [movedTask] = sourceContext.tasks.splice(source.index, 1);
             if (destination?.droppableId === 'DAILY_DONE') {
-                movedTask.finishedAt = new Date().toISOString();
+                movedTask = {
+                    ...movedTask,
+                    finishedAt: new Date().toISOString(),
+                };
+            } else {
+                movedTask = {
+                    ...movedTask,
+                    finishedAt: null,
+                };
             }
 
             destContext.tasks.splice(destination!!.index, 0, movedTask);

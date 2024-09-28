@@ -4,10 +4,16 @@ import { TaskPropertiesProvider } from 'src/components/context/TaskPropertiesCon
 import { useTaskList } from 'src/components/context/TaskListsContext';
 import { DailyPlanTodo } from 'src/components/daily_plan/DailyPlanTodo';
 import { TaskInteractionProvider } from 'src/components/context/TaskInteractionContext';
+import { getTimestamp, happenedToday } from 'src/lib/utils';
+import { Task } from '../../service/taskService';
 
 export const DailyPlanContent: React.FC = () => {
     const todoContext = useTaskList('DAILY_TODO');
     const doneContext = useTaskList('DAILY_DONE');
+    const toDisplayInDoneList = [
+        ...getTasksDoneTodaySorted(doneContext.tasks),
+        ...filterUnfinishedTasks(doneContext.tasks),
+    ];
 
     return (
         <div className="flex gap-4">
@@ -22,7 +28,7 @@ export const DailyPlanContent: React.FC = () => {
             </TaskInteractionProvider>
             <TaskInteractionProvider
                 listName={'DAILY_DONE'}
-                tasks={doneContext.tasks}
+                tasks={toDisplayInDoneList}
                 setTasks={doneContext.setTasks}
             >
                 <TaskPropertiesProvider
@@ -43,3 +49,26 @@ export const DailyPlanContent: React.FC = () => {
         </div>
     );
 };
+
+function compareTasks(a: Task, b: Task): number {
+    const timeA = getTimestamp(a.finishedAt!);
+    const timeB = getTimestamp(b.finishedAt!);
+    return timeB - timeA;
+}
+
+function filterFinishedToday(tasks: Task[]): Task[] {
+    return tasks.filter(task => {
+        if (!task.finishedAt) return false;
+        const finishedDate = new Date(task.finishedAt);
+        return happenedToday(finishedDate);
+    });
+}
+
+function filterUnfinishedTasks(tasks: Task[]): Task[] {
+    return tasks.filter(task => !task.finishedAt);
+}
+
+function getTasksDoneTodaySorted(tasks: Task[]) {
+    const finishedToday = filterFinishedToday(tasks);
+    return finishedToday.sort(compareTasks);
+}
