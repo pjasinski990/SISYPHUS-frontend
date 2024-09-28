@@ -1,7 +1,14 @@
-import React, { createContext, KeyboardEvent, useContext, useEffect, useRef, useState } from 'react';
+import React, {
+    createContext,
+    KeyboardEvent,
+    useContext,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 import Fuse from 'fuse.js';
-import { Emoji } from "@emoji-mart/data";
-import { fetchEmojis } from "src/lib/emojiData";
+import { Emoji } from '@emoji-mart/data';
+import { fetchEmojis } from 'src/lib/emojiData';
 
 interface EmojiContextType {
     text: string;
@@ -9,9 +16,13 @@ interface EmojiContextType {
     filteredEmojis: Emoji[];
     showSuggestions: boolean;
     selectedIndex: number;
-    handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+    handleInputChange: (
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => void;
     handleEmojiSelect: (emoji: Emoji) => void;
-    handleKeyDown: (e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => boolean;
+    handleKeyDown: (
+        e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => boolean;
     inputRef: React.RefObject<HTMLInputElement | HTMLTextAreaElement>;
     listItemRefs: React.MutableRefObject<(HTMLLIElement | null)[]>;
 }
@@ -20,11 +31,17 @@ const EmojiContext = createContext<EmojiContextType | undefined>(undefined);
 
 interface EmojiProviderProps {
     value: string;
-    onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+    onChange: (
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => void;
     children: React.ReactNode;
 }
 
-export const EmojiProvider: React.FC<EmojiProviderProps> = ({ value, onChange, children }) => {
+export const EmojiProvider: React.FC<EmojiProviderProps> = ({
+    value,
+    onChange,
+    children,
+}) => {
     const [text, setText] = useState(value || '');
     const [filteredEmojis, setFilteredEmojis] = useState<Emoji[]>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
@@ -41,7 +58,7 @@ export const EmojiProvider: React.FC<EmojiProviderProps> = ({ value, onChange, c
     }, [value]);
 
     useEffect(() => {
-        fetchEmojis().then((res) => {
+        fetchEmojis().then(res => {
             setEmojiList(res);
         });
     }, []);
@@ -60,7 +77,10 @@ export const EmojiProvider: React.FC<EmojiProviderProps> = ({ value, onChange, c
         if (selectedIndex >= 0 && listItemRefs.current[selectedIndex]) {
             const nItems = listItemRefs.current.length;
             let scrollIndex = selectedIndex;
-            if (selectedIndex < forwardScroll || selectedIndex > nItems - forwardScroll - 1) {
+            if (
+                selectedIndex < forwardScroll ||
+                selectedIndex > nItems - forwardScroll - 1
+            ) {
                 scrollIndex = selectedIndex;
             } else if (direction === 'down') {
                 scrollIndex = (selectedIndex + forwardScroll) % nItems;
@@ -74,7 +94,9 @@ export const EmojiProvider: React.FC<EmojiProviderProps> = ({ value, onChange, c
         }
     }, [direction, selectedIndex]);
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleInputChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => {
         const newText = e.target.value;
         setText(newText);
 
@@ -86,7 +108,7 @@ export const EmojiProvider: React.FC<EmojiProviderProps> = ({ value, onChange, c
             const query = match[1];
             if (query.length > 0 && fuse.current) {
                 const results = fuse.current.search(query);
-                const emojis = results.slice(0, 12).map((result) => result.item);
+                const emojis = results.slice(0, 12).map(result => result.item);
                 setFilteredEmojis(emojis);
                 setShowSuggestions(emojis.length > 0);
                 setSelectedIndex(emojis.length > 0 ? 0 : -1);
@@ -102,16 +124,19 @@ export const EmojiProvider: React.FC<EmojiProviderProps> = ({ value, onChange, c
         if (newText[cursorPosition - 1] === ':') {
             const fullText = newText;
             const upToCursor = fullText.slice(0, cursorPosition);
-            const replaceMatch = upToCursor.match(/:([a-zA-Z0-9_\+-]+):$/);
+            const replaceMatch = upToCursor.match(/:([a-zA-Z0-9_+-]+):$/);
             if (replaceMatch) {
                 const code = replaceMatch[1];
                 const emoji = emojiList.find(
-                    (e) => e.id === code || e.name.toLowerCase() === code.toLowerCase()
+                    e =>
+                        e.id === code ||
+                        e.name.toLowerCase() === code.toLowerCase()
                 );
                 if (emoji) {
                     const beforeMatch = upToCursor.slice(0, replaceMatch.index);
                     const afterMatch = fullText.slice(cursorPosition);
-                    const newTextUpToMatch = beforeMatch + emoji.skins[0].native;
+                    const newTextUpToMatch =
+                        beforeMatch + emoji.skins[0].native;
                     const updatedText = newTextUpToMatch + afterMatch;
 
                     setText(updatedText);
@@ -121,7 +146,10 @@ export const EmojiProvider: React.FC<EmojiProviderProps> = ({ value, onChange, c
                     const newCursorPosition = newTextUpToMatch.length;
                     setTimeout(() => {
                         if (inputRef.current) {
-                            inputRef.current.setSelectionRange(newCursorPosition, newCursorPosition);
+                            inputRef.current.setSelectionRange(
+                                newCursorPosition,
+                                newCursorPosition
+                            );
                             inputRef.current.focus();
                         }
                     }, 0);
@@ -131,7 +159,9 @@ export const EmojiProvider: React.FC<EmojiProviderProps> = ({ value, onChange, c
                             value: updatedText,
                             name: e.target.name,
                         },
-                    } as unknown as React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>;
+                    } as unknown as React.ChangeEvent<
+                        HTMLInputElement | HTMLTextAreaElement
+                    >;
 
                     onChange(syntheticEvent);
 
@@ -148,7 +178,10 @@ export const EmojiProvider: React.FC<EmojiProviderProps> = ({ value, onChange, c
         const textUpToCursor = text.slice(0, cursorPosition);
         const textAfterCursor = text.slice(cursorPosition);
 
-        const newTextUpToCursor = textUpToCursor.replace(/:([a-zA-Z0-9_+-]*)$/, emoji.skins[0].native);
+        const newTextUpToCursor = textUpToCursor.replace(
+            /:([a-zA-Z0-9_+-]*)$/,
+            emoji.skins[0].native
+        );
         const newText = newTextUpToCursor + textAfterCursor;
 
         setText(newText);
@@ -158,7 +191,10 @@ export const EmojiProvider: React.FC<EmojiProviderProps> = ({ value, onChange, c
         const newCursorPosition = newTextUpToCursor.length;
         setTimeout(() => {
             if (inputRef.current) {
-                inputRef.current.setSelectionRange(newCursorPosition, newCursorPosition);
+                inputRef.current.setSelectionRange(
+                    newCursorPosition,
+                    newCursorPosition
+                );
                 inputRef.current.focus();
             }
         }, 0);
@@ -168,30 +204,42 @@ export const EmojiProvider: React.FC<EmojiProviderProps> = ({ value, onChange, c
                 value: newText,
                 name: inputRef.current?.name,
             },
-        } as unknown as React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>;
+        } as unknown as React.ChangeEvent<
+            HTMLInputElement | HTMLTextAreaElement
+        >;
 
         onChange(syntheticEvent);
     };
 
-    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>): boolean => {
+    const handleKeyDown = (
+        e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>
+    ): boolean => {
         if (showSuggestions && filteredEmojis.length > 0) {
             let handled = false;
             const isCtrlHeld = e.ctrlKey;
-            const isDown = (isCtrlHeld && e.key === 'j') || e.key === 'ArrowDown';
+            const isDown =
+                (isCtrlHeld && e.key === 'j') || e.key === 'ArrowDown';
             const isUp = (isCtrlHeld && e.key === 'k') || e.key === 'ArrowUp';
 
             if (isDown) {
                 e.preventDefault();
-                setSelectedIndex((prev) => (prev + 1) % filteredEmojis.length);
+                setSelectedIndex(prev => (prev + 1) % filteredEmojis.length);
                 setDirection('down');
                 handled = true;
             } else if (isUp) {
                 e.preventDefault();
-                setSelectedIndex((prev) => (prev - 1 + filteredEmojis.length) % filteredEmojis.length);
+                setSelectedIndex(
+                    prev =>
+                        (prev - 1 + filteredEmojis.length) %
+                        filteredEmojis.length
+                );
                 setDirection('up');
                 handled = true;
             } else if (e.key === 'Enter') {
-                if (selectedIndex >= 0 && selectedIndex < filteredEmojis.length) {
+                if (
+                    selectedIndex >= 0 &&
+                    selectedIndex < filteredEmojis.length
+                ) {
                     e.preventDefault();
                     handleEmojiSelect(filteredEmojis[selectedIndex]);
                     handled = true;

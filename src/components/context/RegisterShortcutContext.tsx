@@ -7,7 +7,9 @@ export const useRegisterShortcut = (shortcut: Shortcut) => {
     useEffect(() => {
         setShortcuts(prevShortcuts => [...prevShortcuts, shortcut]);
         return () => {
-            setShortcuts(prevShortcuts => prevShortcuts.filter(s => s.id !== shortcut.id));
+            setShortcuts(prevShortcuts =>
+                prevShortcuts.filter(s => s.id !== shortcut.id)
+            );
         };
     }, [setShortcuts, shortcut]);
 };

@@ -1,19 +1,32 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { Task, taskService } from "../../service/taskService";
+import React, {
+    createContext,
+    useCallback,
+    useContext,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
+import { Task, taskService } from '../../service/taskService';
 
 interface TaskListsProviderType {
     tasksLists: Record<string, Task[]>;
     setTaskList: (listName: string, tasks: Task[]) => void;
 }
 
-const TaskListsContext = createContext<TaskListsProviderType | undefined>(undefined);
+const TaskListsContext = createContext<TaskListsProviderType | undefined>(
+    undefined
+);
 
 interface TaskListsProviderProps {
     children: React.ReactNode;
     listNames: string[];
 }
 
-export const TaskListsProvider: React.FC<TaskListsProviderProps> = ({ children, listNames }) => {
+export const TaskListsProvider: React.FC<TaskListsProviderProps> = ({
+    children,
+    listNames,
+}) => {
     const [tasksLists, setTasksLists] = useState<Record<string, Task[]>>({});
 
     const isMounted = useRef(true);
@@ -30,11 +43,14 @@ export const TaskListsProvider: React.FC<TaskListsProviderProps> = ({ children, 
                 if (isMounted.current) {
                     setTasksLists(prev => ({
                         ...prev,
-                        [listName]: taskData
+                        [listName]: taskData,
                     }));
                 }
             } catch (error) {
-                console.error(`Error fetching tasks for list "${listName}":`, error);
+                console.error(
+                    `Error fetching tasks for list "${listName}":`,
+                    error
+                );
             }
         };
 
@@ -48,14 +64,17 @@ export const TaskListsProvider: React.FC<TaskListsProviderProps> = ({ children, 
     const setTaskList = useCallback((listName: string, tasks: Task[]) => {
         setTasksLists(prev => ({
             ...prev,
-            [listName]: tasks
+            [listName]: tasks,
         }));
     }, []);
 
-    const contextValue = useMemo(() => ({
-        tasksLists,
-        setTaskList,
-    }), [tasksLists, setTaskList]);
+    const contextValue = useMemo(
+        () => ({
+            tasksLists,
+            setTaskList,
+        }),
+        [tasksLists, setTaskList]
+    );
 
     return (
         <TaskListsContext.Provider value={contextValue}>
@@ -64,7 +83,9 @@ export const TaskListsProvider: React.FC<TaskListsProviderProps> = ({ children, 
     );
 };
 
-export const useTaskList = (listName: string): { tasks: Task[]; setTasks: (tasks: Task[]) => void } => {
+export const useTaskList = (
+    listName: string
+): { tasks: Task[]; setTasks: (tasks: Task[]) => void } => {
     const context = useContext(TaskListsContext);
     if (context === undefined) {
         throw new Error('useTaskList must be used within a TaskListsProvider');
@@ -73,9 +94,12 @@ export const useTaskList = (listName: string): { tasks: Task[]; setTasks: (tasks
     const { tasksLists, setTaskList } = context;
     const tasks = tasksLists[listName] || [];
 
-    const setTasksForList = useCallback((tasks: Task[]) => {
-        setTaskList(listName, tasks);
-    }, [listName, setTaskList]);
+    const setTasksForList = useCallback(
+        (tasks: Task[]) => {
+            setTaskList(listName, tasks);
+        },
+        [listName, setTaskList]
+    );
 
     return { tasks, setTasks: setTasksForList };
 };
@@ -91,7 +115,10 @@ export const useTaskLists = (
     const { tasksLists, setTaskList } = context;
 
     return useMemo(() => {
-        const result: Record<string, { tasks: Task[]; setTasks: (tasks: Task[]) => void }> = {};
+        const result: Record<
+            string,
+            { tasks: Task[]; setTasks: (tasks: Task[]) => void }
+        > = {};
         listNames.forEach(listName => {
             const tasks = tasksLists[listName] || [];
             result[listName] = {

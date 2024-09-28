@@ -1,21 +1,24 @@
 import React, { useMemo } from 'react';
-import { TaskList } from "src/components/task_list/TaskList";
-import { useRegisterShortcut } from "src/components/context/RegisterShortcutContext";
-import { Shortcut } from "src/components/context/ShortcutsContext";
-import { useTaskInteraction } from "src/components/context/TaskInteractionContext";
-import { useTaskList } from "src/components/context/TaskListsContext";
+import { TaskList } from 'src/components/task_list/TaskList';
+import { useRegisterShortcut } from 'src/components/context/RegisterShortcutContext';
+import { Shortcut } from 'src/components/context/ShortcutsContext';
+import { useTaskInteraction } from 'src/components/context/TaskInteractionContext';
+import { useTaskList } from 'src/components/context/TaskListsContext';
 
 export const DailyPlanTodo: React.FC = () => {
-    const { openCreateTaskDialog } = useTaskInteraction()
-    const { tasks } = useTaskList('DAILY_TODO')
+    const { openCreateTaskDialog } = useTaskInteraction();
+    const { tasks } = useTaskList('DAILY_TODO');
 
-    const addTaskShortcut: Shortcut = useMemo(() => ({
-        id: 'add-task-daily-plan',
-        keys: ['C'],
-        action: openCreateTaskDialog,
-        description: 'Add a new task to today\'s todo list',
-        order: 1,
-    }), [openCreateTaskDialog]);
+    const addTaskShortcut: Shortcut = useMemo(
+        () => ({
+            id: 'add-task-daily-plan',
+            keys: ['C'],
+            action: openCreateTaskDialog,
+            description: "Add a new task to today's todo list",
+            order: 1,
+        }),
+        [openCreateTaskDialog]
+    );
 
     useRegisterShortcut(addTaskShortcut);
 

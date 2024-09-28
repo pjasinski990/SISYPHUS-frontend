@@ -1,11 +1,16 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "src/components/ui/tabs";
-import { ReusableTaskPicker } from "src/components/left_menu/ReusableTaskPicker";
-import { motion } from "framer-motion";
-import { Inbox } from "src/components/left_menu/Inbox";
-import { TaskInteractionProvider } from "src/components/context/TaskInteractionContext";
-import { useTaskList } from "src/components/context/TaskListsContext";
-import { TaskPropertiesProvider } from "src/components/context/TaskPropertiesContext";
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import {
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+} from 'src/components/ui/tabs';
+import { ReusableTaskPicker } from 'src/components/left_menu/ReusableTaskPicker';
+import { motion } from 'framer-motion';
+import { Inbox } from 'src/components/left_menu/Inbox';
+import { TaskInteractionProvider } from 'src/components/context/TaskInteractionContext';
+import { useTaskList } from 'src/components/context/TaskListsContext';
+import { TaskPropertiesProvider } from 'src/components/context/TaskPropertiesContext';
 
 export type TabValue = 'inbox' | 'reusableTasks';
 
@@ -14,17 +19,23 @@ interface LeftMenuProps {
     onActiveTabChange: (tab: TabValue) => void;
 }
 
-export const LeftMenu: React.FC<LeftMenuProps> = ({ activeTab, onActiveTabChange }) => {
+export const LeftMenu: React.FC<LeftMenuProps> = ({
+    activeTab,
+    onActiveTabChange,
+}) => {
     const [direction, setDirection] = useState(0);
-    const prevTabRef = useRef<TabValue>("inbox");
+    const prevTabRef = useRef<TabValue>('inbox');
 
-    const inboxContext = useTaskList('INBOX')
-    const reusableContext = useTaskList('REUSABLE')
+    const inboxContext = useTaskList('INBOX');
+    const reusableContext = useTaskList('REUSABLE');
 
-    const tabOrder: Record<TabValue, number> = useMemo(() => ({
-        inbox: 0,
-        reusableTasks: 1,
-    }), []);
+    const tabOrder: Record<TabValue, number> = useMemo(
+        () => ({
+            inbox: 0,
+            reusableTasks: 1,
+        }),
+        []
+    );
 
     useEffect(() => {
         const prevIndex = tabOrder[prevTabRef.current];
@@ -85,7 +96,7 @@ export const LeftMenu: React.FC<LeftMenuProps> = ({ activeTab, onActiveTabChange
 
             <div className="flex-grow overflow-hidden relative">
                 <TabsContent value="inbox" className="flex-grow overflow-auto">
-                    {activeTab === "inbox" && (
+                    {activeTab === 'inbox' && (
                         <motion.div
                             key="inbox"
                             initial="hidden"
@@ -95,16 +106,26 @@ export const LeftMenu: React.FC<LeftMenuProps> = ({ activeTab, onActiveTabChange
                             transition={{ duration: 0.2 }}
                             className="h-full"
                         >
-                            <TaskInteractionProvider listName={'INBOX'} tasks={inboxContext.tasks} setTasks={inboxContext.setTasks}>
-                                <TaskPropertiesProvider isDraggable={true} isFoldable={true}>
+                            <TaskInteractionProvider
+                                listName={'INBOX'}
+                                tasks={inboxContext.tasks}
+                                setTasks={inboxContext.setTasks}
+                            >
+                                <TaskPropertiesProvider
+                                    isDraggable={true}
+                                    isFoldable={true}
+                                >
                                     <Inbox />
                                 </TaskPropertiesProvider>
                             </TaskInteractionProvider>
                         </motion.div>
                     )}
                 </TabsContent>
-                <TabsContent value="reusableTasks" className="flex-grow overflow-auto">
-                    {activeTab === "reusableTasks" && (
+                <TabsContent
+                    value="reusableTasks"
+                    className="flex-grow overflow-auto"
+                >
+                    {activeTab === 'reusableTasks' && (
                         <motion.div
                             key="reusableTasks"
                             initial="hidden"
@@ -114,8 +135,16 @@ export const LeftMenu: React.FC<LeftMenuProps> = ({ activeTab, onActiveTabChange
                             transition={{ duration: 0.2 }}
                             className="h-full"
                         >
-                            <TaskInteractionProvider listName={"REUSABLE"} tasks={reusableContext.tasks} setTasks={reusableContext.setTasks}>
-                                <TaskPropertiesProvider isDraggable={false} isFoldable={true} initiallyFolded={true}>
+                            <TaskInteractionProvider
+                                listName={'REUSABLE'}
+                                tasks={reusableContext.tasks}
+                                setTasks={reusableContext.setTasks}
+                            >
+                                <TaskPropertiesProvider
+                                    isDraggable={false}
+                                    isFoldable={true}
+                                    initiallyFolded={true}
+                                >
                                     <ReusableTaskPicker />
                                 </TaskPropertiesProvider>
                             </TaskInteractionProvider>

@@ -1,15 +1,19 @@
 import React, { useState, useRef, useEffect, KeyboardEvent } from 'react';
 import { Input, InputProps } from 'src/components/ui/input';
 import Fuse from 'fuse.js';
-import { Emoji } from "@emoji-mart/data";
-import { fetchEmojis } from "src/lib/emojiData";
+import { Emoji } from '@emoji-mart/data';
+import { fetchEmojis } from 'src/lib/emojiData';
 
 interface EmojiInputProps extends InputProps {
     value: string;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export const EmojiInput: React.FC<EmojiInputProps> = ({ value, onChange, ...props }) => {
+export const EmojiInput: React.FC<EmojiInputProps> = ({
+    value,
+    onChange,
+    ...props
+}) => {
     const [text, setText] = useState(value || '');
     const [filteredEmojis, setFilteredEmojis] = useState<Emoji[]>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
@@ -26,7 +30,7 @@ export const EmojiInput: React.FC<EmojiInputProps> = ({ value, onChange, ...prop
     }, [value]);
 
     useEffect(() => {
-        fetchEmojis().then((res) => {
+        fetchEmojis().then(res => {
             setEmojiList(res);
         });
     }, []);
@@ -43,10 +47,13 @@ export const EmojiInput: React.FC<EmojiInputProps> = ({ value, onChange, ...prop
     useEffect(() => {
         const forwardScroll = 2;
         if (selectedIndex >= 0 && listItemRefs.current[selectedIndex]) {
-            const nItems = listItemRefs.current.length
+            const nItems = listItemRefs.current.length;
             let scrollIndex = selectedIndex;
-            if (selectedIndex < forwardScroll || selectedIndex > nItems - forwardScroll - 1) {
-                scrollIndex = selectedIndex
+            if (
+                selectedIndex < forwardScroll ||
+                selectedIndex > nItems - forwardScroll - 1
+            ) {
+                scrollIndex = selectedIndex;
             } else if (direction === 'down') {
                 scrollIndex = (selectedIndex + forwardScroll) % nItems;
             } else if (direction === 'up') {
@@ -71,7 +78,7 @@ export const EmojiInput: React.FC<EmojiInputProps> = ({ value, onChange, ...prop
             const query = match[1];
             if (query.length > 0 && fuse.current) {
                 const results = fuse.current.search(query);
-                const emojis = results.slice(0, 12).map((result) => result.item);
+                const emojis = results.slice(0, 12).map(result => result.item);
                 setFilteredEmojis(emojis);
                 setShowSuggestions(emojis.length > 0);
                 setSelectedIndex(emojis.length > 0 ? 0 : -1);
@@ -87,16 +94,19 @@ export const EmojiInput: React.FC<EmojiInputProps> = ({ value, onChange, ...prop
         if (newText[cursorPosition - 1] === ':') {
             const fullText = newText;
             const upToCursor = fullText.slice(0, cursorPosition);
-            const replaceMatch = upToCursor.match(/:([a-zA-Z0-9_\+-]+):$/);
+            const replaceMatch = upToCursor.match(/:([a-zA-Z0-9_+-]+):$/);
             if (replaceMatch) {
                 const code = replaceMatch[1];
                 const emoji = emojiList.find(
-                    (e) => e.id === code || e.name.toLowerCase() === code.toLowerCase()
+                    e =>
+                        e.id === code ||
+                        e.name.toLowerCase() === code.toLowerCase()
                 );
                 if (emoji) {
                     const beforeMatch = upToCursor.slice(0, replaceMatch.index);
                     const afterMatch = fullText.slice(cursorPosition);
-                    const newTextUpToMatch = beforeMatch + emoji.skins[0].native;
+                    const newTextUpToMatch =
+                        beforeMatch + emoji.skins[0].native;
                     const updatedText = newTextUpToMatch + afterMatch;
 
                     setText(updatedText);
@@ -106,7 +116,10 @@ export const EmojiInput: React.FC<EmojiInputProps> = ({ value, onChange, ...prop
                     const newCursorPosition = newTextUpToMatch.length;
                     setTimeout(() => {
                         if (inputRef.current) {
-                            inputRef.current.setSelectionRange(newCursorPosition, newCursorPosition);
+                            inputRef.current.setSelectionRange(
+                                newCursorPosition,
+                                newCursorPosition
+                            );
                             inputRef.current.focus();
                         }
                     }, 0);
@@ -133,7 +146,10 @@ export const EmojiInput: React.FC<EmojiInputProps> = ({ value, onChange, ...prop
         const textUpToCursor = text.slice(0, cursorPosition);
         const textAfterCursor = text.slice(cursorPosition);
 
-        const newTextUpToCursor = textUpToCursor.replace(/:([a-zA-Z0-9_+-]*)$/, emoji.skins[0].native);
+        const newTextUpToCursor = textUpToCursor.replace(
+            /:([a-zA-Z0-9_+-]*)$/,
+            emoji.skins[0].native
+        );
         const newText = newTextUpToCursor + textAfterCursor;
 
         setText(newText);
@@ -143,7 +159,10 @@ export const EmojiInput: React.FC<EmojiInputProps> = ({ value, onChange, ...prop
         const newCursorPosition = newTextUpToCursor.length;
         setTimeout(() => {
             if (inputRef.current) {
-                inputRef.current.setSelectionRange(newCursorPosition, newCursorPosition);
+                inputRef.current.setSelectionRange(
+                    newCursorPosition,
+                    newCursorPosition
+                );
                 inputRef.current.focus();
             }
         }, 0);
@@ -162,17 +181,22 @@ export const EmojiInput: React.FC<EmojiInputProps> = ({ value, onChange, ...prop
         if (showSuggestions && filteredEmojis.length > 0) {
             let handled = false;
             const isCtrlHeld = e.ctrlKey;
-            const isDown = (isCtrlHeld && e.key === 'j') || e.key === 'ArrowDown';
+            const isDown =
+                (isCtrlHeld && e.key === 'j') || e.key === 'ArrowDown';
             const isUp = (isCtrlHeld && e.key === 'k') || e.key === 'ArrowUp';
             if (isDown) {
                 e.preventDefault();
-                setSelectedIndex((prev) => (prev + 1) % filteredEmojis.length);
-                setDirection('down')
+                setSelectedIndex(prev => (prev + 1) % filteredEmojis.length);
+                setDirection('down');
                 handled = true;
             } else if (isUp) {
                 e.preventDefault();
-                setSelectedIndex((prev) => (prev - 1 + filteredEmojis.length) % filteredEmojis.length);
-                setDirection('up')
+                setSelectedIndex(
+                    prev =>
+                        (prev - 1 + filteredEmojis.length) %
+                        filteredEmojis.length
+                );
+                setDirection('up');
                 handled = true;
             }
 
@@ -181,7 +205,10 @@ export const EmojiInput: React.FC<EmojiInputProps> = ({ value, onChange, ...prop
             }
 
             if (e.key === 'Enter') {
-                if (selectedIndex >= 0 && selectedIndex < filteredEmojis.length) {
+                if (
+                    selectedIndex >= 0 &&
+                    selectedIndex < filteredEmojis.length
+                ) {
                     e.preventDefault();
                     handleEmojiSelect(filteredEmojis[selectedIndex]);
                 }
@@ -222,10 +249,12 @@ export const EmojiInput: React.FC<EmojiInputProps> = ({ value, onChange, ...prop
                     {filteredEmojis.map((emoji, index) => (
                         <li
                             key={emoji.id}
-                            ref={(el) => (listItemRefs.current[index] = el)}
-                            className={` p-2 cursor-pointer ease-in-out ${index === selectedIndex
-                                ? 'bg-slate-200 dark:bg-slate-950'
-                                : 'bg-slate-50 dark:bg-slate-900'}
+                            ref={el => (listItemRefs.current[index] = el)}
+                            className={` p-2 cursor-pointer ease-in-out ${
+                                index === selectedIndex
+                                    ? 'bg-slate-200 dark:bg-slate-950'
+                                    : 'bg-slate-50 dark:bg-slate-900'
+                            }
                             hover:bg-slate-300 dark:hover:bg-slate-600
                         `}
                             onMouseDown={() => handleEmojiSelect(emoji)}

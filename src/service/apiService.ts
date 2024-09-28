@@ -12,7 +12,7 @@ class ApiService {
             withCredentials: true,
         });
         this.api.interceptors.request.use(
-            async (config) => {
+            async config => {
                 let token = AuthService.getAuthToken();
                 if (token) {
                     if (!AuthService.isTokenValid(token)) {
@@ -28,20 +28,25 @@ class ApiService {
                 }
                 return config;
             },
-            (error) => Promise.reject(error)
+            error => Promise.reject(error)
         );
 
         this.api.interceptors.response.use(
-            (response) => response,
-            async (error) => {
+            response => response,
+            async error => {
                 const originalRequest = error.config;
-                if (error.response && error.response.status === 401 && !originalRequest._retry) {
+                if (
+                    error.response &&
+                    error.response.status === 401 &&
+                    !originalRequest._retry
+                ) {
                     originalRequest._retry = true;
                     try {
                         await AuthService.refreshAccessToken();
                         const token = AuthService.getAuthToken();
                         if (token) {
-                            originalRequest.headers['Authorization'] = `Bearer ${token}`;
+                            originalRequest.headers['Authorization'] =
+                                `Bearer ${token}`;
                         }
                         return this.api(originalRequest);
                     } catch (refreshError) {
@@ -64,49 +69,88 @@ class ApiService {
         }
     }
 
-    public async authenticatedGet<T>(endpoint: string, config: AxiosRequestConfig = {}): Promise<T> {
+    public async authenticatedGet<T>(
+        endpoint: string,
+        config: AxiosRequestConfig = {}
+    ): Promise<T> {
         try {
-            const response: AxiosResponse<T> = await this.api.get(endpoint, config);
+            const response: AxiosResponse<T> = await this.api.get(
+                endpoint,
+                config
+            );
             return response.data;
         } catch (error) {
             this.handleAxiosError(error);
         }
     }
 
-    public async authenticatedPost<T>(endpoint: string, data: any, config: AxiosRequestConfig = {}): Promise<T> {
+    public async authenticatedPost<T>(
+        endpoint: string,
+        data: any,
+        config: AxiosRequestConfig = {}
+    ): Promise<T> {
         try {
-            const response: AxiosResponse<T> = await this.api.post(endpoint, data, config);
+            const response: AxiosResponse<T> = await this.api.post(
+                endpoint,
+                data,
+                config
+            );
             return response.data;
         } catch (error) {
             this.handleAxiosError(error);
         }
     }
 
-    public async authenticatedPut<T>(endpoint: string, data: any, config: AxiosRequestConfig = {}): Promise<T> {
+    public async authenticatedPut<T>(
+        endpoint: string,
+        data: any,
+        config: AxiosRequestConfig = {}
+    ): Promise<T> {
         try {
-            const response: AxiosResponse<T> = await this.api.put(endpoint, data, config);
+            const response: AxiosResponse<T> = await this.api.put(
+                endpoint,
+                data,
+                config
+            );
             return response.data;
         } catch (error) {
             this.handleAxiosError(error);
         }
     }
 
-    public async authenticatedDelete<T>(endpoint: string, config: AxiosRequestConfig = {}): Promise<T> {
+    public async authenticatedDelete<T>(
+        endpoint: string,
+        config: AxiosRequestConfig = {}
+    ): Promise<T> {
         try {
-            const response: AxiosResponse<T> = await this.api.delete(endpoint, config);
+            const response: AxiosResponse<T> = await this.api.delete(
+                endpoint,
+                config
+            );
             return response.data;
         } catch (error) {
             this.handleAxiosError(error);
         }
     }
 
-    public async get<T>(endpoint: string, config: AxiosRequestConfig = {}): Promise<T> {
+    public async get<T>(
+        endpoint: string,
+        config: AxiosRequestConfig = {}
+    ): Promise<T> {
         const response: AxiosResponse<T> = await this.api.get(endpoint, config);
         return response.data;
     }
 
-    public async post<T>(endpoint: string, data: any, config: AxiosRequestConfig = {}): Promise<T> {
-        const response: AxiosResponse<T> = await this.api.post(endpoint, data, config);
+    public async post<T>(
+        endpoint: string,
+        data: any,
+        config: AxiosRequestConfig = {}
+    ): Promise<T> {
+        const response: AxiosResponse<T> = await this.api.post(
+            endpoint,
+            data,
+            config
+        );
         return response.data;
     }
 }

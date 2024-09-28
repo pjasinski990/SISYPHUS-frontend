@@ -1,10 +1,17 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { TaskFormData } from "src/components/task/TaskForm";
-import { Task, taskService } from "../../service/taskService";
-import { useAuth } from "src/components/context/AuthContext";
-import { TaskDialog } from "src/components/task/TaskDialog";
-import { ConfirmDialog } from "src/components/library/ConfirmDialog";
-import { TaskItem } from "src/components/task/TaskItem";
+import React, {
+    createContext,
+    useCallback,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
+import { TaskFormData } from 'src/components/task/TaskForm';
+import { Task, taskService } from '../../service/taskService';
+import { useAuth } from 'src/components/context/AuthContext';
+import { TaskDialog } from 'src/components/task/TaskDialog';
+import { ConfirmDialog } from 'src/components/library/ConfirmDialog';
+import { TaskItem } from 'src/components/task/TaskItem';
 
 interface TaskInteractionProviderType {
     openCreateTaskDialog: () => void;
@@ -12,19 +19,16 @@ interface TaskInteractionProviderType {
     openRemoveTaskDialog: (task: Task) => void;
 }
 
-const TaskInteractionContext = createContext<TaskInteractionProviderType | undefined>(undefined);
+const TaskInteractionContext = createContext<
+    TaskInteractionProviderType | undefined
+>(undefined);
 
 export const TaskInteractionProvider: React.FC<{
-    listName: string,
-    tasks: Task[],
-    setTasks: (tasks: Task[]) => void,
-    children: React.ReactNode,
-}> = ({
-                                               listName,
-                                               tasks,
-                                               setTasks,
-                                               children,
-}) => {
+    listName: string;
+    tasks: Task[];
+    setTasks: (tasks: Task[]) => void;
+    children: React.ReactNode;
+}> = ({ listName, tasks, setTasks, children }) => {
     const { username } = useAuth();
     const [editingTask, setEditingTask] = useState<Task | null>(null);
     const [isCreateTaskDialogOpen, setIsCreateTaskDialogOpen] = useState(false);
@@ -42,55 +46,68 @@ export const TaskInteractionProvider: React.FC<{
         fetchData().then();
     }, [listName, setTasks]);
 
-    const createTask = useCallback(async (taskData: TaskFormData) => {
-        if (!username) {
-            throw Error('Error retrieving username');
-        }
-        try {
-            let newTask: Task = {
-                id: null,
-                ...taskData,
-                ownerUsername: username,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-                finishedAt: null,
+    const createTask = useCallback(
+        async (taskData: TaskFormData) => {
+            if (!username) {
+                throw Error('Error retrieving username');
             }
-            const created = await taskService.createTask(newTask)
-            setTasks([...tasks, created])
-        } catch (err) {
-            console.error('Failed to create task', err);
-        }
-    }, [setTasks, tasks, username]);
-
-    const editTask = useCallback(async (taskId: string, updatedTaskData: TaskFormData) => {
-        try {
-            const taskToUpdate = tasks.find((task) => task.id === taskId);
-            if (!taskToUpdate) {
-                console.error('Error: task not found');
-                return;
+            try {
+                let newTask: Task = {
+                    id: null,
+                    ...taskData,
+                    ownerUsername: username,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    finishedAt: null,
+                };
+                const created = await taskService.createTask(newTask);
+                setTasks([...tasks, created]);
+            } catch (err) {
+                console.error('Failed to create task', err);
             }
+        },
+        [setTasks, tasks, username]
+    );
 
-            const updatedTask: Task = {
-                ...taskToUpdate,
-                ...updatedTaskData,
-                updatedAt: new Date().toISOString()
-            };
+    const editTask = useCallback(
+        async (taskId: string, updatedTaskData: TaskFormData) => {
+            try {
+                const taskToUpdate = tasks.find(task => task.id === taskId);
+                if (!taskToUpdate) {
+                    console.error('Error: task not found');
+                    return;
+                }
 
-            setTasks(tasks.map(task => task.id === updatedTask.id ? updatedTask : task));
-            await taskService.updateTask(updatedTask);
-        } catch (error) {
-            console.error('Failed to update task:', error);
-        }
-    }, [setTasks, tasks]);
+                const updatedTask: Task = {
+                    ...taskToUpdate,
+                    ...updatedTaskData,
+                    updatedAt: new Date().toISOString(),
+                };
 
-    const removeTask = useCallback(async (taskId: string) => {
-        try {
-            await taskService.deleteTask(taskId);
-            setTasks(tasks.filter(task => task.id !== taskId));
-        } catch (error) {
-            console.error('Failed to remove task:', error);
-        }
-    }, [setTasks, tasks]);
+                setTasks(
+                    tasks.map(task =>
+                        task.id === updatedTask.id ? updatedTask : task
+                    )
+                );
+                await taskService.updateTask(updatedTask);
+            } catch (error) {
+                console.error('Failed to update task:', error);
+            }
+        },
+        [setTasks, tasks]
+    );
+
+    const removeTask = useCallback(
+        async (taskId: string) => {
+            try {
+                await taskService.deleteTask(taskId);
+                setTasks(tasks.filter(task => task.id !== taskId));
+            } catch (error) {
+                console.error('Failed to remove task:', error);
+            }
+        },
+        [setTasks, tasks]
+    );
 
     const handleTaskFormSubmit = useCallback(
         async (taskData: TaskFormData) => {
@@ -126,22 +143,33 @@ export const TaskInteractionProvider: React.FC<{
     }, []);
 
     const openEditTaskDialog = useCallback((task: Task) => {
-        setEditingTask(task)
+        setEditingTask(task);
     }, []);
 
     const openRemoveTaskDialog = useCallback((task: Task) => {
-        setRemovingTask(task)
+        setRemovingTask(task);
     }, []);
 
-    const contextValue = useMemo(() => ({
-        tasks,
-        openCreateTaskDialog: openCreateTaskDialog,
-        openEditTaskDialog: openEditTaskDialog,
-        openRemoveTaskDialog: openRemoveTaskDialog,
-        createTask: createTask,
-        editTask: editTask,
-        removeTask: removeTask,
-    }), [tasks, openCreateTaskDialog, openEditTaskDialog, openRemoveTaskDialog, createTask, editTask, removeTask]);
+    const contextValue = useMemo(
+        () => ({
+            tasks,
+            openCreateTaskDialog: openCreateTaskDialog,
+            openEditTaskDialog: openEditTaskDialog,
+            openRemoveTaskDialog: openRemoveTaskDialog,
+            createTask: createTask,
+            editTask: editTask,
+            removeTask: removeTask,
+        }),
+        [
+            tasks,
+            openCreateTaskDialog,
+            openEditTaskDialog,
+            openRemoveTaskDialog,
+            createTask,
+            editTask,
+            removeTask,
+        ]
+    );
 
     return (
         <TaskInteractionContext.Provider value={contextValue}>
@@ -151,9 +179,10 @@ export const TaskInteractionProvider: React.FC<{
                 initialData={editingTask}
                 onSubmit={handleTaskFormSubmit}
                 onCancel={handleTaskFormCancel}
-                title={`${editingTask ?
-                    `Edit ${listName.replace(/[^a-zA-Z]+/g, ' ').toLowerCase()} task` :
-                    `Create ${listName.replace(/[^a-zA-Z]+/g, ' ').toLowerCase()} task`
+                title={`${
+                    editingTask
+                        ? `Edit ${listName.replace(/[^a-zA-Z]+/g, ' ').toLowerCase()} task`
+                        : `Create ${listName.replace(/[^a-zA-Z]+/g, ' ').toLowerCase()} task`
                 }`}
             />
 
@@ -164,7 +193,9 @@ export const TaskInteractionProvider: React.FC<{
                 onConfirm={handleConfirmRemoveTask}
                 onCancel={handleCancelRemoveTask}
             >
-                {removingTask && <TaskItem task={removingTask} isVanity={true}/>}
+                {removingTask && (
+                    <TaskItem task={removingTask} isVanity={true} />
+                )}
             </ConfirmDialog>
             {children}
         </TaskInteractionContext.Provider>
@@ -174,7 +205,9 @@ export const TaskInteractionProvider: React.FC<{
 export const useTaskInteraction = () => {
     const context = useContext(TaskInteractionContext);
     if (context === undefined) {
-        throw new Error('useTaskInteraction must be used within a TaskInteractionProvider');
+        throw new Error(
+            'useTaskInteraction must be used within a TaskInteractionProvider'
+        );
     }
     return context;
 };

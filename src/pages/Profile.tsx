@@ -1,6 +1,11 @@
 import React from 'react';
 import { useAuth } from 'src/components/context/AuthContext';
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+} from '../components/ui/card';
 import Layout from '../components/Layout';
 
 const ProfilePage: React.FC = () => {

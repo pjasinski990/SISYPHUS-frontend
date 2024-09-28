@@ -1,13 +1,13 @@
-import { Task, TaskSize } from "../../service/taskService";
-import React from "react";
-import { Button } from "src/components/ui/button";
-import { Edit, Square, Trash } from "lucide-react";
-import { CSSTransition } from "react-transition-group";
-import "./TaskItemContent.css";
-import { categoryStyles } from "src/components/task/categoryShades";
-import { useTaskExtensions } from "src/components/context/TaskExtensionContext";
-import { useTaskInteraction } from "src/components/context/TaskInteractionContext";
-import ReactMarkdown from "react-markdown";
+import { Task, TaskSize } from '../../service/taskService';
+import React from 'react';
+import { Button } from 'src/components/ui/button';
+import { Edit, Square, Trash } from 'lucide-react';
+import { CSSTransition } from 'react-transition-group';
+import './TaskItemContent.css';
+import { categoryStyles } from 'src/components/task/categoryShades';
+import { useTaskExtensions } from 'src/components/context/TaskExtensionContext';
+import { useTaskInteraction } from 'src/components/context/TaskInteractionContext';
+import ReactMarkdown from 'react-markdown';
 
 interface TaskItemContentProps {
     task: Task;
@@ -28,9 +28,9 @@ export const TaskDetails: React.FC<{ task: Task }> = ({ task }) => (
 );
 
 export const TaskItemContent: React.FC<TaskItemContentProps> = ({
-                                                                    task,
-                                                                    showMetadata = true,
-                                                                }) => {
+    task,
+    showMetadata = true,
+}) => {
     const {
         categoryMarkerColorClass,
         categoryBgColorClass,
@@ -39,8 +39,8 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
         iconClass,
     } = categoryStyles[task.category];
 
-    const defaultBorderClass = "border-4 border-transparent";
-    const { openEditTaskDialog, openRemoveTaskDialog } = useTaskInteraction()
+    const defaultBorderClass = 'border-4 border-transparent';
+    const { openEditTaskDialog, openRemoveTaskDialog } = useTaskInteraction();
     const iconSize = task.size === TaskSize.SMALL ? 10 : 20;
 
     const { extraButtons } = useTaskExtensions();
@@ -55,21 +55,21 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                         size={iconSize}
                         style={{
                             marginTop: task.size === TaskSize.BIG ? '' : '8px',
-                            marginLeft: task.size === TaskSize.BIG ? '2px' : '7px',
-                            marginRight: task.size === TaskSize.BIG ? '4px' : '7px',
+                            marginLeft:
+                                task.size === TaskSize.BIG ? '2px' : '7px',
+                            marginRight:
+                                task.size === TaskSize.BIG ? '4px' : '7px',
                         }}
                         className={`mr-2 inline flex-shrink-0 self-start ${iconClass}`}
                         fill="currentColor"
                     />
-                    <h4 className="font-semibold leading-snug">
-                        {task.title}
-                    </h4>
+                    <h4 className="font-semibold leading-snug">{task.title}</h4>
                 </div>
                 <div className="flex items-start space-x-1">
                     <Button
                         variant="ghost"
                         size="sm"
-                        onClick={(e) => {
+                        onClick={e => {
                             e.stopPropagation();
                             openEditTaskDialog(task);
                         }}
@@ -77,12 +77,12 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                         aria-label="Edit Task"
                         title="Edit Task"
                     >
-                        <Edit className="h-4 w-4"/>
+                        <Edit className="h-4 w-4" />
                     </Button>
                     <Button
                         variant="ghost"
                         size="sm"
-                        onClick={(e) => {
+                        onClick={e => {
                             e.stopPropagation();
                             openRemoveTaskDialog(task);
                         }}
@@ -90,7 +90,7 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                         aria-label="Remove Task"
                         title="Remove Task"
                     >
-                        <Trash className="h-4 w-4"/>
+                        <Trash className="h-4 w-4" />
                     </Button>
                     {extraButtons.map((buttonConfig, index) => {
                         const IconComponent = buttonConfig.icon;
@@ -99,7 +99,7 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                                 key={index}
                                 variant="ghost"
                                 size="sm"
-                                onClick={(e) => {
+                                onClick={e => {
                                     e.stopPropagation();
                                     buttonConfig.handler(task);
                                 }}
@@ -107,16 +107,16 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                                 aria-label={`Extension Button ${index + 1}`}
                                 title={`Extension Button ${index + 1}`}
                             >
-                                <IconComponent className="h-4 w-4"/>
+                                <IconComponent className="h-4 w-4" />
                             </Button>
                         );
                     })}
                 </div>
             </div>
-            <div className={`${categoryMarkerColorClass} prose dark:prose-invert px-2`}>
-                <ReactMarkdown>
-                    {task.description}
-                </ReactMarkdown>
+            <div
+                className={`${categoryMarkerColorClass} prose dark:prose-invert px-2`}
+            >
+                <ReactMarkdown>{task.description}</ReactMarkdown>
             </div>
             <CSSTransition
                 in={showMetadata}
@@ -124,7 +124,7 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                 classNames="metadata"
                 unmountOnExit
             >
-                <TaskDetails task={task}/>
+                <TaskDetails task={task} />
             </CSSTransition>
         </div>
     );

@@ -16,7 +16,9 @@ interface ShortcutsContextType {
     setShortcuts: React.Dispatch<React.SetStateAction<Shortcut[]>>;
 }
 
-const ShortcutsContext = createContext<ShortcutsContextType | undefined>(undefined);
+const ShortcutsContext = createContext<ShortcutsContextType | undefined>(
+    undefined
+);
 
 export const useShortcuts = () => {
     const context = useContext(ShortcutsContext);

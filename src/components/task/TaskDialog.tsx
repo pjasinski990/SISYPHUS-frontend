@@ -1,7 +1,12 @@
 import React, { useEffect, useRef } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "src/components/ui/dialog";
-import { TaskForm, TaskFormData } from "src/components/task/TaskForm";
-import { Task } from "../../service/taskService";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from 'src/components/ui/dialog';
+import { TaskForm, TaskFormData } from 'src/components/task/TaskForm';
+import { Task } from '../../service/taskService';
 
 interface TaskDialogProps {
     open: boolean;
@@ -13,13 +18,13 @@ interface TaskDialogProps {
 }
 
 export const TaskDialog: React.FC<TaskDialogProps> = ({
-                                                          open,
-                                                          listName,
-                                                          initialData,
-                                                          onSubmit,
-                                                          onCancel,
-                                                          title,
-                                                      }) => {
+    open,
+    listName,
+    initialData,
+    onSubmit,
+    onCancel,
+    title,
+}) => {
     const formRef = useRef<HTMLFormElement | null>(null);
 
     useEffect(() => {
@@ -42,8 +47,11 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({
     }, [open]);
 
     return (
-        <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onCancel()}>
-            <DialogContent className={'min-w-[800px]'} aria-describedby={"task dialog"}>
+        <Dialog open={open} onOpenChange={isOpen => !isOpen && onCancel()}>
+            <DialogContent
+                className={'min-w-[800px]'}
+                aria-describedby={'task dialog'}
+            >
                 <DialogHeader>
                     <DialogTitle>{title}</DialogTitle>
                 </DialogHeader>

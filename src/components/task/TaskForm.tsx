@@ -1,11 +1,17 @@
-import { Task, TaskCategory, TaskSize } from "../../service/taskService";
-import React, { forwardRef } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "src/components/ui/select";
-import { Button } from "src/components/ui/button";
-import { EmojiInput } from "src/components/library/EmojiInput";
-import { EmojiTextarea } from "src/components/library/EmojiTextArea";
-import { Input } from "src/components/ui/input";
+import { Task, TaskCategory, TaskSize } from '../../service/taskService';
+import React, { forwardRef } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from 'src/components/ui/select';
+import { Button } from 'src/components/ui/button';
+import { EmojiInput } from 'src/components/library/EmojiInput';
+import { EmojiTextarea } from 'src/components/library/EmojiTextArea';
+import { Input } from 'src/components/ui/input';
 
 export interface TaskFormData {
     title: string;
@@ -34,22 +40,22 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
         } = useForm<TaskFormData>({
             defaultValues: initialData
                 ? {
-                    title: initialData.title,
-                    description: initialData.description,
-                    category: initialData.category,
-                    size: initialData.size,
-                    listName: initialData.listName,
-                    duration: initialData.duration,
-                    startTime: initialData.startTime,
-                }
+                      title: initialData.title,
+                      description: initialData.description,
+                      category: initialData.category,
+                      size: initialData.size,
+                      listName: initialData.listName,
+                      duration: initialData.duration,
+                      startTime: initialData.startTime,
+                  }
                 : {
-                    title: '',
-                    description: '',
-                    category: TaskCategory.WHITE,
-                    size: TaskSize.SMALL,
-                    duration: '',
-                    startTime: '',
-                },
+                      title: '',
+                      description: '',
+                      category: TaskCategory.WHITE,
+                      size: TaskSize.SMALL,
+                      duration: '',
+                      startTime: '',
+                  },
         });
 
         const onFormSubmit = (data: TaskFormData) => {
@@ -66,9 +72,16 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
         };
 
         return (
-            <form ref={ref} onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
+            <form
+                ref={ref}
+                onSubmit={handleSubmit(onFormSubmit)}
+                className="space-y-6"
+            >
                 <div>
-                    <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+                    <label
+                        htmlFor="title"
+                        className="block text-sm font-medium text-gray-700"
+                    >
                         Title
                     </label>
                     <Controller
@@ -85,7 +98,9 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                                     autoComplete="off"
                                 />
                                 {errors.title && (
-                                    <p className="mt-1 text-sm text-red-600">{errors.title.message}</p>
+                                    <p className="mt-1 text-sm text-red-600">
+                                        {errors.title.message}
+                                    </p>
                                 )}
                             </>
                         )}
@@ -93,7 +108,10 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                 </div>
 
                 <div>
-                    <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+                    <label
+                        htmlFor="description"
+                        className="block text-sm font-medium text-gray-700"
+                    >
                         Description
                     </label>
                     <Controller
@@ -110,21 +128,31 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                     />
                 </div>
 
-
                 <div>
-                    <label htmlFor="category" className="block text-sm font-medium text-gray-700">
+                    <label
+                        htmlFor="category"
+                        className="block text-sm font-medium text-gray-700"
+                    >
                         Category
                     </label>
                     <Controller
                         name="category"
                         control={control}
                         render={({ field }) => (
-                            <Select onValueChange={field.onChange} value={field.value}>
-                                <SelectTrigger id="category" onKeyDown={handleKeyDown}>
-                                    <SelectValue placeholder="Select category">{field.value}</SelectValue>
+                            <Select
+                                onValueChange={field.onChange}
+                                value={field.value}
+                            >
+                                <SelectTrigger
+                                    id="category"
+                                    onKeyDown={handleKeyDown}
+                                >
+                                    <SelectValue placeholder="Select category">
+                                        {field.value}
+                                    </SelectValue>
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {Object.values(TaskCategory).map((value) => (
+                                    {Object.values(TaskCategory).map(value => (
                                         <SelectItem key={value} value={value}>
                                             {value}
                                         </SelectItem>
@@ -136,19 +164,30 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                 </div>
 
                 <div>
-                    <label htmlFor="size" className="block text-sm font-medium text-gray-700">
+                    <label
+                        htmlFor="size"
+                        className="block text-sm font-medium text-gray-700"
+                    >
                         Size
                     </label>
                     <Controller
                         name="size"
                         control={control}
                         render={({ field }) => (
-                            <Select onValueChange={field.onChange} value={field.value}>
-                                <SelectTrigger id="size" onKeyDown={handleKeyDown}>
-                                    <SelectValue placeholder="Select size">{field.value}</SelectValue>
+                            <Select
+                                onValueChange={field.onChange}
+                                value={field.value}
+                            >
+                                <SelectTrigger
+                                    id="size"
+                                    onKeyDown={handleKeyDown}
+                                >
+                                    <SelectValue placeholder="Select size">
+                                        {field.value}
+                                    </SelectValue>
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {Object.values(TaskSize).map((value) => (
+                                    {Object.values(TaskSize).map(value => (
                                         <SelectItem key={value} value={value}>
                                             {value}
                                         </SelectItem>
@@ -160,12 +199,15 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                 </div>
 
                 <div>
-                    <label htmlFor="startTime" className="block text-sm font-medium text-gray-700">
+                    <label
+                        htmlFor="startTime"
+                        className="block text-sm font-medium text-gray-700"
+                    >
                         Start Time
                     </label>
                     <Input
                         id="startTime"
-                        {...register("startTime")}
+                        {...register('startTime')}
                         placeholder="Start Time"
                         type="time"
                     />

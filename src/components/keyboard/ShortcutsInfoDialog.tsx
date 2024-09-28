@@ -11,9 +11,9 @@ import {
     DialogTrigger,
 } from 'src/components/ui/dialog';
 import ShortcutsList from './ShortcutsList';
-import { Description } from "@radix-ui/react-dialog";
-import { Shortcut } from "src/components/context/ShortcutsContext";
-import { useRegisterShortcut } from "src/components/context/RegisterShortcutContext";
+import { Description } from '@radix-ui/react-dialog';
+import { Shortcut } from 'src/components/context/ShortcutsContext';
+import { useRegisterShortcut } from 'src/components/context/RegisterShortcutContext';
 
 const ShortcutsInfoDialog: React.FC = () => {
     const [open, setOpen] = React.useState(false);
@@ -22,13 +22,16 @@ const ShortcutsInfoDialog: React.FC = () => {
         setOpen(true);
     }, []);
 
-    const addTaskShortcut: Shortcut = useMemo(() => ({
-        id: 'open-shortcut-info-dialog',
-        keys: ['Ctrl', '?'],
-        action: openDialog,
-        description: 'Open keyboard shortcuts dialog',
-        order: 2,
-    }), [openDialog]);
+    const addTaskShortcut: Shortcut = useMemo(
+        () => ({
+            id: 'open-shortcut-info-dialog',
+            keys: ['Ctrl', '?'],
+            action: openDialog,
+            description: 'Open keyboard shortcuts dialog',
+            order: 2,
+        }),
+        [openDialog]
+    );
 
     useRegisterShortcut(addTaskShortcut);
 
@@ -44,7 +47,10 @@ const ShortcutsInfoDialog: React.FC = () => {
                     <span>Shortcuts</span>
                 </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-xl" aria-describedby={"list of shortcuts"}>
+            <DialogContent
+                className="max-w-xl"
+                aria-describedby={'list of shortcuts'}
+            >
                 <DialogHeader>
                     <DialogTitle>Keyboard Shortcuts</DialogTitle>
                 </DialogHeader>

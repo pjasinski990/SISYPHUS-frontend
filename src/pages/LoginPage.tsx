@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from "src/components/ui/card";
-import { Input } from "src/components/ui/input";
-import { Button } from "src/components/ui/button";
-import { Alert, AlertDescription } from "src/components/ui/alert";
-import Layout from "src/components/Layout";
-import { useAuth } from "src/components/context/AuthContext";
-import { AuthResponse, AuthService, authService } from "../service/authService";
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+} from 'src/components/ui/card';
+import { Input } from 'src/components/ui/input';
+import { Button } from 'src/components/ui/button';
+import { Alert, AlertDescription } from 'src/components/ui/alert';
+import Layout from 'src/components/Layout';
+import { useAuth } from 'src/components/context/AuthContext';
+import { AuthResponse, AuthService, authService } from '../service/authService';
 
 const LoginPage: React.FC = () => {
     const [isLogin, setIsLogin] = useState(true);
@@ -42,22 +47,21 @@ const LoginPage: React.FC = () => {
         const refreshToken = AuthService.extractRefreshToken(response);
         setToken(token);
         setRefreshToken(refreshToken);
-        const tokenSet = await AuthService.waitForToken(token)
+        const tokenSet = await AuthService.waitForToken(token);
         if (tokenSet) {
             navigate('/dashboard');
+        } else {
+            setMessage(`Error logging in. Try again later.`);
         }
-        else {
-            setMessage(`Error logging in. Try again later.`)
-        }
-    }
+    };
 
     const handleSuccessfulRegisterResponse = async (response: AuthResponse) => {
-        setMessage(`${response.message}. Redirecting to login.`)
+        setMessage(`${response.message}. Redirecting to login.`);
         setTimeout(() => {
-            setIsLogin(true)
-            setMessage('')
-        }, 1000)
-    }
+            setIsLogin(true);
+            setMessage('');
+        }, 1000);
+    };
 
     const toggleAuthMode = () => setIsLogin(!isLogin);
 
@@ -73,14 +77,14 @@ const LoginPage: React.FC = () => {
                             type="text"
                             placeholder="Username"
                             value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            onChange={e => setUsername(e.target.value)}
                             required
                         />
                         <Input
                             type="password"
                             placeholder="Password"
                             value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            onChange={e => setPassword(e.target.value)}
                             required
                         />
                         <Button type="submit" className="w-full">
@@ -93,7 +97,9 @@ const LoginPage: React.FC = () => {
                             onClick={toggleAuthMode}
                             className="text-sm"
                         >
-                            {isLogin ? 'Need an account? Register' : 'Have an account? Login'}
+                            {isLogin
+                                ? 'Need an account? Register'
+                                : 'Have an account? Login'}
                         </Button>
                     </div>
                     {message && (

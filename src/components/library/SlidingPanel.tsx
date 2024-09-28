@@ -9,11 +9,11 @@ interface SlidingPanelProps {
 }
 
 export const SlidingPanel: React.FC<SlidingPanelProps> = ({
-                                                              isOpen,
-                                                              setIsOpen,
-                                                              children,
-                                                              maxWidth,
-                                                          }) => {
+    isOpen,
+    setIsOpen,
+    children,
+    maxWidth,
+}) => {
     const widthStyles = useSpring({
         width: isOpen ? maxWidth : 0,
         config: { tension: 300, friction: 30 },

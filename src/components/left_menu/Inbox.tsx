@@ -1,14 +1,14 @@
-import React, { useEffect, useMemo, useRef } from "react";
-import { Card, CardContent } from "src/components/ui/card";
-import { TaskList } from "src/components/task_list/TaskList";
-import { useTaskInteraction } from "src/components/context/TaskInteractionContext";
-import { useTaskList } from "src/components/context/TaskListsContext";
-import { useRegisterShortcut } from "src/components/context/RegisterShortcutContext";
-import { Shortcut } from "src/components/context/ShortcutsContext";
+import React, { useEffect, useMemo, useRef } from 'react';
+import { Card, CardContent } from 'src/components/ui/card';
+import { TaskList } from 'src/components/task_list/TaskList';
+import { useTaskInteraction } from 'src/components/context/TaskInteractionContext';
+import { useTaskList } from 'src/components/context/TaskListsContext';
+import { useRegisterShortcut } from 'src/components/context/RegisterShortcutContext';
+import { Shortcut } from 'src/components/context/ShortcutsContext';
 
 export const Inbox: React.FC = () => {
     const tasks = useTaskList('INBOX').tasks;
-    const { openCreateTaskDialog } = useTaskInteraction()
+    const { openCreateTaskDialog } = useTaskInteraction();
 
     const cardContentRef = useRef<HTMLDivElement>(null);
     useEffect(() => {

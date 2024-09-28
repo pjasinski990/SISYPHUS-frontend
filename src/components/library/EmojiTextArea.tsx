@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect, KeyboardEvent } from 'react';
 import { Textarea, TextareaProps } from 'src/components/ui/textarea';
 import Fuse from 'fuse.js';
-import { Emoji } from "@emoji-mart/data";
-import { fetchEmojis } from "src/lib/emojiData";
+import { Emoji } from '@emoji-mart/data';
+import { fetchEmojis } from 'src/lib/emojiData';
 import ReactMarkdown from 'react-markdown';
 
 interface EmojiTextareaProps extends TextareaProps {
@@ -10,7 +10,11 @@ interface EmojiTextareaProps extends TextareaProps {
     onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }
 
-export const EmojiTextarea: React.FC<EmojiTextareaProps> = ({ value, onChange, ...props }) => {
+export const EmojiTextarea: React.FC<EmojiTextareaProps> = ({
+    value,
+    onChange,
+    ...props
+}) => {
     const [text, setText] = useState(value || '');
     const [filteredEmojis, setFilteredEmojis] = useState<Emoji[]>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
@@ -27,7 +31,7 @@ export const EmojiTextarea: React.FC<EmojiTextareaProps> = ({ value, onChange, .
     }, [value]);
 
     useEffect(() => {
-        fetchEmojis().then((res) => {
+        fetchEmojis().then(res => {
             setEmojiList(res);
         });
     }, []);
@@ -44,10 +48,13 @@ export const EmojiTextarea: React.FC<EmojiTextareaProps> = ({ value, onChange, .
     useEffect(() => {
         const forwardScroll = 2;
         if (selectedIndex >= 0 && listItemRefs.current[selectedIndex]) {
-            const nItems = listItemRefs.current.length
+            const nItems = listItemRefs.current.length;
             let scrollIndex = selectedIndex;
-            if (selectedIndex < forwardScroll || selectedIndex > nItems - forwardScroll - 1) {
-                scrollIndex = selectedIndex
+            if (
+                selectedIndex < forwardScroll ||
+                selectedIndex > nItems - forwardScroll - 1
+            ) {
+                scrollIndex = selectedIndex;
             } else if (direction === 'down') {
                 scrollIndex = (selectedIndex + forwardScroll) % nItems;
             } else if (direction === 'up') {
@@ -59,7 +66,6 @@ export const EmojiTextarea: React.FC<EmojiTextareaProps> = ({ value, onChange, .
             });
         }
     }, [direction, selectedIndex]);
-
 
     const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const newText = e.target.value;
@@ -73,7 +79,7 @@ export const EmojiTextarea: React.FC<EmojiTextareaProps> = ({ value, onChange, .
             const query = match[1];
             if (query.length > 0 && fuse.current) {
                 const results = fuse.current.search(query);
-                const emojis = results.slice(0, 12).map((result) => result.item);
+                const emojis = results.slice(0, 12).map(result => result.item);
                 setFilteredEmojis(emojis);
                 setShowSuggestions(emojis.length > 0);
                 setSelectedIndex(emojis.length > 0 ? 0 : -1);
@@ -93,12 +99,15 @@ export const EmojiTextarea: React.FC<EmojiTextareaProps> = ({ value, onChange, .
             if (replaceMatch) {
                 const code = replaceMatch[1];
                 const emoji = emojiList.find(
-                    (e) => e.id === code || e.name.toLowerCase() === code.toLowerCase()
+                    e =>
+                        e.id === code ||
+                        e.name.toLowerCase() === code.toLowerCase()
                 );
                 if (emoji) {
                     const beforeMatch = upToCursor.slice(0, replaceMatch.index);
                     const afterMatch = fullText.slice(cursorPosition);
-                    const newTextUpToMatch = beforeMatch + emoji.skins[0].native;
+                    const newTextUpToMatch =
+                        beforeMatch + emoji.skins[0].native;
                     const updatedText = newTextUpToMatch + afterMatch;
 
                     setText(updatedText);
@@ -108,7 +117,10 @@ export const EmojiTextarea: React.FC<EmojiTextareaProps> = ({ value, onChange, .
                     const newCursorPosition = newTextUpToMatch.length;
                     setTimeout(() => {
                         if (textAreaRef.current) {
-                            textAreaRef.current.setSelectionRange(newCursorPosition, newCursorPosition);
+                            textAreaRef.current.setSelectionRange(
+                                newCursorPosition,
+                                newCursorPosition
+                            );
                             textAreaRef.current.focus();
                         }
                     }, 0);
@@ -131,11 +143,15 @@ export const EmojiTextarea: React.FC<EmojiTextareaProps> = ({ value, onChange, .
     };
 
     const handleEmojiSelect = (emoji: Emoji) => {
-        const cursorPosition = textAreaRef.current?.selectionStart || text.length;
+        const cursorPosition =
+            textAreaRef.current?.selectionStart || text.length;
         const textUpToCursor = text.slice(0, cursorPosition);
         const textAfterCursor = text.slice(cursorPosition);
 
-        const newTextUpToCursor = textUpToCursor.replace(/:([a-zA-Z0-9_+-]*)$/, emoji.skins[0].native);
+        const newTextUpToCursor = textUpToCursor.replace(
+            /:([a-zA-Z0-9_+-]*)$/,
+            emoji.skins[0].native
+        );
         const newText = newTextUpToCursor + textAfterCursor;
 
         setText(newText);
@@ -145,7 +161,10 @@ export const EmojiTextarea: React.FC<EmojiTextareaProps> = ({ value, onChange, .
         const newCursorPosition = newTextUpToCursor.length;
         setTimeout(() => {
             if (textAreaRef.current) {
-                textAreaRef.current.setSelectionRange(newCursorPosition, newCursorPosition);
+                textAreaRef.current.setSelectionRange(
+                    newCursorPosition,
+                    newCursorPosition
+                );
                 textAreaRef.current.focus();
             }
         }, 0);
@@ -164,17 +183,22 @@ export const EmojiTextarea: React.FC<EmojiTextareaProps> = ({ value, onChange, .
         if (showSuggestions && filteredEmojis.length > 0) {
             let handled = false;
             const isCtrlHeld = e.ctrlKey;
-            const isDown = (isCtrlHeld && e.key === 'j') || e.key === 'ArrowDown';
+            const isDown =
+                (isCtrlHeld && e.key === 'j') || e.key === 'ArrowDown';
             const isUp = (isCtrlHeld && e.key === 'k') || e.key === 'ArrowUp';
             if (isDown) {
                 e.preventDefault();
-                setSelectedIndex((prev) => (prev + 1) % filteredEmojis.length);
-                setDirection('down')
+                setSelectedIndex(prev => (prev + 1) % filteredEmojis.length);
+                setDirection('down');
                 handled = true;
             } else if (isUp) {
                 e.preventDefault();
-                setSelectedIndex((prev) => (prev - 1 + filteredEmojis.length) % filteredEmojis.length);
-                setDirection('up')
+                setSelectedIndex(
+                    prev =>
+                        (prev - 1 + filteredEmojis.length) %
+                        filteredEmojis.length
+                );
+                setDirection('up');
                 handled = true;
             }
 
@@ -183,7 +207,10 @@ export const EmojiTextarea: React.FC<EmojiTextareaProps> = ({ value, onChange, .
             }
 
             if (e.key === 'Enter') {
-                if (selectedIndex >= 0 && selectedIndex < filteredEmojis.length) {
+                if (
+                    selectedIndex >= 0 &&
+                    selectedIndex < filteredEmojis.length
+                ) {
                     e.preventDefault();
                     handleEmojiSelect(filteredEmojis[selectedIndex]);
                 }
@@ -225,7 +252,7 @@ export const EmojiTextarea: React.FC<EmojiTextareaProps> = ({ value, onChange, .
                         {filteredEmojis.map((emoji, index) => (
                             <li
                                 key={emoji.id}
-                                ref={(el) => (listItemRefs.current[index] = el)}
+                                ref={el => (listItemRefs.current[index] = el)}
                                 className={`p-2 cursor-pointer ease-in-out ${
                                     index === selectedIndex
                                         ? 'bg-slate-200 dark:bg-slate-950'

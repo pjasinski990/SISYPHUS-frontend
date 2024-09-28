@@ -1,23 +1,22 @@
-import React, { useEffect, useMemo, useRef } from "react";
-import { Card, CardContent } from "src/components/ui/card";
-import { TaskPropertiesProvider } from "src/components/context/TaskPropertiesContext";
-import { Shortcut } from "src/components/context/ShortcutsContext";
-import { useRegisterShortcut } from "src/components/context/RegisterShortcutContext";
-import { TaskList } from "src/components/task_list/TaskList";
-import { TaskExtensionProvider } from "src/components/context/TaskExtensionContext";
-import { ArrowRight } from "lucide-react";
-import { useTaskInteraction } from "src/components/context/TaskInteractionContext";
-import { useTaskList } from "src/components/context/TaskListsContext";
-import { Task } from "../../service/taskService";
+import React, { useEffect, useMemo, useRef } from 'react';
+import { Card, CardContent } from 'src/components/ui/card';
+import { Shortcut } from 'src/components/context/ShortcutsContext';
+import { useRegisterShortcut } from 'src/components/context/RegisterShortcutContext';
+import { TaskList } from 'src/components/task_list/TaskList';
+import { TaskExtensionProvider } from 'src/components/context/TaskExtensionContext';
+import { ArrowRight } from 'lucide-react';
+import { useTaskInteraction } from 'src/components/context/TaskInteractionContext';
+import { useTaskList } from 'src/components/context/TaskListsContext';
+import { Task } from '../../service/taskService';
 
 export const ReusableTaskPicker: React.FC = () => {
-    const todoContext = useTaskList('DAILY_TODO')
+    const todoContext = useTaskList('DAILY_TODO');
     const addTaskToDailyPlan = (newTask: Task) => {
-        todoContext.setTasks([...todoContext.tasks, newTask])
-    }
+        todoContext.setTasks([...todoContext.tasks, newTask]);
+    };
 
-    const tasks = useTaskList('REUSABLE').tasks
-    const { openCreateTaskDialog } = useTaskInteraction()
+    const tasks = useTaskList('REUSABLE').tasks;
+    const { openCreateTaskDialog } = useTaskInteraction();
 
     const cardContentRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
@@ -48,14 +47,21 @@ export const ReusableTaskPicker: React.FC = () => {
                 ref={cardContentRef}
                 className="flex-grow h-full overflow-y-auto overflow-x-clip scrollbar-custom"
             >
-                <TaskExtensionProvider extraButtons={[{icon: ArrowRight, handler: addTaskToDailyPlan}]}>
+                <TaskExtensionProvider
+                    extraButtons={[
+                        { icon: ArrowRight, handler: addTaskToDailyPlan },
+                    ]}
+                >
                     <div className={'mt-6'}>
                         <TaskList
                             tasks={tasks}
                             placeholderNode={
                                 <>
                                     <span>reusable tasks.</span>
-                                    <span>the building blocks of your monotone life.</span>
+                                    <span>
+                                        the building blocks of your monotone
+                                        life.
+                                    </span>
                                 </>
                             }
                             title={'Reusable tasks'}

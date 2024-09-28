@@ -1,7 +1,10 @@
-import { ChevronRight } from "lucide-react";
-import React from "react";
+import { ChevronRight } from 'lucide-react';
+import React from 'react';
 
-export const SlidingPanelToggleRibbon: React.FC<{toggleOpen: () => void, isOpen: boolean}> = ({ toggleOpen, isOpen }) => {
+export const SlidingPanelToggleRibbon: React.FC<{
+    toggleOpen: () => void;
+    isOpen: boolean;
+}> = ({ toggleOpen, isOpen }) => {
     return (
         <div
             onClick={toggleOpen}
@@ -15,4 +18,4 @@ export const SlidingPanelToggleRibbon: React.FC<{toggleOpen: () => void, isOpen:
             />
         </div>
     );
-}
+};

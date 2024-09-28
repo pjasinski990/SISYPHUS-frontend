@@ -1,6 +1,10 @@
 import React from 'react';
-import { useShortcuts, Shortcut, Key } from "src/components/context/ShortcutsContext";
-import KbdKey from "src/components/keyboard/KbdKey";
+import {
+    useShortcuts,
+    Shortcut,
+    Key,
+} from 'src/components/context/ShortcutsContext';
+import KbdKey from 'src/components/keyboard/KbdKey';
 
 const ShortcutsList: React.FC = () => {
     const { shortcuts } = useShortcuts();
@@ -27,7 +31,11 @@ const ShortcutsList: React.FC = () => {
                         <div className="flex items-center space-x-1 mr-4">
                             {renderKeys(shortcut.keys)}
                         </div>
-                        <div className="font-mono text-sm"> - {shortcut.description || 'No description available'}</div>
+                        <div className="font-mono text-sm">
+                            {' '}
+                            -{' '}
+                            {shortcut.description || 'No description available'}
+                        </div>
                     </li>
                 ))}
             </ul>

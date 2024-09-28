@@ -1,19 +1,20 @@
-import React, { createContext, useContext } from "react";
-import { DraggableProvided, DraggableStateSnapshot } from "@hello-pangea/dnd";
+import React, { createContext, useContext } from 'react';
+import { DraggableProvided, DraggableStateSnapshot } from '@hello-pangea/dnd';
 
 interface DraggableContextType {
     provided: DraggableProvided;
     snapshot: DraggableStateSnapshot;
 }
 
-const DraggableContext = createContext<DraggableContextType | undefined>(undefined);
+const DraggableContext = createContext<DraggableContextType | undefined>(
+    undefined
+);
 
 export const DraggableProvider: React.FC<{
     provided: DraggableProvided;
     snapshot: DraggableStateSnapshot;
-    children: React.ReactNode
+    children: React.ReactNode;
 }> = ({ provided, snapshot, children }) => {
-
     return (
         <DraggableContext.Provider value={{ provided, snapshot }}>
             {children}

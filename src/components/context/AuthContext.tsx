@@ -12,9 +12,15 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [token, setToken] = useState<string | null>(() => localStorage.getItem('authToken'));
-    const [refreshToken, setRefreshToken] = useState<string | null>(() => localStorage.getItem('refreshToken'));
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+    children,
+}) => {
+    const [token, setToken] = useState<string | null>(() =>
+        localStorage.getItem('authToken')
+    );
+    const [refreshToken, setRefreshToken] = useState<string | null>(() =>
+        localStorage.getItem('refreshToken')
+    );
     const [username, setUsername] = useState<string | null>(() => {
         const storedToken = localStorage.getItem('authToken');
         return storedToken ? extractUsernameFromToken(storedToken) : null;
@@ -49,7 +55,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 atob(base64)
                     .split('')
                     .map(function (c) {
-                        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                        return (
+                            '%' +
+                            ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+                        );
                     })
                     .join('')
             );
@@ -64,7 +73,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     useEffect(() => {
         const handleTokenRefreshed = (event: CustomEvent) => {
-            const { token: newToken, refreshToken: newRefreshToken } = event.detail;
+            const { token: newToken, refreshToken: newRefreshToken } =
+                event.detail;
             setToken(newToken);
             setUsername(newToken ? extractUsernameFromToken(newToken) : null);
             if (newRefreshToken) {
@@ -78,11 +88,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setUsername(null);
         };
 
-        window.addEventListener('tokenRefreshed', handleTokenRefreshed as EventListener);
+        window.addEventListener(
+            'tokenRefreshed',
+            handleTokenRefreshed as EventListener
+        );
         window.addEventListener('authLogout', handleLogout);
 
         return () => {
-            window.removeEventListener('tokenRefreshed', handleTokenRefreshed as EventListener);
+            window.removeEventListener(
+                'tokenRefreshed',
+                handleTokenRefreshed as EventListener
+            );
             window.removeEventListener('authLogout', handleLogout);
         };
     }, []);
@@ -95,7 +111,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     return (
-        <AuthContext.Provider value={{ token, setToken, refreshToken, setRefreshToken, logout, isAuthenticated, username }}>
+        <AuthContext.Provider
+            value={{
+                token,
+                setToken,
+                refreshToken,
+                setRefreshToken,
+                logout,
+                isAuthenticated,
+                username,
+            }}
+        >
             {children}
         </AuthContext.Provider>
     );

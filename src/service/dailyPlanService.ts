@@ -1,12 +1,12 @@
-import { apiService } from "./apiService";
-import { Task } from "./taskService";
+import { apiService } from './apiService';
+import { Task } from './taskService';
 
 export interface DailyPlan {
-    id: string,
-    ownerUsername: string,
-    day: string,    // iso date (yyyy-MM-dd)
-    todo: Task[],
-    done: Task[],
+    id: string;
+    ownerUsername: string;
+    day: string; // iso date (yyyy-MM-dd)
+    todo: Task[];
+    done: Task[];
 }
 
 export interface GetDailyPlanResponse {
@@ -15,7 +15,10 @@ export interface GetDailyPlanResponse {
 
 class DailyPlanService {
     async updateDailyPlan(dailyPlan: DailyPlan): Promise<any> {
-        return apiService.authenticatedPut(`/daily-plan/${dailyPlan.day}`, dailyPlan);
+        return apiService.authenticatedPut(
+            `/daily-plan/${dailyPlan.day}`,
+            dailyPlan
+        );
     }
 
     async getDailyPlan(date: string): Promise<GetDailyPlanResponse> {
@@ -23,4 +26,4 @@ class DailyPlanService {
     }
 }
 
-export const dailyPlanService = new DailyPlanService()
+export const dailyPlanService = new DailyPlanService();

@@ -1,6 +1,6 @@
-import React, { createContext, useContext, ReactNode } from "react";
-import { Task } from "../../service/taskService";
-import { LucideIcon } from "lucide-react";
+import React, { createContext, useContext, ReactNode } from 'react';
+import { Task } from '../../service/taskService';
+import { LucideIcon } from 'lucide-react';
 
 export interface TaskExtensionButton {
     icon: LucideIcon;
@@ -21,9 +21,9 @@ interface TaskExtensionProviderProps {
 }
 
 export const TaskExtensionProvider: React.FC<TaskExtensionProviderProps> = ({
-                                                                                children,
-                                                                                extraButtons = [],
-                                                                            }) => {
+    children,
+    extraButtons = [],
+}) => {
     return (
         <TaskExtensionContext.Provider value={{ extraButtons }}>
             {children}
