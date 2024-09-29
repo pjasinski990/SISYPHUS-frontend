@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Pie } from 'react-chartjs-2';
+import { Pie, Radar } from 'react-chartjs-2';
 import { StatsResponse, statsService } from '../service/statsService';
 import { TaskCategory, TaskSize } from '../service/taskService';
 import {
@@ -17,14 +17,29 @@ import {
     Tooltip as ChartTooltip,
     Legend as ChartLegend,
     ChartOptions,
+    RadialLinearScale,
+    PointElement,
+    LineElement,
+    Filler,
 } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { TAILWIND_COLORS } from 'src/components/library/TailwindColors';
+import { hexToRgba } from 'src/lib/utils';
 
-ChartJS.register(ArcElement, ChartTooltip, ChartLegend, ChartDataLabels);
+ChartJS.register(
+    ArcElement,
+    ChartTooltip,
+    ChartLegend,
+    ChartDataLabels,
+    RadialLinearScale,
+    PointElement,
+    LineElement,
+    Filler
+);
 
 const StatsPage: React.FC = () => {
-    const [chartData, setChartData] = useState<any>(null);
+    const [pieChartData, setPieChartData] = useState<any>(null);
+    const [radarChartData, setRadarChartData] = useState<any>(null);
     const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
 
     useEffect(() => {
@@ -70,46 +85,103 @@ const StatsPage: React.FC = () => {
             .then((stats: StatsResponse[]) => {
                 const categoryTotals: { [key: string]: number } = {};
 
+                const radarData: {
+                    [key: string]: { small: number; big: number };
+                } = {};
+
                 stats.forEach(stat => {
-                    const weight = stat.size === TaskSize.BIG ? 3 : 1;
                     const category = stat.category;
 
+                    const weight = stat.size === TaskSize.BIG ? 3 : 1;
                     if (!categoryTotals[category]) {
                         categoryTotals[category] = 0;
                     }
-
                     categoryTotals[category] += stat.count * weight;
+
+                    if (!radarData[category]) {
+                        radarData[category] = { small: 0, big: 0 };
+                    }
+                    if (stat.size === TaskSize.BIG) {
+                        radarData[category].big += stat.count;
+                    } else {
+                        radarData[category].small += stat.count;
+                    }
                 });
 
-                const labels = Object.keys(categoryTotals);
-                const values = labels.map(category => categoryTotals[category]);
-                const backgroundColors = labels.map(category =>
+                const pieLabels = Object.keys(categoryTotals);
+                const pieValues = pieLabels.map(
+                    category => categoryTotals[category]
+                );
+                const pieBackgroundColors = pieLabels.map(category =>
                     getCategoryColor(category)
                 );
 
-                const data = {
-                    labels: labels,
+                const pieData = {
+                    labels: pieLabels,
                     datasets: [
                         {
-                            data: values,
-                            backgroundColor: backgroundColors,
+                            data: pieValues,
+                            backgroundColor: pieBackgroundColors,
                             borderWidth: 0,
                         },
                     ],
                 };
 
-                setChartData(data);
+                setPieChartData(pieData);
+
+                const radarLabels = Object.keys(radarData);
+                const smallTaskValues = radarLabels.map(
+                    category => radarData[category].small
+                );
+                const bigTaskValues = radarLabels.map(
+                    category => radarData[category].big
+                );
+
+                const smallTasksRadarBg = isDarkMode
+                    ? hexToRgba(TAILWIND_COLORS['sky-700'], 0.3)
+                    : hexToRgba(TAILWIND_COLORS['sky-500'], 0.3);
+                const smallTasksRadarBorder = TAILWIND_COLORS['sky-500'];
+                const bigTasksRadarBg = isDarkMode
+                    ? hexToRgba(TAILWIND_COLORS['rose-700'], 0.3)
+                    : hexToRgba(TAILWIND_COLORS['rose-500'], 0.3);
+                const bigTasksRadarBorder = TAILWIND_COLORS['rose-500'];
+
+                const radarDataFormatted = {
+                    labels: radarLabels,
+                    datasets: [
+                        {
+                            label: 'SMALL',
+                            data: smallTaskValues,
+                            backgroundColor: smallTasksRadarBg,
+                            borderColor: smallTasksRadarBorder,
+                            borderWidth: 1,
+                            pointBackgroundColor: smallTasksRadarBorder,
+                            fill: true,
+                        },
+                        {
+                            label: 'BIG',
+                            data: bigTaskValues,
+                            backgroundColor: bigTasksRadarBg,
+                            borderColor: bigTasksRadarBorder,
+                            borderWidth: 1,
+                            pointBackgroundColor: bigTasksRadarBg,
+                            fill: true,
+                        },
+                    ],
+                };
+
+                setRadarChartData(radarDataFormatted);
             })
             .catch(error => {
                 console.error('Error fetching stats:', error);
             });
     }, [getCategoryColor, isDarkMode]);
 
-    const options: ChartOptions<'pie'> = {
+    const pieOptions: ChartOptions<'pie'> = {
         responsive: true,
         plugins: {
             legend: {
-                display: false, // Disable default legend
+                display: false,
             },
             tooltip: {
                 backgroundColor: isDarkMode ? '#1f2937' : '#ffffff',
@@ -148,6 +220,41 @@ const StatsPage: React.FC = () => {
         },
     };
 
+    const radarOptions: ChartOptions<'radar'> = {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'top' as const,
+                labels: {
+                    color: isDarkMode ? '#ffffff' : '#000000',
+                },
+            },
+            tooltip: {
+                backgroundColor: isDarkMode ? '#1f2937' : '#ffffff',
+                borderColor: TAILWIND_COLORS['slate-900'],
+                titleColor: isDarkMode ? '#ffffff' : '#000000',
+                bodyColor: isDarkMode ? '#ffffff' : '#000000',
+            },
+        },
+        scales: {
+            r: {
+                angleLines: {
+                    color: isDarkMode ? '#4b5563' : '#e5e7eb',
+                },
+                grid: {
+                    color: isDarkMode ? '#4b5563' : '#e5e7eb',
+                },
+                ticks: {
+                    backdropColor: 'transparent',
+                    color: isDarkMode ? '#ffffff' : '#000000',
+                },
+                pointLabels: {
+                    color: isDarkMode ? '#ffffff' : '#000000',
+                },
+            },
+        },
+    };
+
     const CustomLegend: React.FC<{ labels: string[]; colors: string[] }> = ({
         labels,
         colors,
@@ -183,18 +290,36 @@ const StatsPage: React.FC = () => {
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="flex flex-col lg:flex-row items-center justify-start min-w-[450px]">
-                        <div className="chart-container">
-                            {chartData && (
-                                <Pie data={chartData} options={options} />
+                    <div className="flex flex-row min-w-[450px] space-x-8 items-stretch p-4">
+                        <div className="flex items-center p-4 border">
+                            <div className="chart-container">
+                                {pieChartData && (
+                                    <Pie
+                                        data={pieChartData}
+                                        options={pieOptions}
+                                    />
+                                )}
+                            </div>
+                            {pieChartData && (
+                                <CustomLegend
+                                    labels={pieChartData.labels}
+                                    colors={
+                                        pieChartData.datasets[0].backgroundColor
+                                    }
+                                />
                             )}
                         </div>
-                        {chartData && (
-                            <CustomLegend
-                                labels={chartData.labels}
-                                colors={chartData.datasets[0].backgroundColor}
-                            />
-                        )}
+
+                        <div className="flex items-center p-4 border">
+                            <div className="w-80 h-80">
+                                {radarChartData && (
+                                    <Radar
+                                        data={radarChartData}
+                                        options={radarOptions}
+                                    />
+                                )}
+                            </div>
+                        </div>
                     </div>
                 </CardContent>
             </Card>
