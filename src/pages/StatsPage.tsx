@@ -16,6 +16,7 @@ import {
     ArcElement,
     Tooltip as ChartTooltip,
     Legend as ChartLegend,
+    ChartOptions,
 } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { TAILWIND_COLORS } from 'src/components/library/TailwindColors';
@@ -49,7 +50,7 @@ const StatsPage: React.FC = () => {
         (category: string) => {
             const taskCategory = category.toUpperCase() as TaskCategory;
             const shade = categoryShades[taskCategory];
-            const colorKey = isDarkMode ? shade.darkBg : shade.lightHoverBg;
+            const colorKey = isDarkMode ? shade.darkBg : shade.lightIcon;
             return TAILWIND_COLORS[colorKey] || '#8884d8';
         },
         [isDarkMode]
@@ -92,7 +93,7 @@ const StatsPage: React.FC = () => {
                         {
                             data: values,
                             backgroundColor: backgroundColors,
-                            borderWidth: 0, // Remove borders
+                            borderWidth: 0,
                         },
                     ],
                 };
@@ -104,7 +105,7 @@ const StatsPage: React.FC = () => {
             });
     }, [getCategoryColor, isDarkMode]);
 
-    const options = {
+    const options: ChartOptions<'pie'> = {
         responsive: true,
         plugins: {
             legend: {
@@ -113,21 +114,37 @@ const StatsPage: React.FC = () => {
             tooltip: {
                 backgroundColor: isDarkMode ? '#1f2937' : '#ffffff',
                 borderColor: TAILWIND_COLORS['slate-900'],
-                borderWidth: 6,
                 titleColor: isDarkMode ? '#ffffff' : '#000000',
                 bodyColor: isDarkMode ? '#ffffff' : '#000000',
             },
             datalabels: {
                 color: isDarkMode ? '#ffffff' : '#000000',
+                anchor: 'end',
+                align: 'start',
+                offset: 6,
+                clip: false,
                 formatter: (value: number, context: any) => {
                     const total = context.dataset.data.reduce(
                         (acc: number, val: number) => acc + val,
                         0
                     );
-                    const percentage = ((value / total) * 100).toFixed(0);
-                    return `${context.chart.data.labels[context.dataIndex]}: ${percentage}%`;
+                    const percentage = (value / total) * 100;
+                    const threshold = 3;
+                    if (percentage < threshold) {
+                        return null;
+                    }
+                    return `${percentage.toFixed(0)}% / ${value}w`;
                 },
+                textAlign: 'left',
+                backgroundColor: isDarkMode
+                    ? 'rgba(0, 0, 0, 0.4)'
+                    : 'rgba(0, 0, 0, 0.1)',
+                borderRadius: 4,
+                padding: 6,
             },
+        },
+        layout: {
+            autoPadding: true,
         },
     };
 
@@ -136,7 +153,7 @@ const StatsPage: React.FC = () => {
         colors,
     }) => {
         return (
-            <div className="flex flex-wrap justify-center space-x-4 mt-4">
+            <div className="flex flex-col justify-start space-y-2 ml-8">
                 {labels.map((label, index) => (
                     <div key={index} className="flex items-center space-x-2">
                         <span
@@ -167,13 +184,7 @@ const StatsPage: React.FC = () => {
                 </CardHeader>
                 <CardContent>
                     <div className="flex flex-col lg:flex-row items-center justify-start min-w-[450px]">
-                        <div
-                            style={{
-                                width: '100%',
-                                maxWidth: '600px',
-                                height: 400,
-                            }}
-                        >
+                        <div className="chart-container">
                             {chartData && (
                                 <Pie data={chartData} options={options} />
                             )}
