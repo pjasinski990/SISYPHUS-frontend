@@ -42,29 +42,29 @@ export const ReusableTaskPicker: React.FC = () => {
     useRegisterShortcut(addTaskShortcut);
 
     return (
-        <Card className="flex flex-col min-h-[calc(100vh-150px)]">
+        <Card className="flex flex-col flex-1">
             <CardContent
                 ref={cardContentRef}
-                className="flex-grow h-full overflow-y-auto overflow-x-clip scrollbar-custom"
+                className="flex-grow overflow-y-auto overflow-x-clip scrollbar-custom"
             >
                 <TaskExtensionProvider
                     extraButtons={[
                         { icon: ArrowRight, handler: addTaskToDailyPlan },
                     ]}
                 >
-                    <div className={'mt-6'}>
+                    <div className="mt-2">
                         <TaskList
                             tasks={tasks}
                             placeholderNode={
                                 <>
-                                    <span>reusable tasks.</span>
+                                    <span>Reusable tasks.</span>
                                     <span>
-                                        the building blocks of your monotone
+                                        The building blocks of your monotone
                                         life.
                                     </span>
                                 </>
                             }
-                            title={'Reusable tasks'}
+                            title="Reusable Tasks"
                             isDroppable={false}
                             showCreateButton={true}
                             onCreateTask={openCreateTaskDialog}

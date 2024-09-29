@@ -19,7 +19,7 @@ interface LeftMenuProps {
     onActiveTabChange: (tab: TabValue) => void;
 }
 
-export const LeftMenu: React.FC<LeftMenuProps> = ({
+const LeftMenuComponent: React.FC<LeftMenuProps> = ({
     activeTab,
     onActiveTabChange,
 }) => {
@@ -104,10 +104,10 @@ export const LeftMenu: React.FC<LeftMenuProps> = ({
                             variants={variants}
                             custom={direction}
                             transition={{ duration: 0.2 }}
-                            className="h-full"
+                            className="h-full flex flex-col"
                         >
                             <TaskInteractionProvider
-                                listName={'INBOX'}
+                                listName="INBOX"
                                 tasks={inboxContext.tasks}
                                 setTasks={inboxContext.setTasks}
                             >
@@ -133,10 +133,10 @@ export const LeftMenu: React.FC<LeftMenuProps> = ({
                             variants={variants}
                             custom={direction}
                             transition={{ duration: 0.2 }}
-                            className="h-full"
+                            className="h-full flex flex-col"
                         >
                             <TaskInteractionProvider
-                                listName={'REUSABLE'}
+                                listName="REUSABLE"
                                 tasks={reusableContext.tasks}
                                 setTasks={reusableContext.setTasks}
                             >
@@ -155,3 +155,5 @@ export const LeftMenu: React.FC<LeftMenuProps> = ({
         </Tabs>
     );
 };
+
+export const LeftMenu = React.memo(LeftMenuComponent);

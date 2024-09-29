@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Droppable } from '@hello-pangea/dnd';
 import { Task } from '../../service/taskService';
 import { PlusButton } from 'src/components/library/Buttons';
@@ -14,7 +14,7 @@ interface TaskListProps {
     isDroppable?: boolean;
 }
 
-export const TaskList: React.FC<TaskListProps> = ({
+const TaskListComponent: React.FC<TaskListProps> = ({
     title,
     tasks,
     droppableId,
@@ -45,6 +45,7 @@ export const TaskList: React.FC<TaskListProps> = ({
         </div>
     );
 };
+export const TaskList = React.memo(TaskListComponent);
 
 const TaskListHeader: React.FC<{
     title: string;

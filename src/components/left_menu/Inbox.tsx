@@ -34,12 +34,9 @@ export const Inbox: React.FC = () => {
     useRegisterShortcut(addTaskShortcut);
 
     return (
-        <Card className="flex flex-col min-h-[calc(100vh-150px)]">
-            <CardContent
-                ref={cardContentRef}
-                className="flex-grow h-full overflow-y-auto overflow-x-clip scrollbar-custom"
-            >
-                <div className={'mt-6'}>
+        <Card className="flex flex-col flex-1">
+            <CardContent ref={cardContentRef} className="scrollbar-custom">
+                <div className={'mt-2'}>
                     <TaskList
                         title={'Inbox'}
                         tasks={tasks}
