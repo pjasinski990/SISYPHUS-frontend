@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { Button } from 'src/components/ui/button';
-import { LogOut, Moon, Sun, User } from 'lucide-react';
+import { LogOut, Moon, PieChartIcon, Sun, User } from 'lucide-react';
 import { useAuth } from 'src/components/context/AuthContext';
 import ShortcutsInfoDialog from 'src/components/keyboard/ShortcutsInfoDialog';
 
@@ -25,7 +25,7 @@ const Navigation: React.FC<NavigationProps> = ({
     return (
         <nav className="flex justify-between items-center px-4 py-2 bg-white dark:bg-gray-800 shadow">
             <RouterLink to="/" className="text-xl font-bold">
-                mind=blown
+                🤯 mind=blown 🤯
             </RouterLink>
             <div className="flex items-center space-x-4">
                 <ShortcutsInfoDialog />
@@ -42,6 +42,19 @@ const Navigation: React.FC<NavigationProps> = ({
                             >
                                 <User className="h-4 w-4" />
                                 <span>{username}</span>
+                            </Button>
+                        </RouterLink>
+                        <RouterLink
+                            to={'/stats'}
+                            className="flex items-center space-x-2 text-sm"
+                        >
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="flex items-center space-x-2 dark:hover:bg-slate-700"
+                            >
+                                <PieChartIcon className="h-4 w-4" />
+                                <span>Stats</span>
                             </Button>
                         </RouterLink>
                         <Button

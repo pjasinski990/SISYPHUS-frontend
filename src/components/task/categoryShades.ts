@@ -13,7 +13,7 @@ export interface CategoryShades {
     darkMarkers: string;
 }
 
-const categoryShades: Record<TaskCategory, CategoryShades> = {
+export const categoryShades: Record<TaskCategory, CategoryShades> = {
     [TaskCategory.GREEN]: {
         lightBg: 'green-100',
         darkBg: 'green-800',

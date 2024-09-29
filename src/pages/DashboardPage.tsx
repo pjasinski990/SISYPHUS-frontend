@@ -4,7 +4,7 @@ import { TaskListsProvider } from 'src/components/context/TaskListsContext';
 import { TaskDragDropProvider } from 'src/components/context/TaskDragDropContext';
 import { DashboardContent } from 'src/components/DashboardContent';
 
-const Dashboard: React.FC = () => {
+const DashboardPage: React.FC = () => {
     return (
         <Layout>
             <div className="flex h-full">
@@ -27,4 +27,4 @@ const Dashboard: React.FC = () => {
     );
 };
 
-export default Dashboard;
+export default DashboardPage;

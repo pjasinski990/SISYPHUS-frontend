@@ -71,26 +71,24 @@ export const DashboardContent: React.FC = () => {
     useRegisterShortcut(openReusableTasksShortcut);
 
     return (
-        <TaskDragDropProvider listNames={['DAILY_TODO', 'DAILY_DONE', 'INBOX']}>
-            <DragDropContext onDragEnd={onDragEnd}>
-                <SlidingPanel
+        <DragDropContext onDragEnd={onDragEnd}>
+            <SlidingPanel
+                isOpen={isLeftMenuOpen}
+                setIsOpen={setIsLeftMenuOpen}
+                maxWidth={400}
+            >
+                <LeftMenu
+                    activeTab={activeTab}
+                    onActiveTabChange={setActiveTab}
+                />
+            </SlidingPanel>
+            <div className="flex flex-1 transition-all duration-200">
+                <SlidingPanelToggleRibbon
+                    toggleOpen={toggleLeftMenu}
                     isOpen={isLeftMenuOpen}
-                    setIsOpen={setIsLeftMenuOpen}
-                    maxWidth={400}
-                >
-                    <LeftMenu
-                        activeTab={activeTab}
-                        onActiveTabChange={setActiveTab}
-                    />
-                </SlidingPanel>
-                <div className="flex flex-1 transition-all duration-200">
-                    <SlidingPanelToggleRibbon
-                        toggleOpen={toggleLeftMenu}
-                        isOpen={isLeftMenuOpen}
-                    />
-                    <DailyPlanDashboard />
-                </div>
-            </DragDropContext>
-        </TaskDragDropProvider>
+                />
+                <DailyPlanDashboard />
+            </div>
+        </DragDropContext>
     );
 };

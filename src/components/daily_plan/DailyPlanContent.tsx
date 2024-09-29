@@ -38,7 +38,7 @@ export const DailyPlanContent: React.FC = () => {
                 >
                     <TaskList
                         title="Done"
-                        tasks={doneContext.tasks}
+                        tasks={toDisplayInDoneList}
                         droppableId="DAILY_DONE"
                         placeholderNode={
                             <span>drop your done tasks here.</span>

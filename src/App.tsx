@@ -8,10 +8,11 @@ import {
 } from 'react-router-dom';
 import { AuthProvider, useAuth } from 'src/components/context/AuthContext';
 import LoginPage from './pages/LoginPage';
-import Dashboard from './pages/Dashboard';
-import ProfilePage from './pages/Profile';
+import DashboardPage from './pages/DashboardPage';
+import ProfilePage from './pages/ProfilePage';
 import { ShortcutsProvider } from 'src/components/context/ShortcutsContext';
 import KeyboardShortcuts from 'src/components/keyboard/KeyboardShortcutHandler';
+import StatsPage from './pages/StatsPage';
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
     children,
 }) => {
@@ -45,7 +46,7 @@ const AppRoutes: React.FC = () => {
                 path="/dashboard"
                 element={
                     <ProtectedRoute>
-                        <Dashboard />
+                        <DashboardPage />
                     </ProtectedRoute>
                 }
             />
@@ -54,6 +55,14 @@ const AppRoutes: React.FC = () => {
                 element={
                     <ProtectedRoute>
                         <ProfilePage />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/stats"
+                element={
+                    <ProtectedRoute>
+                        <StatsPage />
                     </ProtectedRoute>
                 }
             />
