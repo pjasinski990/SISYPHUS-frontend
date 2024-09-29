@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { TaskList } from 'src/components/task_list/TaskList';
 import { TaskPropertiesProvider } from 'src/components/context/TaskPropertiesContext';
-import { useTaskList } from 'src/components/context/TaskListsContext';
+import {
+    useListFilters,
+    useListOrder,
+    useTaskList,
+} from 'src/components/context/TaskListsContext';
 import { DailyPlanTodo } from 'src/components/daily_plan/DailyPlanTodo';
 import { TaskInteractionProvider } from 'src/components/context/TaskInteractionContext';
 import { getTimestamp, happenedToday } from 'src/lib/utils';
@@ -10,10 +14,15 @@ import { Task } from '../../service/taskService';
 export const DailyPlanContent: React.FC = () => {
     const todoContext = useTaskList('DAILY_TODO');
     const doneContext = useTaskList('DAILY_DONE');
-    const toDisplayInDoneList = [
-        ...getTasksDoneTodaySorted(doneContext.tasks),
-        ...filterUnfinishedTasks(doneContext.tasks),
-    ];
+    const { setFilter } = useListFilters();
+    const { setComparator } = useListOrder();
+
+    useEffect(() => {
+        setFilter('DAILY_DONE', task => {
+            return finishedTodayFilter(task) || unfinishedFilter(task);
+        });
+        setComparator('DAILY_DONE', byTimeFinishedComparator);
+    }, [setComparator, setFilter]);
 
     return (
         <div className="flex gap-4">
@@ -28,7 +37,7 @@ export const DailyPlanContent: React.FC = () => {
             </TaskInteractionProvider>
             <TaskInteractionProvider
                 listName={'DAILY_DONE'}
-                tasks={toDisplayInDoneList}
+                tasks={doneContext.tasks}
                 setTasks={doneContext.setTasks}
             >
                 <TaskPropertiesProvider
@@ -38,7 +47,7 @@ export const DailyPlanContent: React.FC = () => {
                 >
                     <TaskList
                         title="Done"
-                        tasks={toDisplayInDoneList}
+                        tasks={doneContext.tasks}
                         droppableId="DAILY_DONE"
                         placeholderNode={
                             <span>drop your done tasks here.</span>
@@ -50,25 +59,18 @@ export const DailyPlanContent: React.FC = () => {
     );
 };
 
-function compareTasks(a: Task, b: Task): number {
+function byTimeFinishedComparator(a: Task, b: Task): number {
     const timeA = getTimestamp(a.finishedAt!);
     const timeB = getTimestamp(b.finishedAt!);
     return timeB - timeA;
 }
 
-function filterFinishedToday(tasks: Task[]): Task[] {
-    return tasks.filter(task => {
-        if (!task.finishedAt) return false;
-        const finishedDate = new Date(task.finishedAt);
-        return happenedToday(finishedDate);
-    });
+function finishedTodayFilter(task: Task): boolean {
+    if (!task.finishedAt) return false;
+    const finishedDate = new Date(task.finishedAt);
+    return happenedToday(finishedDate);
 }
 
-function filterUnfinishedTasks(tasks: Task[]): Task[] {
-    return tasks.filter(task => !task.finishedAt);
-}
-
-function getTasksDoneTodaySorted(tasks: Task[]) {
-    const finishedToday = filterFinishedToday(tasks);
-    return finishedToday.sort(compareTasks);
+function unfinishedFilter(task: Task): boolean {
+    return !task.finishedAt;
 }
