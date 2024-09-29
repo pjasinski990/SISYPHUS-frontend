@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Droppable } from '@hello-pangea/dnd';
 import { Task } from '../../service/taskService';
 import { PlusButton } from 'src/components/library/Buttons';

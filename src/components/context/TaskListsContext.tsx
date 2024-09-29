@@ -136,12 +136,12 @@ export const useTaskList = (
     }
 
     const { tasksLists, setTaskList, filters, comparators } = context;
-    const rawTasks = tasksLists[listName] || [];
 
     const filteredTasks = useMemo(() => {
+        const rawTasks = tasksLists[listName] || [];
         const filter = filters[listName];
         return filter ? rawTasks.filter(filter) : rawTasks;
-    }, [rawTasks, filters, listName]);
+    }, [filters, listName, tasksLists]);
 
     const sortedTasks = useMemo(() => {
         const comparator = comparators[listName];

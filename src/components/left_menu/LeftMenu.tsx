@@ -23,7 +23,7 @@ const LeftMenuComponent: React.FC<LeftMenuProps> = ({
     activeTab,
     onActiveTabChange,
 }) => {
-    const [direction, setDirection] = useState(0);
+    const [direction, setDirection] = useState(1);
     const prevTabRef = useRef<TabValue>('inbox');
 
     const inboxContext = useTaskList('INBOX');
@@ -93,65 +93,65 @@ const LeftMenuComponent: React.FC<LeftMenuProps> = ({
                     Reusable
                 </TabsTrigger>
             </TabsList>
-
-            <div className="flex-grow overflow-hidden relative">
-                <TabsContent value="inbox" className="flex-grow overflow-auto">
-                    {activeTab === 'inbox' && (
-                        <motion.div
-                            key="inbox"
-                            initial="hidden"
-                            animate="visible"
-                            variants={variants}
-                            custom={direction}
-                            transition={{ duration: 0.2 }}
-                            className="h-full flex flex-col"
+            <TabsContent
+                value="inbox"
+                className="overflow-auto overflow-x-hidden"
+            >
+                {activeTab === 'inbox' && (
+                    <motion.div
+                        key="inbox"
+                        initial="hidden"
+                        animate="visible"
+                        variants={variants}
+                        custom={direction}
+                        transition={{ duration: 0.2 }}
+                        className="h-full flex"
+                    >
+                        <TaskInteractionProvider
+                            listName="INBOX"
+                            tasks={inboxContext.tasks}
+                            setTasks={inboxContext.setTasks}
                         >
-                            <TaskInteractionProvider
-                                listName="INBOX"
-                                tasks={inboxContext.tasks}
-                                setTasks={inboxContext.setTasks}
+                            <TaskPropertiesProvider
+                                isDraggable={true}
+                                isFoldable={true}
                             >
-                                <TaskPropertiesProvider
-                                    isDraggable={true}
-                                    isFoldable={true}
-                                >
-                                    <Inbox />
-                                </TaskPropertiesProvider>
-                            </TaskInteractionProvider>
-                        </motion.div>
-                    )}
-                </TabsContent>
-                <TabsContent
-                    value="reusableTasks"
-                    className="flex-grow overflow-auto"
-                >
-                    {activeTab === 'reusableTasks' && (
-                        <motion.div
-                            key="reusableTasks"
-                            initial="hidden"
-                            animate="visible"
-                            variants={variants}
-                            custom={direction}
-                            transition={{ duration: 0.2 }}
-                            className="h-full flex flex-col"
+                                <Inbox />
+                            </TaskPropertiesProvider>
+                        </TaskInteractionProvider>
+                    </motion.div>
+                )}
+            </TabsContent>
+            <TabsContent
+                value="reusableTasks"
+                className="overflow-auto overflow-x-hidden"
+            >
+                {activeTab === 'reusableTasks' && (
+                    <motion.div
+                        key="reusableTasks"
+                        initial="hidden"
+                        animate="visible"
+                        variants={variants}
+                        custom={direction}
+                        transition={{ duration: 0.2 }}
+                        className="h-full flex"
+                    >
+                        <TaskInteractionProvider
+                            listName="REUSABLE"
+                            tasks={reusableContext.tasks}
+                            setTasks={reusableContext.setTasks}
                         >
-                            <TaskInteractionProvider
-                                listName="REUSABLE"
-                                tasks={reusableContext.tasks}
-                                setTasks={reusableContext.setTasks}
+                            <TaskPropertiesProvider
+                                isDraggable={false}
+                                isFoldable={true}
+                                initiallyFolded={true}
                             >
-                                <TaskPropertiesProvider
-                                    isDraggable={false}
-                                    isFoldable={true}
-                                    initiallyFolded={true}
-                                >
-                                    <ReusableTaskPicker />
-                                </TaskPropertiesProvider>
-                            </TaskInteractionProvider>
-                        </motion.div>
-                    )}
-                </TabsContent>
-            </div>
+                                <ReusableTaskPicker />
+                            </TaskPropertiesProvider>
+                        </TaskInteractionProvider>
+                    </motion.div>
+                )}
+            </TabsContent>
         </Tabs>
     );
 };

@@ -25,7 +25,7 @@ export const DailyPlanContent: React.FC = () => {
     }, [setComparator, setFilter]);
 
     return (
-        <div className="flex gap-4">
+        <div className="flex gap-4 h-[calc(100vh-200px)]">
             <TaskInteractionProvider
                 listName={'DAILY_TODO'}
                 tasks={todoContext.tasks}

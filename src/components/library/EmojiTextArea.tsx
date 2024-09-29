@@ -96,7 +96,7 @@ export const EmojiTextarea: React.FC<EmojiTextareaProps> = ({
         if (newText[cursorPosition - 1] === ':') {
             const fullText = newText;
             const upToCursor = fullText.slice(0, cursorPosition);
-            const replaceMatch = upToCursor.match(/:([a-zA-Z0-9_\+-]+):$/);
+            const replaceMatch = upToCursor.match(/:([a-zA-Z0-9_+-]+):$/);
             if (replaceMatch) {
                 const code = replaceMatch[1];
                 const emoji = emojiList.find(
