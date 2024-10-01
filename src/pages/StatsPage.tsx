@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Pie, Radar } from 'react-chartjs-2';
+import { Pie, Radar, Bar } from 'react-chartjs-2';
 import { StatsResponse, statsService } from '../service/statsService';
 import { TaskCategory, TaskSize } from '../service/taskService';
 import {
@@ -21,6 +21,10 @@ import {
     PointElement,
     LineElement,
     Filler,
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title as ChartTitle,
 } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { TAILWIND_COLORS } from 'src/components/library/TailwindColors';
@@ -34,12 +38,18 @@ ChartJS.register(
     RadialLinearScale,
     PointElement,
     LineElement,
-    Filler
+    Filler,
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    ChartTitle
 );
 
 const StatsPage: React.FC = () => {
     const [pieChartData, setPieChartData] = useState<any>(null);
     const [radarChartData, setRadarChartData] = useState<any>(null);
+    const [barWeightChartData, setBarWeightChartData] = useState<any>(null);
+    const [barSizeChartData, setBarSizeChartData] = useState<any>(null);
     const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
 
     useEffect(() => {
@@ -89,8 +99,16 @@ const StatsPage: React.FC = () => {
                     [key: string]: { small: number; big: number };
                 } = {};
 
+                const weightByDate: {
+                    [date: string]: { [category: string]: number };
+                } = {};
+                const sizeByDate: {
+                    [date: string]: { [size: string]: number };
+                } = {};
+
                 stats.forEach(stat => {
                     const category = stat.category;
+                    const date = stat.date;
 
                     const weight = stat.size === TaskSize.BIG ? 3 : 1;
                     if (!categoryTotals[category]) {
@@ -106,6 +124,21 @@ const StatsPage: React.FC = () => {
                     } else {
                         radarData[category].small += stat.count;
                     }
+
+                    if (!weightByDate[date]) {
+                        weightByDate[date] = {};
+                    }
+                    if (!weightByDate[date][category]) {
+                        weightByDate[date][category] = 0;
+                    }
+                    weightByDate[date][category] += stat.count * weight;
+
+                    if (!sizeByDate[date]) {
+                        sizeByDate[date] = { Small: 0, Big: 0 };
+                    }
+                    const sizeLabel =
+                        stat.size === TaskSize.BIG ? 'Big' : 'Small';
+                    sizeByDate[date][sizeLabel] += stat.count;
                 });
 
                 const pieLabels = Object.keys(categoryTotals);
@@ -171,6 +204,52 @@ const StatsPage: React.FC = () => {
                 };
 
                 setRadarChartData(radarDataFormatted);
+
+                const sortedDates = Object.keys(weightByDate).sort();
+                const categories = Array.from(
+                    new Set(stats.map(stat => stat.category))
+                );
+
+                const weightDatasets = categories.map(category => {
+                    const data = sortedDates.map(
+                        date => weightByDate[date][category] || 0
+                    );
+                    return {
+                        label: category,
+                        data,
+                        backgroundColor: getCategoryColor(category),
+                    };
+                });
+
+                const barWeightData = {
+                    labels: sortedDates,
+                    datasets: weightDatasets,
+                };
+
+                setBarWeightChartData(barWeightData);
+
+                const sizeLabels = ['Small', 'Big'];
+                const sizeDatasets = sizeLabels.map(size => {
+                    const data = sortedDates.map(
+                        date => sizeByDate[date][size] || 0
+                    );
+                    const color =
+                        size === 'Small'
+                            ? TAILWIND_COLORS['sky-500']
+                            : TAILWIND_COLORS['rose-500'];
+                    return {
+                        label: size,
+                        data,
+                        backgroundColor: color,
+                    };
+                });
+
+                const barSizeData = {
+                    labels: sortedDates,
+                    datasets: sizeDatasets,
+                };
+
+                setBarSizeChartData(barSizeData);
             })
             .catch(error => {
                 console.error('Error fetching stats:', error);
@@ -255,12 +334,49 @@ const StatsPage: React.FC = () => {
         },
     };
 
+    const barOptions: ChartOptions<'bar'> = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'top' as const,
+                labels: {
+                    color: isDarkMode ? '#ffffff' : '#000000',
+                },
+            },
+            tooltip: {
+                backgroundColor: isDarkMode ? '#1f2937' : '#ffffff',
+                borderColor: TAILWIND_COLORS['slate-900'],
+                titleColor: isDarkMode ? '#ffffff' : '#000000',
+                bodyColor: isDarkMode ? '#ffffff' : '#000000',
+            },
+        },
+        scales: {
+            x: {
+                ticks: {
+                    color: isDarkMode ? '#ffffff' : '#000000',
+                },
+                grid: {
+                    color: isDarkMode ? '#4b5563' : '#e5e7eb',
+                },
+            },
+            y: {
+                ticks: {
+                    color: isDarkMode ? '#ffffff' : '#000000',
+                },
+                grid: {
+                    color: isDarkMode ? '#4b5563' : '#e5e7eb',
+                },
+            },
+        },
+    };
+
     const CustomLegend: React.FC<{ labels: string[]; colors: string[] }> = ({
         labels,
         colors,
     }) => {
         return (
-            <div className="flex flex-col justify-start space-y-2 ml-8">
+            <div className="flex flex-col justify-start space-y-2 ml-4">
                 {labels.map((label, index) => (
                     <div key={index} className="flex items-center space-x-2">
                         <span
@@ -283,41 +399,86 @@ const StatsPage: React.FC = () => {
 
     return (
         <Layout>
-            <Card>
+            <Card className={'my-4'}>
                 <CardHeader>
                     <CardTitle className="text-gray-800 dark:text-gray-200 text-center">
-                        Task statistics over the last 7 days
+                        Task statistics
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="flex flex-row min-w-[450px] space-x-8 items-stretch p-4">
-                        <div className="flex items-center p-4 border">
-                            <div className="chart-container">
+                    <div className="flex flex-col space-y-8 p-4">
+                        <div className="flex flex-row space-x-8 items-stretch">
+                            <div className="flex flex-row items-center p-4 border w-full">
+                                <div className="flex-1">
+                                    <h3 className="text-center text-gray-800 dark:text-gray-200 mb-4">
+                                        Task Weights Distribution
+                                    </h3>
+                                    <div className="chart-container">
+                                        {pieChartData && (
+                                            <Pie
+                                                data={pieChartData}
+                                                options={pieOptions}
+                                            />
+                                        )}
+                                    </div>
+                                </div>
                                 {pieChartData && (
-                                    <Pie
-                                        data={pieChartData}
-                                        options={pieOptions}
+                                    <CustomLegend
+                                        labels={pieChartData.labels}
+                                        colors={
+                                            pieChartData.datasets[0]
+                                                .backgroundColor
+                                        }
                                     />
                                 )}
                             </div>
-                            {pieChartData && (
-                                <CustomLegend
-                                    labels={pieChartData.labels}
-                                    colors={
-                                        pieChartData.datasets[0].backgroundColor
-                                    }
-                                />
-                            )}
+
+                            <div className="flex flex-row items-start p-4 border w-full">
+                                <div className="flex-1">
+                                    <h3 className="text-center text-gray-800 dark:text-gray-200 mb-4">
+                                        Task Sizes by Category
+                                    </h3>
+                                    <div className="w-80 h-80">
+                                        {radarChartData && (
+                                            <Radar
+                                                data={radarChartData}
+                                                options={radarOptions}
+                                            />
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <div className="flex items-center p-4 border">
-                            <div className="w-80 h-80">
-                                {radarChartData && (
-                                    <Radar
-                                        data={radarChartData}
-                                        options={radarOptions}
-                                    />
-                                )}
+                        <div className="flex flex-row items-start p-4 border w-full">
+                            <div className="flex-1">
+                                <h3 className="text-center text-gray-800 dark:text-gray-200 mb-4">
+                                    Task Weight per Day
+                                </h3>
+                                <div className="flex-1 h-56">
+                                    {barWeightChartData && (
+                                        <Bar
+                                            data={barWeightChartData}
+                                            options={barOptions}
+                                        />
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-row items-start p-4 border w-full">
+                            <div className="flex-1">
+                                <h3 className="text-center text-gray-800 dark:text-gray-200 mb-4">
+                                    Task Size per Day
+                                </h3>
+                                <div className="flex-1 h-56">
+                                    {barSizeChartData && (
+                                        <Bar
+                                            data={barSizeChartData}
+                                            options={barOptions}
+                                        />
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
