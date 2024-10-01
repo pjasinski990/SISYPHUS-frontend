@@ -74,11 +74,7 @@ const LeftMenuComponent: React.FC<LeftMenuProps> = ({
     };
 
     return (
-        <Tabs
-            value={activeTab}
-            onValueChange={handleTabChange}
-            className="h-full flex flex-col"
-        >
+        <Tabs value={activeTab} onValueChange={handleTabChange}>
             <TabsList className="rounded-none flex justify-start items-stretch p-0 bg-white dark:bg-slate-950 h-10">
                 <TabsTrigger
                     value="inbox"
@@ -134,7 +130,6 @@ const LeftMenuComponent: React.FC<LeftMenuProps> = ({
                         variants={variants}
                         custom={direction}
                         transition={{ duration: 0.2 }}
-                        className="h-full flex"
                     >
                         <TaskInteractionProvider
                             listName="REUSABLE"

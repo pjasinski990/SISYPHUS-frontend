@@ -7,12 +7,15 @@ import { TaskExtensionProvider } from 'src/components/context/TaskExtensionConte
 import { ArrowRight } from 'lucide-react';
 import { useTaskInteraction } from 'src/components/context/TaskInteractionContext';
 import { useTaskList } from 'src/components/context/TaskListsContext';
-import { Task } from '../../service/taskService';
+import { Task, taskService } from '../../service/taskService';
 
 export const ReusableTaskPicker: React.FC = () => {
     const todoContext = useTaskList('DAILY_TODO');
-    const addTaskToDailyPlan = (newTask: Task) => {
-        todoContext.setTasks([...todoContext.tasks, newTask]);
+
+    const addTaskToDailyPlan = async (newTask: Task) => {
+        const addedTask = { ...newTask, listName: 'DAILY_TODO' };
+        const createdTask = await taskService.createTask(addedTask);
+        todoContext.setTasks([...todoContext.tasks, createdTask]);
     };
 
     const tasks = useTaskList('REUSABLE').tasks;
@@ -57,10 +60,9 @@ export const ReusableTaskPicker: React.FC = () => {
                             tasks={tasks}
                             placeholderNode={
                                 <>
-                                    <span>Reusable tasks.</span>
+                                    <span>reusable tasks.</span>
                                     <span>
-                                        The building blocks of your monotone
-                                        life.
+                                        the building blocks of your boring life.
                                     </span>
                                 </>
                             }
