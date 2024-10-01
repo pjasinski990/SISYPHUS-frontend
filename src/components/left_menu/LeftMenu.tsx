@@ -8,9 +8,8 @@ import {
 import { ReusableTaskPicker } from 'src/components/left_menu/ReusableTaskPicker';
 import { motion } from 'framer-motion';
 import { Inbox } from 'src/components/left_menu/Inbox';
-import { TaskInteractionProvider } from 'src/components/context/TaskInteractionContext';
-import { useTaskList } from 'src/components/context/TaskListsContext';
 import { TaskPropertiesProvider } from 'src/components/context/TaskPropertiesContext';
+import { TaskInteractionProvider } from 'src/components/context/TaskInteractionContext';
 
 export type TabValue = 'inbox' | 'reusableTasks';
 
@@ -25,9 +24,6 @@ const LeftMenuComponent: React.FC<LeftMenuProps> = ({
 }) => {
     const [direction, setDirection] = useState(1);
     const prevTabRef = useRef<TabValue>('inbox');
-
-    const inboxContext = useTaskList('INBOX');
-    const reusableContext = useTaskList('REUSABLE');
 
     const tabOrder: Record<TabValue, number> = useMemo(
         () => ({
@@ -103,11 +99,7 @@ const LeftMenuComponent: React.FC<LeftMenuProps> = ({
                         transition={{ duration: 0.2 }}
                         className="h-full flex"
                     >
-                        <TaskInteractionProvider
-                            listName="INBOX"
-                            tasks={inboxContext.tasks}
-                            setTasks={inboxContext.setTasks}
-                        >
+                        <TaskInteractionProvider listName="INBOX">
                             <TaskPropertiesProvider
                                 isDraggable={true}
                                 isFoldable={true}
@@ -131,11 +123,7 @@ const LeftMenuComponent: React.FC<LeftMenuProps> = ({
                         custom={direction}
                         transition={{ duration: 0.2 }}
                     >
-                        <TaskInteractionProvider
-                            listName="REUSABLE"
-                            tasks={reusableContext.tasks}
-                            setTasks={reusableContext.setTasks}
-                        >
+                        <TaskInteractionProvider listName="REUSABLE">
                             <TaskPropertiesProvider
                                 isDraggable={false}
                                 isFoldable={true}

@@ -12,10 +12,9 @@ import { getTimestamp, happenedToday } from 'src/lib/utils';
 import { Task } from '../../service/taskService';
 
 export const DailyPlanContent: React.FC = () => {
-    const todoContext = useTaskList('DAILY_TODO');
-    const doneContext = useTaskList('DAILY_DONE');
     const { setFilter } = useListFilters();
     const { setComparator } = useListOrder();
+    const doneTasks = useTaskList('DAILY_DONE').tasks;
 
     useEffect(() => {
         setFilter('DAILY_DONE', task => {
@@ -26,20 +25,12 @@ export const DailyPlanContent: React.FC = () => {
 
     return (
         <div className="flex gap-4 h-[calc(100vh-200px)]">
-            <TaskInteractionProvider
-                listName={'DAILY_TODO'}
-                tasks={todoContext.tasks}
-                setTasks={todoContext.setTasks}
-            >
+            <TaskInteractionProvider listName={'DAILY_TODO'}>
                 <TaskPropertiesProvider isDraggable={true} isFoldable={true}>
                     <DailyPlanTodo />
                 </TaskPropertiesProvider>
             </TaskInteractionProvider>
-            <TaskInteractionProvider
-                listName={'DAILY_DONE'}
-                tasks={doneContext.tasks}
-                setTasks={doneContext.setTasks}
-            >
+            <TaskInteractionProvider listName={'DAILY_DONE'}>
                 <TaskPropertiesProvider
                     isDraggable={true}
                     isFoldable={true}
@@ -47,7 +38,7 @@ export const DailyPlanContent: React.FC = () => {
                 >
                     <TaskList
                         title="Done"
-                        tasks={doneContext.tasks}
+                        tasks={doneTasks}
                         droppableId="DAILY_DONE"
                         placeholderNode={
                             <span>drop your done tasks here.</span>

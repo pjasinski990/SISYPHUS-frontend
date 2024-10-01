@@ -45,23 +45,14 @@ export const TaskListsProvider: React.FC<TaskListsProviderProps> = ({
         Record<string, TaskComparator>
     >({});
 
-    const isMounted = useRef(true);
-    useEffect(() => {
-        return () => {
-            isMounted.current = false;
-        };
-    }, []);
-
     useEffect(() => {
         const fetchTasksForList = async (listName: string) => {
             try {
                 const taskData = await taskService.getTasksList(listName);
-                if (isMounted.current) {
-                    setTasksLists(prev => ({
-                        ...prev,
-                        [listName]: taskData,
-                    }));
-                }
+                setTasksLists(prev => ({
+                    ...prev,
+                    [listName]: taskData,
+                }));
             } catch (error) {
                 console.error(
                     `Error fetching tasks for list "${listName}":`,
@@ -72,7 +63,7 @@ export const TaskListsProvider: React.FC<TaskListsProviderProps> = ({
 
         listNames.forEach(listName => {
             if (!tasksLists[listName]) {
-                fetchTasksForList(listName);
+                fetchTasksForList(listName).then();
             }
         });
     }, [listNames, tasksLists]);

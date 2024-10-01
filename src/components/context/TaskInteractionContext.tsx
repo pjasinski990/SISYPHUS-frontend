@@ -1,17 +1,11 @@
-import React, {
-    createContext,
-    useCallback,
-    useContext,
-    useEffect,
-    useMemo,
-    useState,
-} from 'react';
+import React, { createContext, useCallback, useContext, useState } from 'react';
 import { TaskFormData } from 'src/components/task/TaskForm';
 import { Task, taskService } from '../../service/taskService';
 import { useAuth } from 'src/components/context/AuthContext';
 import { TaskDialog } from 'src/components/task/TaskDialog';
 import { ConfirmDialog } from 'src/components/library/ConfirmDialog';
 import { TaskItem } from 'src/components/task/TaskItem';
+import { useTaskList } from 'src/components/context/TaskListsContext';
 
 interface TaskInteractionProviderType {
     openCreateTaskDialog: () => void;
@@ -25,26 +19,13 @@ const TaskInteractionContext = createContext<
 
 export const TaskInteractionProvider: React.FC<{
     listName: string;
-    tasks: Task[];
-    setTasks: (tasks: Task[]) => void;
     children: React.ReactNode;
-}> = ({ listName, tasks, setTasks, children }) => {
+}> = ({ listName, children }) => {
     const { username } = useAuth();
     const [editingTask, setEditingTask] = useState<Task | null>(null);
     const [isCreateTaskDialogOpen, setIsCreateTaskDialogOpen] = useState(false);
     const [removingTask, setRemovingTask] = useState<Task | null>(null);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const taskData = await taskService.getTasksList(listName);
-                setTasks(taskData);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        };
-        fetchData().then();
-    }, [listName, setTasks]);
+    const { tasks, setTasks } = useTaskList(listName);
 
     const createTask = useCallback(
         async (taskData: TaskFormData) => {
@@ -150,26 +131,15 @@ export const TaskInteractionProvider: React.FC<{
         setRemovingTask(task);
     }, []);
 
-    const contextValue = useMemo(
-        () => ({
-            tasks,
-            openCreateTaskDialog: openCreateTaskDialog,
-            openEditTaskDialog: openEditTaskDialog,
-            openRemoveTaskDialog: openRemoveTaskDialog,
-            createTask: createTask,
-            editTask: editTask,
-            removeTask: removeTask,
-        }),
-        [
-            tasks,
-            openCreateTaskDialog,
-            openEditTaskDialog,
-            openRemoveTaskDialog,
-            createTask,
-            editTask,
-            removeTask,
-        ]
-    );
+    const contextValue = {
+        tasks,
+        openCreateTaskDialog: openCreateTaskDialog,
+        openEditTaskDialog: openEditTaskDialog,
+        openRemoveTaskDialog: openRemoveTaskDialog,
+        createTask: createTask,
+        editTask: editTask,
+        removeTask: removeTask,
+    };
 
     return (
         <TaskInteractionContext.Provider value={contextValue}>
