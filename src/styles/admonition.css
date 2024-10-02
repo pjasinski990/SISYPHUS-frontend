@@ -1,0 +1,78 @@
+.admonition {
+    border-left: 4px solid;
+    padding: 1em;
+    margin: 1em 0;
+    @apply p-4 border-l-4 rounded-md;
+    background-color: rgba(0, 0, 0, 0.05); /* Light mode background */
+}
+
+.dark .admonition {
+    background-color: rgba(0, 0, 0, 0.5); /* Dark mode background */
+}
+
+.admonition strong {
+    font-size: 0.95rem;
+}
+
+/* Warning */
+.admonition.warning {
+    @apply border-amber-400;
+}
+
+.dark .admonition.warning {
+    @apply border-amber-600;
+}
+
+/* Info */
+.admonition.info {
+    @apply border-blue-400;
+}
+
+.dark .admonition.info {
+    @apply border-blue-600;
+}
+
+/* Tip */
+.admonition.tip {
+    @apply border-green-400;
+}
+
+.dark .admonition.tip {
+    @apply border-green-600;
+}
+
+/* Caution */
+.admonition.caution {
+    @apply border-yellow-400;
+}
+
+.dark .admonition.caution {
+    @apply border-yellow-600;
+}
+
+/* Note */
+.admonition.note {
+    @apply border-purple-400;
+}
+
+.dark .admonition.note {
+    @apply border-purple-600;
+}
+
+/* Danger */
+.admonition.danger {
+    @apply border-red-400;
+}
+
+.dark .admonition.danger {
+    @apply border-red-600;
+}
+
+/* Success */
+.admonition.success {
+    @apply border-green-400;
+}
+
+.dark .admonition.success {
+    @apply border-green-600;
+}

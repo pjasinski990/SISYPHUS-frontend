@@ -1,4 +1,5 @@
 @import 'src/styles/components.css';
+@import 'src/styles/admonition.css';
 
 body {
     margin: 0;

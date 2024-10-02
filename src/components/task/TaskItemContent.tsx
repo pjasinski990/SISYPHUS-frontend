@@ -11,6 +11,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { TaskDetailsDialog } from './TaskDetailsDialog';
 import { ContextMenu } from 'src/components/task/TaskContextMenu';
+import MarkdownRenderer from 'src/components/markdown/MarkdownRenderer';
 
 interface TaskItemContentProps {
     task: Task;
@@ -40,9 +41,7 @@ const TaskDescription: React.FC<{ task: Task }> = ({ task }) => {
         <div
             className={`${categoryMarkerColorClass} prose dark:prose-invert px-2`}
         >
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {task.description}
-            </ReactMarkdown>
+            <MarkdownRenderer content={task.description} />
         </div>
     );
 };

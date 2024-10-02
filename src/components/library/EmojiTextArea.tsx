@@ -3,6 +3,7 @@ import { Textarea, TextareaProps } from 'src/components/ui/textarea';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useEmojiPicker } from 'src/components/hooks/useEmojiPicker';
+import MarkdownRenderer from 'src/components/markdown/MarkdownRenderer';
 
 interface EmojiTextareaProps extends TextareaProps {
     value: string;
@@ -87,12 +88,7 @@ export const EmojiTextarea: React.FC<EmojiTextareaProps> = ({
                         description preview
                     </small>
                 ) : (
-                    <ReactMarkdown
-                        className="prose dark:prose-invert p-2"
-                        remarkPlugins={[remarkGfm]}
-                    >
-                        {text}
-                    </ReactMarkdown>
+                    <MarkdownRenderer content={text} />
                 )}
             </div>
         </div>
