@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { Input, InputProps } from 'src/components/ui/input';
-import { useEmojiPicker } from 'src/components/context/EmojiContext';
+import { useEmojiPicker } from 'src/components/hooks/useEmojiPicker';
 
 interface EmojiInputProps extends InputProps {
     value: string;

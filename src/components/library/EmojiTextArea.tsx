@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { Textarea, TextareaProps } from 'src/components/ui/textarea';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { useEmojiPicker } from 'src/components/context/EmojiContext';
+import { useEmojiPicker } from 'src/components/hooks/useEmojiPicker';
 
 interface EmojiTextareaProps extends TextareaProps {
     value: string;
