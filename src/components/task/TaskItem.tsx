@@ -1,10 +1,7 @@
 import { Task } from '../../service/taskService';
 import React from 'react';
 import { TaskItemContent } from 'src/components/task/TaskItemContent';
-import {
-    TaskPropertiesProvider,
-    useTaskProperties,
-} from 'src/components/context/TaskPropertiesContext';
+import { useTaskProperties } from 'src/components/context/TaskPropertiesContext';
 import { Draggable } from '@hello-pangea/dnd';
 import { DraggableProvider } from 'src/components/context/DraggableContext';
 import { DraggableWrapper } from 'src/components/library/DraggableWrapper';
@@ -14,6 +11,7 @@ interface TaskItemProps {
     index?: number;
     isVanity?: boolean;
     className?: string;
+    isHighlighted?: boolean;
 }
 
 export const TaskItem: React.FC<TaskItemProps> = ({
@@ -21,37 +19,49 @@ export const TaskItem: React.FC<TaskItemProps> = ({
     index,
     isVanity = false,
     className,
+    isHighlighted = false,
 }) => {
     return (
         <div className={className}>
-            <TaskItemInternal task={task} index={index} isVanity={isVanity} />
+            <TaskItemInternal
+                task={task}
+                index={index}
+                isVanity={isVanity}
+                isHighlighted={isHighlighted}
+            />
         </div>
     );
 };
 
-export const TaskItemInternal: React.FC<TaskItemProps> = ({
+const TaskItemInternal: React.FC<TaskItemProps> = ({
     task,
     index,
-    isVanity = false,
+    isVanity,
+    isHighlighted,
 }) => {
     if (isVanity) {
         return <VanityTask task={task} />;
     }
-    return <TaskDispatcher task={task} index={index} />;
-};
-
-const VanityTask: React.FC<TaskItemProps> = ({ task }) => {
     return (
-        <TaskPropertiesProvider isDraggable={false} isFoldable={false}>
-            <TaskItemContent task={task} />
-        </TaskPropertiesProvider>
+        <TaskDispatcher
+            task={task}
+            index={index}
+            isHighlighted={isHighlighted}
+        />
     );
 };
 
-const TaskDispatcher: React.FC<TaskItemProps> = ({ task, index }) => {
-    const { isDraggable, isFoldable, initiallyFolded } = useTaskProperties();
+const VanityTask: React.FC<TaskItemProps> = ({ task }) => {
+    return <TaskItemContent task={task} />;
+};
 
-    let content = <TaskItemContent task={task} />;
+const TaskDispatcher: React.FC<TaskItemProps> = ({
+    task,
+    index,
+    isHighlighted,
+}) => {
+    const { isDraggable, isFoldable, initiallyFolded } = useTaskProperties();
+    let content = <TaskItemContent task={task} isHighlighted={isHighlighted} />;
 
     if (isFoldable) {
         content = (

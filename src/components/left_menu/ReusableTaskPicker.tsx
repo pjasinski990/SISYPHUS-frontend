@@ -57,6 +57,8 @@ export const ReusableTaskPicker: React.FC = () => {
                 >
                     <div className="mt-2">
                         <TaskList
+                            title={'Reusable Tasks'}
+                            listName="REUSABLE"
                             tasks={tasks}
                             placeholderNode={
                                 <>
@@ -66,7 +68,6 @@ export const ReusableTaskPicker: React.FC = () => {
                                     </span>
                                 </>
                             }
-                            title="Reusable Tasks"
                             isDroppable={false}
                             showCreateButton={true}
                             onCreateTask={openCreateTaskDialog}

@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Droppable } from '@hello-pangea/dnd';
 import { Task } from '../../service/taskService';
 import { PlusButton } from 'src/components/library/Buttons';
 import { TaskItem } from 'src/components/task/TaskItem';
+import { useTaskNavigation } from 'src/components/context/TaskNavigationContext';
 
 interface TaskListProps {
     title: string;
+    listName: string;
     tasks: Task[];
     droppableId?: string;
     placeholderNode: string | React.ReactNode;
@@ -16,6 +18,7 @@ interface TaskListProps {
 
 const TaskListComponent: React.FC<TaskListProps> = ({
     title,
+    listName,
     tasks,
     droppableId,
     placeholderNode,
@@ -23,6 +26,18 @@ const TaskListComponent: React.FC<TaskListProps> = ({
     onCreateTask,
     isDroppable = true,
 }) => {
+    const {
+        registerList,
+        unregisterList,
+        highlightedTaskId,
+        highlightedListName,
+    } = useTaskNavigation();
+
+    useEffect(() => {
+        registerList(listName);
+        return () => unregisterList(listName);
+    }, [listName, registerList, unregisterList]);
+
     return (
         <div className="bg-slate-50 dark:bg-slate-900 px-4 py-2 rounded-md min-h-[300px] shadow shadow-slate-200 dark:shadow-slate-950 w-[350px] max-h-[calc(100vh-200px)] overflow-auto">
             <TaskListHeader
@@ -35,11 +50,13 @@ const TaskListComponent: React.FC<TaskListProps> = ({
                     droppableId={droppableId}
                     tasks={tasks}
                     placeholderNode={placeholderNode}
+                    highlightedTaskId={highlightedTaskId}
                 />
             ) : (
                 <NonDroppableTasks
                     tasks={tasks}
                     placeholderNode={placeholderNode}
+                    highlightedTaskId={highlightedTaskId}
                 />
             )}
         </div>
@@ -67,8 +84,11 @@ const TaskListHeader: React.FC<{
 const DroppableTasks: React.FC<{
     droppableId: string;
     tasks: Task[];
+    highlightedTaskId: string | null;
     placeholderNode: string | React.ReactNode;
-}> = ({ droppableId, tasks, placeholderNode }) => {
+}> = ({ droppableId, tasks, highlightedTaskId, placeholderNode }) => {
+    console.log('highlighted: ', highlightedTaskId);
+    console.log(tasks.find(t => t.id === highlightedTaskId));
     return (
         <Droppable droppableId={droppableId}>
             {(provided, snapshot) => (
@@ -82,7 +102,12 @@ const DroppableTasks: React.FC<{
                     }`}
                 >
                     {tasks.map((task, index) => (
-                        <TaskItem key={task.id} task={task} index={index} />
+                        <TaskItem
+                            key={task.id}
+                            task={task}
+                            index={index}
+                            isHighlighted={highlightedTaskId === task.id}
+                        />
                     ))}
                     {provided.placeholder}
                     {tasks.length === 0 && !snapshot.isDraggingOver && (
@@ -98,12 +123,17 @@ const DroppableTasks: React.FC<{
 
 const NonDroppableTasks: React.FC<{
     tasks: Task[];
+    highlightedTaskId: string | null;
     placeholderNode: string | React.ReactNode;
-}> = ({ tasks, placeholderNode }) => {
+}> = ({ tasks, highlightedTaskId, placeholderNode }) => {
     return (
         <div className="flex flex-col gap-2 min-h-[100px]">
             {tasks.map(task => (
-                <TaskItem key={task.id} task={task} />
+                <TaskItem
+                    key={task.id}
+                    task={task}
+                    isHighlighted={highlightedTaskId === task.id}
+                />
             ))}
             {tasks.length === 0 && (
                 <div className="h-[120px] flex flex-col space-y-2 items-center justify-center text-center font-mono text-slate-300 dark:text-slate-700">

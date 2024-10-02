@@ -3,6 +3,8 @@ import Layout from 'src/components/Layout';
 import { TaskListsProvider } from 'src/components/context/TaskListsContext';
 import { TaskDragDropProvider } from 'src/components/context/TaskDragDropContext';
 import { DashboardContent } from 'src/components/DashboardContent';
+import { TaskNavigationProvider } from 'src/components/context/TaskNavigationContext';
+import { TaskActionProvider } from 'src/components/context/TaskActionContext';
 
 const DashboardPage: React.FC = () => {
     return (
@@ -16,11 +18,19 @@ const DashboardPage: React.FC = () => {
                         'DAILY_DONE',
                     ]}
                 >
-                    <TaskDragDropProvider
-                        listNames={['DAILY_TODO', 'DAILY_DONE', 'INBOX']}
-                    >
-                        <DashboardContent />
-                    </TaskDragDropProvider>
+                    <TaskActionProvider>
+                        <TaskNavigationProvider>
+                            <TaskDragDropProvider
+                                listNames={[
+                                    'DAILY_TODO',
+                                    'DAILY_DONE',
+                                    'INBOX',
+                                ]}
+                            >
+                                <DashboardContent />
+                            </TaskDragDropProvider>
+                        </TaskNavigationProvider>
+                    </TaskActionProvider>
                 </TaskListsProvider>
             </div>
         </Layout>

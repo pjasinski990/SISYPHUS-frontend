@@ -37,7 +37,8 @@ export const DailyPlanContent: React.FC = () => {
                     initiallyFolded={true}
                 >
                     <TaskList
-                        title="Done"
+                        title={'Done'}
+                        listName="DAILY_DONE"
                         tasks={doneTasks}
                         droppableId="DAILY_DONE"
                         placeholderNode={

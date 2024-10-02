@@ -24,7 +24,8 @@ export const DailyPlanTodo: React.FC = () => {
 
     return (
         <TaskList
-            title="Todo"
+            title={'Todo'}
+            listName="DAILY_TODO"
             tasks={tasks}
             droppableId="DAILY_TODO"
             placeholderNode={<span>empty. well done!</span>}

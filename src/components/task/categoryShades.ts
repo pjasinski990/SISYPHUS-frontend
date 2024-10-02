@@ -20,7 +20,7 @@ export const categoryShades: Record<TaskCategory, CategoryShades> = {
         lightHoverBg: 'green-200',
         darkHoverBg: 'green-900',
         lightBorderHover: 'green-200',
-        darkBorderHover: 'green-600',
+        darkBorderHover: 'green-500',
         lightIcon: 'green-500',
         darkIcon: 'green-300',
         lightMarkers: 'green-400',
@@ -32,7 +32,7 @@ export const categoryShades: Record<TaskCategory, CategoryShades> = {
         lightHoverBg: 'blue-200',
         darkHoverBg: 'blue-900',
         lightBorderHover: 'blue-200',
-        darkBorderHover: 'blue-600',
+        darkBorderHover: 'blue-500',
         lightIcon: 'blue-500',
         darkIcon: 'blue-300',
         lightMarkers: 'blue-400',
@@ -44,7 +44,7 @@ export const categoryShades: Record<TaskCategory, CategoryShades> = {
         lightHoverBg: 'red-200',
         darkHoverBg: 'red-900',
         lightBorderHover: 'red-200',
-        darkBorderHover: 'red-600',
+        darkBorderHover: 'red-500',
         lightIcon: 'red-500',
         darkIcon: 'red-300',
         lightMarkers: 'red-400',
@@ -56,7 +56,7 @@ export const categoryShades: Record<TaskCategory, CategoryShades> = {
         lightHoverBg: 'yellow-200',
         darkHoverBg: 'yellow-800',
         lightBorderHover: 'yellow-200',
-        darkBorderHover: 'yellow-600',
+        darkBorderHover: 'yellow-500',
         lightIcon: 'yellow-500',
         darkIcon: 'yellow-300',
         lightMarkers: 'yellow-400',
@@ -68,7 +68,7 @@ export const categoryShades: Record<TaskCategory, CategoryShades> = {
         lightHoverBg: 'gray-200',
         darkHoverBg: 'gray-700',
         lightBorderHover: 'gray-200',
-        darkBorderHover: 'gray-400',
+        darkBorderHover: 'gray-300',
         lightIcon: 'gray-300',
         darkIcon: 'gray-200',
         lightMarkers: 'gray-500',
@@ -80,7 +80,7 @@ export const categoryShades: Record<TaskCategory, CategoryShades> = {
         lightHoverBg: 'pink-200',
         darkHoverBg: 'pink-900',
         lightBorderHover: 'pink-200',
-        darkBorderHover: 'pink-600',
+        darkBorderHover: 'pink-500',
         lightIcon: 'pink-500',
         darkIcon: 'pink-300',
         lightMarkers: 'pink-400',
@@ -89,6 +89,7 @@ export const categoryShades: Record<TaskCategory, CategoryShades> = {
 };
 
 interface CategoryStyleClasses {
+    categoryHighlightClass: string;
     categoryMarkerColorClass: string;
     categoryBgColorClass: string;
     categoryBgHoverColorClass: string;
@@ -99,6 +100,7 @@ interface CategoryStyleClasses {
 const generateCategoryStyles = (
     shades: CategoryShades
 ): CategoryStyleClasses => ({
+    categoryHighlightClass: `border-4 border-${shades.lightBorderHover} dark:border-${shades.darkBorderHover}`,
     categoryMarkerColorClass: `marker:text-${shades.lightMarkers} dark:marker:text-${shades.darkMarkers}`,
     categoryBgColorClass: `bg-${shades.lightBg} dark:bg-${shades.darkBg}`,
     categoryBgHoverColorClass: `hover:bg-${shades.lightHoverBg} dark:hover:bg-${shades.darkHoverBg}`,

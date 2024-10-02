@@ -1,11 +1,10 @@
 import React, {
     createContext,
-    useCallback,
     useContext,
     useEffect,
-    useMemo,
-    useRef,
     useState,
+    useCallback,
+    useMemo,
 } from 'react';
 import { Task, taskService } from '../../service/taskService';
 
@@ -16,6 +15,7 @@ interface TaskListsProviderType {
     comparators: Record<string, TaskComparator>;
     setFilter: (listName: string, filter: TaskFilter) => void;
     setComparator: (listName: string, comparator: TaskComparator) => void;
+    orderedListNames: string[];
 }
 
 const TaskListsContext = createContext<TaskListsProviderType | undefined>(
@@ -44,6 +44,8 @@ export const TaskListsProvider: React.FC<TaskListsProviderProps> = ({
     const [comparators, setComparators] = useState<
         Record<string, TaskComparator>
     >({});
+
+    const orderedListNames = listNames;
 
     useEffect(() => {
         const fetchTasksForList = async (listName: string) => {
@@ -100,6 +102,7 @@ export const TaskListsProvider: React.FC<TaskListsProviderProps> = ({
             comparators,
             setFilter,
             setComparator,
+            orderedListNames,
         }),
         [
             tasksLists,
@@ -108,6 +111,7 @@ export const TaskListsProvider: React.FC<TaskListsProviderProps> = ({
             comparators,
             setFilter,
             setComparator,
+            orderedListNames,
         ]
     );
 
@@ -182,6 +186,14 @@ export const useTaskLists = (
         });
         return result;
     }, [listNames, tasksLists, setTaskList, filters, comparators]);
+};
+
+export const useAllTaskLists = () => {
+    const context = useContext(TaskListsContext);
+    if (context === undefined) {
+        throw new Error('useTaskLists must be used within a TaskListsProvider');
+    }
+    return context;
 };
 
 export const useListFilters = (): {

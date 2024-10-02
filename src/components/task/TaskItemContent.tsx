@@ -6,16 +6,15 @@ import { CSSTransition } from 'react-transition-group';
 import './TaskItemContent.css';
 import { categoryStyles } from 'src/components/task/categoryShades';
 import { useTaskExtensions } from 'src/components/context/TaskExtensionContext';
-import { useTaskInteraction } from 'src/components/context/TaskInteractionContext';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 import { TaskDetailsDialog } from './TaskDetailsDialog';
 import { ContextMenu } from 'src/components/task/TaskContextMenu';
 import MarkdownRenderer from 'src/components/markdown/MarkdownRenderer';
+import { useTaskAction } from 'src/components/context/TaskActionContext';
 
 interface TaskItemContentProps {
     task: Task;
     showDetails?: boolean;
+    isHighlighted?: boolean;
 }
 
 export const TaskDetails: React.FC<{ task: Task }> = ({ task }) => (
@@ -49,16 +48,18 @@ const TaskDescription: React.FC<{ task: Task }> = ({ task }) => {
 export const TaskItemContent: React.FC<TaskItemContentProps> = ({
     task,
     showDetails = true,
+    isHighlighted = false,
 }) => {
     const {
         categoryBgColorClass,
         categoryBgHoverColorClass,
         categoryBorderColorClass,
+        categoryHighlightClass,
         iconClass,
     } = categoryStyles[task.category];
 
     const defaultBorderClass = 'border-4 border-transparent';
-    const { openEditTaskDialog, openRemoveTaskDialog } = useTaskInteraction();
+    const { openEditTaskDialog, openRemoveTaskDialog } = useTaskAction();
     const iconSize = task.size === TaskSize.SMALL ? 10 : 20;
 
     const { extraButtons } = useTaskExtensions();
@@ -67,7 +68,10 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
     const [contextMenuPosition, setContextMenuPosition] = useState<{
         x: number;
         y: number;
-    }>({ x: 0, y: 0 });
+    }>({
+        x: 0,
+        y: 0,
+    });
     const [showDetailsDialog, setShowDetailsDialog] = useState(false);
 
     const handleContextMenu = (e: React.MouseEvent) => {
@@ -115,6 +119,7 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
         };
     }, [showContextMenu]);
 
+    const highlightedClass = isHighlighted ? categoryHighlightClass : '';
     return (
         <>
             <TaskDetailsDialog
@@ -124,7 +129,7 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
             />
             <div
                 onContextMenu={handleContextMenu}
-                className={`task-item-content relative flex-grow w-full p-0.5 rounded shadow-md text-gray-950 dark:text-gray-100 ${categoryBgColorClass} ${defaultBorderClass} ${categoryBorderColorClass} cursor-pointer transition-all duration-75`}
+                className={`task-item-content relative flex-grow w-full p-0.5 rounded shadow-md text-gray-950 dark:text-gray-100 ${categoryBgColorClass} ${defaultBorderClass} ${categoryBorderColorClass} ${highlightedClass} cursor-pointer transition-all duration-75`}
             >
                 <div className="flex justify-between items-start">
                     <div className="flex-1 flex pt-2">

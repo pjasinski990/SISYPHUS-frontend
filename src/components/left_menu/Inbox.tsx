@@ -39,6 +39,7 @@ export const Inbox: React.FC = () => {
                 <div className={'mt-2'}>
                     <TaskList
                         title={'Inbox'}
+                        listName={'INBOX'}
                         tasks={tasks}
                         droppableId={'INBOX'}
                         showCreateButton={true}
