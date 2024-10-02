@@ -64,9 +64,19 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
         };
 
         const handleKeyDown = (event: React.KeyboardEvent) => {
-            if (event.key === 'Enter' && event.ctrlKey) {
+            if (event.key === 'Enter') {
+                if (event.ctrlKey) {
+                    return;
+                }
+
+                const target = event.target as HTMLElement;
+                const tagName = target.tagName.toLowerCase();
+                if (tagName === 'textarea' || target.isContentEditable) {
+                    event.stopPropagation();
+                    return;
+                }
+
                 event.preventDefault();
-            } else if (event.key === 'Enter') {
                 event.stopPropagation();
             }
         };
@@ -74,6 +84,7 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
         return (
             <form
                 ref={ref}
+                onKeyDown={handleKeyDown}
                 onSubmit={handleSubmit(onFormSubmit)}
                 className="space-y-6"
             >
@@ -94,7 +105,6 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                                     id="title"
                                     {...field}
                                     placeholder="Task Title"
-                                    onKeyDown={handleKeyDown}
                                     autoComplete="off"
                                 />
                                 {errors.title && (
@@ -122,7 +132,6 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                                 id="description"
                                 {...field}
                                 placeholder="Task Description"
-                                onKeyDown={handleKeyDown}
                             />
                         )}
                     />
@@ -145,7 +154,6 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                             >
                                 <SelectTrigger
                                     id="category"
-                                    onKeyDown={handleKeyDown}
                                 >
                                     <SelectValue placeholder="Select category">
                                         {field.value}
@@ -180,7 +188,6 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                             >
                                 <SelectTrigger
                                     id="size"
-                                    onKeyDown={handleKeyDown}
                                 >
                                     <SelectValue placeholder="Select size">
                                         {field.value}
