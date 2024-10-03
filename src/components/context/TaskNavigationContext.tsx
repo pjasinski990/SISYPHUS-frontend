@@ -8,7 +8,9 @@ interface TaskNavigationContextType {
     highlightedListName: string | null;
     clearHighlight: () => void;
     moveHighlight: (direction: 'h' | 'j' | 'k' | 'l') => void;
-    performAction: (action: 'edit' | 'delete' | 'move') => void;
+    performAction: (
+        action: 'edit' | 'delete' | 'move-next' | 'move-prev'
+    ) => void;
     highlightedTask: Task | null;
     registerList: (listName: string) => void;
     unregisterList: (listName: string) => void;
@@ -49,15 +51,34 @@ export const TaskNavigationProvider: React.FC<{
         setHighlightedTaskId(null);
     }, []);
 
+    const getNextListName = useCallback((): string | null => {
+        if (!highlightedListName) {
+            return visibleLists.length > 0 ? visibleLists[0] : null;
+        }
+        const currentIndex = visibleLists.indexOf(highlightedListName);
+        if (currentIndex === -1 || currentIndex >= visibleLists.length - 1) {
+            return null;
+        }
+        return visibleLists[currentIndex + 1];
+    }, [highlightedListName, visibleLists]);
+
+    const getPreviousListName = useCallback((): string | null => {
+        if (!highlightedListName) {
+            return visibleLists.length > 0 ? visibleLists[0] : null;
+        }
+        const currentIndex = visibleLists.indexOf(highlightedListName);
+        if (currentIndex <= 0) {
+            return null;
+        }
+        return visibleLists[currentIndex - 1];
+    }, [highlightedListName, visibleLists]);
+
     const moveHighlight = useCallback(
         (direction: 'h' | 'j' | 'k' | 'l') => {
             if (visibleLists.length === 0) {
                 return;
             }
 
-            const currentListIndex = highlightedListName
-                ? visibleLists.indexOf(highlightedListName)
-                : 0;
             let currentTaskList = highlightedListName
                 ? tasksLists[highlightedListName]?.tasks || []
                 : [];
@@ -72,9 +93,8 @@ export const TaskNavigationProvider: React.FC<{
 
             switch (direction) {
                 case 'h':
-                    if (currentListIndex > 0) {
-                        newHighlightedListName =
-                            visibleLists[currentListIndex - 1];
+                    newHighlightedListName = getPreviousListName();
+                    if (newHighlightedListName) {
                         currentTaskList =
                             tasksLists[newHighlightedListName]?.tasks || [];
                         currentTaskIndex = Math.min(
@@ -86,9 +106,8 @@ export const TaskNavigationProvider: React.FC<{
                     }
                     break;
                 case 'l':
-                    if (currentListIndex < visibleLists.length - 1) {
-                        newHighlightedListName =
-                            visibleLists[currentListIndex + 1];
+                    newHighlightedListName = getNextListName();
+                    if (newHighlightedListName) {
                         currentTaskList =
                             tasksLists[newHighlightedListName]?.tasks || [];
                         currentTaskIndex = Math.min(
@@ -116,17 +135,25 @@ export const TaskNavigationProvider: React.FC<{
             setHighlightedListName(newHighlightedListName);
             setHighlightedTaskId(newHighlightedTaskId);
         },
-        [highlightedListName, highlightedTaskId, tasksLists, visibleLists]
+        [
+            highlightedListName,
+            highlightedTaskId,
+            tasksLists,
+            visibleLists,
+            getNextListName,
+            getPreviousListName,
+        ]
     );
 
     const performAction = useCallback(
-        async (action: 'edit' | 'delete' | 'move') => {
+        async (action: 'edit' | 'delete' | 'move-next' | 'move-prev') => {
             if (!highlightedTaskId || !highlightedListName) {
                 return;
             }
             const task = tasksLists[highlightedListName]?.tasks.find(
                 t => t.id === highlightedTaskId
             );
+
             if (!task) {
                 return;
             }
@@ -138,12 +165,34 @@ export const TaskNavigationProvider: React.FC<{
                 case 'delete':
                     taskActionContext.openRemoveTaskDialog(task);
                     break;
-                case 'move':
-                    // TODO move
+                case 'move-next': {
+                    const nextListName = getNextListName();
+                    if (nextListName) {
+                        taskActionContext.moveTask(task, nextListName);
+                        setHighlightedListName(nextListName);
+                        setHighlightedTaskId(task.id);
+                    }
                     break;
+                }
+                case 'move-prev': {
+                    const previousListName = getPreviousListName();
+                    if (previousListName) {
+                        taskActionContext.moveTask(task, previousListName);
+                        setHighlightedListName(previousListName);
+                        setHighlightedTaskId(task.id);
+                    }
+                    break;
+                }
             }
         },
-        [highlightedTaskId, highlightedListName, tasksLists, taskActionContext]
+        [
+            highlightedTaskId,
+            highlightedListName,
+            tasksLists,
+            taskActionContext,
+            getNextListName,
+            getPreviousListName,
+        ]
     );
 
     const highlightedTask =

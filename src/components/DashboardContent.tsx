@@ -185,6 +185,28 @@ const TaskNavigationHandler: React.FC = () => {
         [performAction]
     );
 
+    const moveTaskRightShortcut: Shortcut = useMemo(
+        () => ({
+            id: 'move-task-right',
+            keys: ['Shift', 'l'],
+            action: () => performAction('move-next'),
+            description: 'Move highlighted task right',
+            order: 3,
+        }),
+        [performAction]
+    );
+
+    const moveTaskLeftShortcut: Shortcut = useMemo(
+        () => ({
+            id: 'move-task-left',
+            keys: ['Shift', 'h'],
+            action: () => performAction('move-prev'),
+            description: 'Move highlighted task left',
+            order: 3,
+        }),
+        [performAction]
+    );
+
     useRegisterShortcut(moveLeftShortcut);
     useRegisterShortcut(moveDownShortcut);
     useRegisterShortcut(moveUpShortcut);
@@ -192,6 +214,8 @@ const TaskNavigationHandler: React.FC = () => {
     useRegisterShortcut(clearHighlightShortcut);
     useRegisterShortcut(editTaskShortcut);
     useRegisterShortcut(deleteTaskShortcut);
+    useRegisterShortcut(moveTaskRightShortcut);
+    useRegisterShortcut(moveTaskLeftShortcut);
 
     return null;
 };

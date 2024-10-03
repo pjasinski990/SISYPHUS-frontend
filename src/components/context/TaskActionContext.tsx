@@ -5,10 +5,13 @@ import { ConfirmDialog } from '../library/ConfirmDialog';
 import { useAllTaskLists } from './TaskListsContext';
 import { TaskFormData } from 'src/components/task/TaskForm';
 import { TaskItem } from 'src/components/task/TaskItem';
+import { util } from 'zod';
+import objectKeys = util.objectKeys;
 
 interface TaskActionContextType {
     openEditTaskDialog: (task: Task) => void;
     openRemoveTaskDialog: (task: Task) => void;
+    moveTask: (task: Task, destinationList: string) => void;
 }
 
 const TaskActionContext = createContext<TaskActionContextType | undefined>(
@@ -30,6 +33,27 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
     const openRemoveTaskDialog = useCallback((task: Task) => {
         setRemovingTask(task);
     }, []);
+
+    const handleMoveTask = useCallback(
+        (task: Task, destinationList: string) => {
+            if (!objectKeys(tasksLists).includes(destinationList)) {
+                return;
+            }
+            const currentList = task.listName;
+            const updatedTask = { ...task, listName: destinationList };
+
+            taskService.updateTask(updatedTask).then();
+            tasksLists[currentList].setTasks(
+                tasksLists[currentList].tasks.filter(t => t.id !== task.id)
+            );
+
+            tasksLists[destinationList].setTasks([
+                ...tasksLists[destinationList].tasks,
+                updatedTask,
+            ]);
+        },
+        [tasksLists]
+    );
 
     const handleTaskFormSubmit = useCallback(
         async (taskData: TaskFormData) => {
@@ -91,7 +115,11 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
 
     return (
         <TaskActionContext.Provider
-            value={{ openEditTaskDialog, openRemoveTaskDialog }}
+            value={{
+                openEditTaskDialog,
+                openRemoveTaskDialog,
+                moveTask: handleMoveTask,
+            }}
         >
             <TaskDialog
                 open={!!editingTask}
