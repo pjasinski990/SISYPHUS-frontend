@@ -52,7 +52,7 @@ export const DashboardContent: React.FC = () => {
             keys: ['1'],
             action: () => toggleTab('inbox'),
             description: 'Switch to inbox panel',
-            order: 3,
+            order: 2,
         }),
         [toggleTab]
     );
@@ -63,7 +63,7 @@ export const DashboardContent: React.FC = () => {
             keys: ['2'],
             action: () => toggleTab('reusableTasks'),
             description: 'Switch to reusable tasks panel',
-            order: 4,
+            order: 2,
         }),
         [toggleTab]
     );
@@ -103,7 +103,8 @@ export const DashboardContent: React.FC = () => {
 };
 
 const TaskNavigationHandler: React.FC = () => {
-    const { moveHighlight, performAction } = useTaskNavigation();
+    const { moveHighlight, clearHighlight, performAction } =
+        useTaskNavigation();
 
     const moveLeftShortcut: Shortcut = useMemo(
         () => ({
@@ -111,7 +112,7 @@ const TaskNavigationHandler: React.FC = () => {
             keys: ['h'],
             action: () => moveHighlight('h'),
             description: 'Move highlight left',
-            order: 5,
+            order: 3,
         }),
         [moveHighlight]
     );
@@ -122,7 +123,7 @@ const TaskNavigationHandler: React.FC = () => {
             keys: ['j'],
             action: () => moveHighlight('j'),
             description: 'Move highlight down',
-            order: 6,
+            order: 3,
         }),
         [moveHighlight]
     );
@@ -133,7 +134,7 @@ const TaskNavigationHandler: React.FC = () => {
             keys: ['k'],
             action: () => moveHighlight('k'),
             description: 'Move highlight up',
-            order: 7,
+            order: 3,
         }),
         [moveHighlight]
     );
@@ -144,9 +145,22 @@ const TaskNavigationHandler: React.FC = () => {
             keys: ['l'],
             action: () => moveHighlight('l'),
             description: 'Move highlight right',
-            order: 8,
+            order: 3,
         }),
         [moveHighlight]
+    );
+
+    const clearHighlightShortcut: Shortcut = useMemo(
+        () => ({
+            id: 'clear-highlight',
+            keys: ['Escape'],
+            action: () => {
+                clearHighlight();
+            },
+            description: 'Clear highlight',
+            order: 4,
+        }),
+        [clearHighlight]
     );
 
     const editTaskShortcut: Shortcut = useMemo(
@@ -155,7 +169,7 @@ const TaskNavigationHandler: React.FC = () => {
             keys: ['e'],
             action: () => performAction('edit'),
             description: 'Edit highlighted task',
-            order: 9,
+            order: 3,
         }),
         [performAction]
     );
@@ -166,7 +180,7 @@ const TaskNavigationHandler: React.FC = () => {
             keys: ['d'],
             action: () => performAction('delete'),
             description: 'Delete highlighted task',
-            order: 10,
+            order: 3,
         }),
         [performAction]
     );
@@ -175,6 +189,7 @@ const TaskNavigationHandler: React.FC = () => {
     useRegisterShortcut(moveDownShortcut);
     useRegisterShortcut(moveUpShortcut);
     useRegisterShortcut(moveRightShortcut);
+    useRegisterShortcut(clearHighlightShortcut);
     useRegisterShortcut(editTaskShortcut);
     useRegisterShortcut(deleteTaskShortcut);
 

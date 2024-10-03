@@ -6,6 +6,7 @@ import { useTaskAction } from './TaskActionContext';
 interface TaskNavigationContextType {
     highlightedTaskId: string | null;
     highlightedListName: string | null;
+    clearHighlight: () => void;
     moveHighlight: (direction: 'h' | 'j' | 'k' | 'l') => void;
     performAction: (action: 'edit' | 'delete' | 'move') => void;
     highlightedTask: Task | null;
@@ -42,6 +43,10 @@ export const TaskNavigationProvider: React.FC<{
 
     const unregisterList = useCallback((listName: string) => {
         setVisibleLists(prev => prev.filter(name => name !== listName));
+    }, []);
+
+    const clearHighlight = useCallback(() => {
+        setHighlightedTaskId(null);
     }, []);
 
     const moveHighlight = useCallback(
@@ -98,26 +103,12 @@ export const TaskNavigationProvider: React.FC<{
                     if (currentTaskIndex < currentTaskList.length - 1) {
                         newHighlightedTaskId =
                             currentTaskList[currentTaskIndex + 1]?.id || null;
-                    } else if (currentListIndex < visibleLists.length - 1) {
-                        newHighlightedListName =
-                            visibleLists[currentListIndex + 1];
-                        currentTaskList =
-                            tasksLists[newHighlightedListName]?.tasks || [];
-                        newHighlightedTaskId = currentTaskList[0]?.id || null;
                     }
                     break;
                 case 'k':
                     if (currentTaskIndex > 0) {
                         newHighlightedTaskId =
                             currentTaskList[currentTaskIndex - 1]?.id || null;
-                    } else if (currentListIndex > 0) {
-                        newHighlightedListName =
-                            visibleLists[currentListIndex - 1];
-                        currentTaskList =
-                            tasksLists[newHighlightedListName]?.tasks || [];
-                        newHighlightedTaskId =
-                            currentTaskList[currentTaskList.length - 1]?.id ||
-                            null;
                     }
                     break;
             }
@@ -165,6 +156,7 @@ export const TaskNavigationProvider: React.FC<{
     const value: TaskNavigationContextType = {
         highlightedTaskId,
         highlightedListName,
+        clearHighlight,
         moveHighlight,
         performAction,
         highlightedTask,

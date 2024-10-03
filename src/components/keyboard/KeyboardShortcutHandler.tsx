@@ -106,7 +106,7 @@ const applySpecialKeyModifiers = (
 };
 
 const isKeyMatch = (pressedKey: string, shortcutKey: string): boolean => {
-    return pressedKey === shortcutKey;
+    return pressedKey.toUpperCase() === shortcutKey.toUpperCase();
 };
 
 const areModifiersMatching = (

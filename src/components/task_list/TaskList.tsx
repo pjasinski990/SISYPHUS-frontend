@@ -87,8 +87,6 @@ const DroppableTasks: React.FC<{
     highlightedTaskId: string | null;
     placeholderNode: string | React.ReactNode;
 }> = ({ droppableId, tasks, highlightedTaskId, placeholderNode }) => {
-    console.log('highlighted: ', highlightedTaskId);
-    console.log(tasks.find(t => t.id === highlightedTaskId));
     return (
         <Droppable droppableId={droppableId}>
             {(provided, snapshot) => (
