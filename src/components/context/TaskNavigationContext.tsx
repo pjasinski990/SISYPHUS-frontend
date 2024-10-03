@@ -28,7 +28,7 @@ export const TaskNavigationProvider: React.FC<{
     >(null);
     const [visibleLists, setVisibleLists] = useState<string[]>([]);
 
-    const { tasksLists, orderedListNames } = useAllTaskLists();
+    const tasksLists = useAllTaskLists();
     const taskActionContext = useTaskAction();
 
     const registerList = useCallback((listName: string) => {
@@ -54,7 +54,7 @@ export const TaskNavigationProvider: React.FC<{
                 ? visibleLists.indexOf(highlightedListName)
                 : 0;
             let currentTaskList = highlightedListName
-                ? tasksLists[highlightedListName] || []
+                ? tasksLists[highlightedListName]?.tasks || []
                 : [];
             let currentTaskIndex = highlightedTaskId
                 ? currentTaskList.findIndex(
@@ -71,7 +71,7 @@ export const TaskNavigationProvider: React.FC<{
                         newHighlightedListName =
                             visibleLists[currentListIndex - 1];
                         currentTaskList =
-                            tasksLists[newHighlightedListName] || [];
+                            tasksLists[newHighlightedListName]?.tasks || [];
                         currentTaskIndex = Math.min(
                             currentTaskIndex,
                             currentTaskList.length - 1
@@ -85,7 +85,7 @@ export const TaskNavigationProvider: React.FC<{
                         newHighlightedListName =
                             visibleLists[currentListIndex + 1];
                         currentTaskList =
-                            tasksLists[newHighlightedListName] || [];
+                            tasksLists[newHighlightedListName]?.tasks || [];
                         currentTaskIndex = Math.min(
                             currentTaskIndex,
                             currentTaskList.length - 1
@@ -102,7 +102,7 @@ export const TaskNavigationProvider: React.FC<{
                         newHighlightedListName =
                             visibleLists[currentListIndex + 1];
                         currentTaskList =
-                            tasksLists[newHighlightedListName] || [];
+                            tasksLists[newHighlightedListName]?.tasks || [];
                         newHighlightedTaskId = currentTaskList[0]?.id || null;
                     }
                     break;
@@ -114,7 +114,7 @@ export const TaskNavigationProvider: React.FC<{
                         newHighlightedListName =
                             visibleLists[currentListIndex - 1];
                         currentTaskList =
-                            tasksLists[newHighlightedListName] || [];
+                            tasksLists[newHighlightedListName]?.tasks || [];
                         newHighlightedTaskId =
                             currentTaskList[currentTaskList.length - 1]?.id ||
                             null;
@@ -129,11 +129,11 @@ export const TaskNavigationProvider: React.FC<{
     );
 
     const performAction = useCallback(
-        (action: 'edit' | 'delete' | 'move') => {
+        async (action: 'edit' | 'delete' | 'move') => {
             if (!highlightedTaskId || !highlightedListName) {
                 return;
             }
-            const task = tasksLists[highlightedListName]?.find(
+            const task = tasksLists[highlightedListName]?.tasks.find(
                 t => t.id === highlightedTaskId
             );
             if (!task) {
@@ -148,6 +148,7 @@ export const TaskNavigationProvider: React.FC<{
                     taskActionContext.openRemoveTaskDialog(task);
                     break;
                 case 'move':
+                    // TODO move
                     break;
             }
         },
@@ -156,7 +157,7 @@ export const TaskNavigationProvider: React.FC<{
 
     const highlightedTask =
         highlightedTaskId && highlightedListName
-            ? tasksLists[highlightedListName]?.find(
+            ? tasksLists[highlightedListName]?.tasks.find(
                   t => t.id === highlightedTaskId
               ) || null
             : null;

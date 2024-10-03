@@ -1,5 +1,5 @@
 import { Task } from '../../service/taskService';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { TaskItemContent } from 'src/components/task/TaskItemContent';
 import { useTaskProperties } from 'src/components/context/TaskPropertiesContext';
 import { Draggable } from '@hello-pangea/dnd';
@@ -21,8 +21,20 @@ export const TaskItem: React.FC<TaskItemProps> = ({
     className,
     isHighlighted = false,
 }) => {
+    const itemRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        if (isHighlighted && itemRef.current) {
+            itemRef.current.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center',
+                inline: 'nearest',
+            });
+        }
+    }, [isHighlighted]);
+
     return (
-        <div className={className}>
+        <div ref={itemRef} className={className}>
             <TaskItemInternal
                 task={task}
                 index={index}

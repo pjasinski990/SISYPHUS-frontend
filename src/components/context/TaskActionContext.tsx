@@ -21,7 +21,7 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
     const [editingTask, setEditingTask] = useState<Task | null>(null);
     const [removingTask, setRemovingTask] = useState<Task | null>(null);
 
-    const { tasksLists, setTaskList } = useAllTaskLists();
+    const tasksLists = useAllTaskLists();
 
     const openEditTaskDialog = useCallback((task: Task) => {
         setEditingTask(task);
@@ -39,13 +39,16 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
                     await taskService.updateTask(updatedTask);
 
                     const listName = updatedTask.listName;
-                    const tasks = tasksLists[listName] || [];
-                    const taskIndex = tasks.findIndex(
-                        task => task.id === updatedTask.id
-                    );
-                    if (taskIndex !== -1) {
-                        tasks[taskIndex] = updatedTask;
-                        setTaskList(listName, [...tasks]);
+                    const list = tasksLists[listName];
+                    if (list) {
+                        const tasks = list.tasks;
+                        const taskIndex = tasks.findIndex(
+                            task => task.id === updatedTask.id
+                        );
+                        if (taskIndex !== -1) {
+                            tasks[taskIndex] = updatedTask;
+                            list.setTasks([...tasks]);
+                        }
                     }
                 } catch (error) {
                     console.error('Failed to update task', error);
@@ -54,7 +57,7 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
                 }
             }
         },
-        [editingTask, tasksLists, setTaskList]
+        [editingTask, tasksLists]
     );
 
     const handleTaskFormCancel = useCallback(() => {
@@ -67,18 +70,20 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
                 await taskService.deleteTask(removingTask.id!);
 
                 const listName = removingTask.listName;
-                const tasks = tasksLists[listName] || [];
-                setTaskList(
-                    listName,
-                    tasks.filter(task => task.id !== removingTask.id)
-                );
+                const list = tasksLists[listName];
+                if (list) {
+                    const tasks = list.tasks;
+                    list.setTasks(
+                        tasks.filter(task => task.id !== removingTask.id)
+                    );
+                }
             } catch (error) {
                 console.error('Failed to delete task', error);
             } finally {
                 setRemovingTask(null);
             }
         }
-    }, [removingTask, tasksLists, setTaskList]);
+    }, [removingTask, tasksLists]);
 
     const handleCancelRemoveTask = useCallback(() => {
         setRemovingTask(null);

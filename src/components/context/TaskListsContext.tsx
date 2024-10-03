@@ -122,6 +122,51 @@ export const TaskListsProvider: React.FC<TaskListsProviderProps> = ({
     );
 };
 
+function getSortedAndFilteredTasksForList(
+    listName: string,
+    tasksLists: Record<string, Task[]>,
+    setTaskList: (listName: string, tasks: Task[]) => void,
+    filters: Record<string, TaskFilter>,
+    comparators: Record<string, TaskComparator>
+): { tasks: Task[]; setTasks: (tasks: Task[]) => void } {
+    const rawTasks = tasksLists[listName] || [];
+
+    const filteredTasks = filters[listName]
+        ? rawTasks.filter(filters[listName])
+        : rawTasks;
+
+    const sortedTasks = comparators[listName]
+        ? [...filteredTasks].sort(comparators[listName])
+        : filteredTasks;
+
+    const setTasks = (tasks: Task[]) => setTaskList(listName, tasks);
+
+    return { tasks: sortedTasks, setTasks };
+}
+
+function getSortedAndFilteredTasksForLists(
+    listNames: string[],
+    tasksLists: Record<string, Task[]>,
+    setTaskList: (listName: string, tasks: Task[]) => void,
+    filters: Record<string, TaskFilter>,
+    comparators: Record<string, TaskComparator>
+): Record<string, { tasks: Task[]; setTasks: (tasks: Task[]) => void }> {
+    const result: Record<
+        string,
+        { tasks: Task[]; setTasks: (tasks: Task[]) => void }
+    > = {};
+    listNames.forEach(listName => {
+        result[listName] = getSortedAndFilteredTasksForList(
+            listName,
+            tasksLists,
+            setTaskList,
+            filters,
+            comparators
+        );
+    });
+    return result;
+}
+
 export const useTaskList = (
     listName: string
 ): { tasks: Task[]; setTasks: (tasks: Task[]) => void } => {
@@ -132,25 +177,17 @@ export const useTaskList = (
 
     const { tasksLists, setTaskList, filters, comparators } = context;
 
-    const filteredTasks = useMemo(() => {
-        const rawTasks = tasksLists[listName] || [];
-        const filter = filters[listName];
-        return filter ? rawTasks.filter(filter) : rawTasks;
-    }, [filters, listName, tasksLists]);
-
-    const sortedTasks = useMemo(() => {
-        const comparator = comparators[listName];
-        return comparator ? [...filteredTasks].sort(comparator) : filteredTasks;
-    }, [filteredTasks, comparators, listName]);
-
-    const setTasksForList = useCallback(
-        (tasks: Task[]) => {
-            setTaskList(listName, tasks);
-        },
-        [listName, setTaskList]
+    return useMemo(
+        () =>
+            getSortedAndFilteredTasksForList(
+                listName,
+                tasksLists,
+                setTaskList,
+                filters,
+                comparators
+            ),
+        [listName, tasksLists, setTaskList, filters, comparators]
     );
-
-    return { tasks: sortedTasks, setTasks: setTasksForList };
 };
 
 export const useTaskLists = (
@@ -163,37 +200,44 @@ export const useTaskLists = (
 
     const { tasksLists, setTaskList, filters, comparators } = context;
 
-    return useMemo(() => {
-        const result: Record<
-            string,
-            { tasks: Task[]; setTasks: (tasks: Task[]) => void }
-        > = {};
-        listNames.forEach(listName => {
-            const rawTasks = tasksLists[listName] || [];
-
-            const filteredTasks = filters[listName]
-                ? rawTasks.filter(filters[listName])
-                : rawTasks;
-
-            const sortedTasks = comparators[listName]
-                ? [...filteredTasks].sort(comparators[listName])
-                : filteredTasks;
-
-            result[listName] = {
-                tasks: sortedTasks,
-                setTasks: (tasks: Task[]) => setTaskList(listName, tasks),
-            };
-        });
-        return result;
-    }, [listNames, tasksLists, setTaskList, filters, comparators]);
+    return useMemo(
+        () =>
+            getSortedAndFilteredTasksForLists(
+                listNames,
+                tasksLists,
+                setTaskList,
+                filters,
+                comparators
+            ),
+        [listNames, tasksLists, setTaskList, filters, comparators]
+    );
 };
 
-export const useAllTaskLists = () => {
+export const useAllTaskLists = (): Record<
+    string,
+    { tasks: Task[]; setTasks: (tasks: Task[]) => void }
+> => {
     const context = useContext(TaskListsContext);
     if (context === undefined) {
-        throw new Error('useTaskLists must be used within a TaskListsProvider');
+        throw new Error(
+            'useAllTaskLists must be used within a TaskListsProvider'
+        );
     }
-    return context;
+
+    const { tasksLists, setTaskList, filters, comparators, orderedListNames } =
+        context;
+
+    return useMemo(
+        () =>
+            getSortedAndFilteredTasksForLists(
+                orderedListNames,
+                tasksLists,
+                setTaskList,
+                filters,
+                comparators
+            ),
+        [orderedListNames, tasksLists, setTaskList, filters, comparators]
+    );
 };
 
 export const useListFilters = (): {

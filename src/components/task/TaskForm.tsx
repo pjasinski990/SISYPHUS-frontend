@@ -152,9 +152,7 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                                 onValueChange={field.onChange}
                                 value={field.value}
                             >
-                                <SelectTrigger
-                                    id="category"
-                                >
+                                <SelectTrigger id="category">
                                     <SelectValue placeholder="Select category">
                                         {field.value}
                                     </SelectValue>
@@ -186,9 +184,7 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                                 onValueChange={field.onChange}
                                 value={field.value}
                             >
-                                <SelectTrigger
-                                    id="size"
-                                >
+                                <SelectTrigger id="size">
                                     <SelectValue placeholder="Select size">
                                         {field.value}
                                     </SelectValue>

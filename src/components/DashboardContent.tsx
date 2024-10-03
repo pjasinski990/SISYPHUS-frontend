@@ -7,7 +7,10 @@ import { DragDropContext } from '@hello-pangea/dnd';
 import { Shortcut } from 'src/components/context/ShortcutsContext';
 import { useRegisterShortcut } from 'src/components/context/RegisterShortcutContext';
 import { useTaskDragAndDrop } from 'src/components/context/TaskDragDropContext';
-import { TaskNavigationProvider, useTaskNavigation } from 'src/components/context/TaskNavigationContext';
+import {
+    TaskNavigationProvider,
+    useTaskNavigation,
+} from 'src/components/context/TaskNavigationContext';
 import { TaskActionProvider } from 'src/components/context/TaskActionContext';
 
 export const DashboardContent: React.FC = () => {
