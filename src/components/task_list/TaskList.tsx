@@ -34,7 +34,9 @@ const TaskListComponent: React.FC<TaskListProps> = ({
     } = useTaskNavigation();
 
     useEffect(() => {
-        registerList(listName);
+        const isPositionedAtLeft =
+            listName === 'INBOX' || listName === 'REUSABLE';
+        registerList(listName, isPositionedAtLeft);
         return () => unregisterList(listName);
     }, [listName, registerList, unregisterList]);
 

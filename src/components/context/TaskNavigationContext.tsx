@@ -12,7 +12,7 @@ interface TaskNavigationContextType {
         action: 'edit' | 'delete' | 'move-next' | 'move-prev'
     ) => void;
     highlightedTask: Task | null;
-    registerList: (listName: string) => void;
+    registerList: (listName: string, atFront: boolean) => void;
     unregisterList: (listName: string) => void;
 }
 
@@ -34,9 +34,12 @@ export const TaskNavigationProvider: React.FC<{
     const tasksLists = useAllTaskLists();
     const taskActionContext = useTaskAction();
 
-    const registerList = useCallback((listName: string) => {
+    const registerList = useCallback((listName: string, atFront: boolean) => {
         setVisibleLists(prev => {
             if (!prev.includes(listName)) {
+                if (atFront) {
+                    return [listName, ...prev];
+                }
                 return [...prev, listName];
             }
             return prev;
@@ -79,17 +82,28 @@ export const TaskNavigationProvider: React.FC<{
                 return;
             }
 
-            let currentTaskList = highlightedListName
-                ? tasksLists[highlightedListName]?.tasks || []
-                : [];
+            let newHighlightedListName = highlightedListName;
+            let newHighlightedTaskId = highlightedTaskId;
+
+            if (
+                !highlightedListName ||
+                !highlightedTaskId ||
+                !visibleLists.includes(highlightedListName)
+            ) {
+                newHighlightedListName = visibleLists[0];
+                const firstTask = tasksLists[newHighlightedListName]?.tasks[0];
+                newHighlightedTaskId = firstTask ? firstTask.id : null;
+                setHighlightedListName(newHighlightedListName);
+                setHighlightedTaskId(newHighlightedTaskId);
+                return;
+            }
+
+            let currentTaskList = tasksLists[highlightedListName]?.tasks || [];
             let currentTaskIndex = highlightedTaskId
                 ? currentTaskList.findIndex(
                       task => task.id === highlightedTaskId
                   )
                 : -1;
-
-            let newHighlightedListName = highlightedListName;
-            let newHighlightedTaskId = highlightedTaskId;
 
             switch (direction) {
                 case 'h':
