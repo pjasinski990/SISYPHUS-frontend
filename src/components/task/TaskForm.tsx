@@ -81,6 +81,12 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
             }
         };
 
+        const preventActionWhenCtrlPressed = (event: React.KeyboardEvent) => {
+            if (event.ctrlKey) {
+                event.preventDefault();
+            }
+        };
+
         return (
             <form
                 ref={ref}
@@ -152,7 +158,10 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                                 onValueChange={field.onChange}
                                 value={field.value}
                             >
-                                <SelectTrigger id="category">
+                                <SelectTrigger
+                                    id="category"
+                                    onKeyDown={preventActionWhenCtrlPressed}
+                                >
                                     <SelectValue placeholder="Select category">
                                         {field.value}
                                     </SelectValue>
@@ -184,7 +193,10 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                                 onValueChange={field.onChange}
                                 value={field.value}
                             >
-                                <SelectTrigger id="size">
+                                <SelectTrigger
+                                    id="size"
+                                    onKeyDown={preventActionWhenCtrlPressed}
+                                >
                                     <SelectValue placeholder="Select size">
                                         {field.value}
                                     </SelectValue>
