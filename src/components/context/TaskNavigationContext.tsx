@@ -61,27 +61,71 @@ export const TaskNavigationProvider: React.FC<{
         setHighlightedListName(null);
     }, []);
 
-    const getNextListName = useCallback((): string | null => {
-        if (!highlightedListName) {
-            return visibleLists.length > 0 ? visibleLists[0] : null;
-        }
-        const currentIndex = visibleLists.indexOf(highlightedListName);
-        if (currentIndex === -1 || currentIndex >= visibleLists.length - 1) {
+    const getNextListName = useCallback(
+        (skipEmpty: boolean = true): string | null => {
+            if (!highlightedListName) {
+                if (skipEmpty) {
+                    for (const list of visibleLists) {
+                        if (tasksLists[list]?.tasks.length > 0) {
+                            return list;
+                        }
+                    }
+                    return null;
+                }
+                return visibleLists.length > 0 ? visibleLists[0] : null;
+            }
+            const currentIndex = visibleLists.indexOf(highlightedListName);
+            if (
+                currentIndex === -1 ||
+                currentIndex >= visibleLists.length - 1
+            ) {
+                return null;
+            }
+            for (let i = currentIndex + 1; i < visibleLists.length; i++) {
+                if (
+                    !skipEmpty ||
+                    tasksLists[visibleLists[i]]?.tasks.length > 0
+                ) {
+                    return visibleLists[i];
+                }
+            }
             return null;
-        }
-        return visibleLists[currentIndex + 1];
-    }, [highlightedListName, visibleLists]);
+        },
+        [highlightedListName, visibleLists, tasksLists]
+    );
 
-    const getPreviousListName = useCallback((): string | null => {
-        if (!highlightedListName) {
-            return visibleLists.length > 0 ? visibleLists[0] : null;
-        }
-        const currentIndex = visibleLists.indexOf(highlightedListName);
-        if (currentIndex <= 0) {
+    const getPreviousListName = useCallback(
+        (skipEmpty: boolean = true): string | null => {
+            if (!highlightedListName) {
+                if (skipEmpty) {
+                    for (let i = visibleLists.length - 1; i >= 0; i--) {
+                        const list = visibleLists[i];
+                        if (tasksLists[list]?.tasks.length > 0) {
+                            return list;
+                        }
+                    }
+                    return null;
+                }
+                return visibleLists.length > 0
+                    ? visibleLists[visibleLists.length - 1]
+                    : null;
+            }
+            const currentIndex = visibleLists.indexOf(highlightedListName);
+            if (currentIndex <= 0) {
+                return null;
+            }
+            for (let i = currentIndex - 1; i >= 0; i--) {
+                if (
+                    !skipEmpty ||
+                    tasksLists[visibleLists[i]]?.tasks.length > 0
+                ) {
+                    return visibleLists[i];
+                }
+            }
             return null;
-        }
-        return visibleLists[currentIndex - 1];
-    }, [highlightedListName, visibleLists]);
+        },
+        [highlightedListName, visibleLists, tasksLists]
+    );
 
     const moveHighlight = useCallback(
         (direction: 'h' | 'j' | 'k' | 'l') => {
@@ -94,8 +138,11 @@ export const TaskNavigationProvider: React.FC<{
                 !highlightedTaskId ||
                 !visibleLists.includes(highlightedListName)
             ) {
-                const firstList = visibleLists[0];
-                const firstTask = tasksLists[firstList]?.tasks[0];
+                // Initialize highlight to the first non-empty list
+                const firstList = getNextListName(true);
+                const firstTask = firstList
+                    ? tasksLists[firstList]?.tasks[0]
+                    : null;
                 setHighlightedListName(firstList);
                 setHighlightedTaskId(firstTask ? firstTask.id : null);
                 return;
@@ -118,7 +165,7 @@ export const TaskNavigationProvider: React.FC<{
 
             switch (direction) {
                 case 'h': {
-                    const previousListName = getPreviousListName();
+                    const previousListName = getPreviousListName(true); // Skip empty lists
                     if (previousListName) {
                         newHighlightedListName = previousListName;
                         const newTaskList =
@@ -127,12 +174,13 @@ export const TaskNavigationProvider: React.FC<{
                             currentTaskIndex,
                             newTaskList.length - 1
                         );
-                        newHighlightedTaskId = newTaskList[clampedIndex]?.id;
+                        newHighlightedTaskId =
+                            newTaskList[clampedIndex]?.id || null;
                     }
                     break;
                 }
                 case 'l': {
-                    const nextListName = getNextListName();
+                    const nextListName = getNextListName(true); // Skip empty lists
                     if (nextListName) {
                         newHighlightedListName = nextListName;
                         const newTaskList =
@@ -183,7 +231,14 @@ export const TaskNavigationProvider: React.FC<{
     );
 
     const performAction = useCallback(
-        async (action: 'edit' | 'delete' | 'move-next' | 'move-prev' | 'show-details') => {
+        async (
+            action:
+                | 'edit'
+                | 'delete'
+                | 'move-next'
+                | 'move-prev'
+                | 'show-details'
+        ) => {
             if (!highlightedTaskId || !highlightedListName) {
                 return;
             }
@@ -206,7 +261,7 @@ export const TaskNavigationProvider: React.FC<{
                     taskActionContext.openTaskDetailsDialog(task);
                     break;
                 case 'move-next': {
-                    const nextListName = getNextListName();
+                    const nextListName = getNextListName(false); // Do not skip empty lists
                     if (nextListName) {
                         taskActionContext.moveTask(task, nextListName);
                         setHighlightedListName(nextListName);
@@ -215,7 +270,7 @@ export const TaskNavigationProvider: React.FC<{
                     break;
                 }
                 case 'move-prev': {
-                    const previousListName = getPreviousListName();
+                    const previousListName = getPreviousListName(false); // Do not skip empty lists
                     if (previousListName) {
                         taskActionContext.moveTask(task, previousListName);
                         setHighlightedListName(previousListName);
@@ -250,15 +305,23 @@ export const TaskNavigationProvider: React.FC<{
             !visibleLists.includes(highlightedListName)
         ) {
             if (visibleLists.length > 0) {
-                const firstVisibleList = visibleLists[0];
-                const firstTask = tasksLists[firstVisibleList]?.tasks[0];
+                const firstVisibleList = getNextListName(true); // Skip empty lists
+                const firstTask = firstVisibleList
+                    ? tasksLists[firstVisibleList]?.tasks[0]
+                    : null;
                 setHighlightedListName(firstVisibleList);
                 setHighlightedTaskId(firstTask ? firstTask.id : null);
             } else {
                 clearHighlight();
             }
         }
-    }, [visibleLists, highlightedListName, tasksLists, clearHighlight]);
+    }, [
+        visibleLists,
+        highlightedListName,
+        tasksLists,
+        clearHighlight,
+        getNextListName,
+    ]);
 
     const value: TaskNavigationContextType = {
         highlightedTaskId,

@@ -57,7 +57,14 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
                 const savedTask = await taskService
                     .createTask(updatedTask)
                     .then();
-                updatedTask.id = savedTask.id;
+                tasksLists[currentList].setTasks(
+                    tasksLists[currentList].tasks.map((t: Task) => {
+                        if (t.id === task.id) {
+                            t.id = savedTask.id;
+                        }
+                        return t;
+                    })
+                );
             } else {
                 taskService.updateTask(updatedTask).then();
                 tasksLists[currentList].setTasks(
