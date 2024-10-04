@@ -118,12 +118,14 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
         };
     }, [showContextMenu]);
 
-    const highlightedClass = isHighlighted ? categoryHighlightClass : '';
+    const highlightedClass = isHighlighted
+        ? categoryHighlightClass
+        : defaultBorderClass;
     return (
         <>
             <div
                 onContextMenu={handleContextMenu}
-                className={`task-item-content relative flex-grow w-full p-0.5 rounded shadow-md text-gray-950 dark:text-gray-100 ${categoryBgColorClass} ${defaultBorderClass} ${categoryBorderColorClass} ${highlightedClass} cursor-pointer transition-all duration-75`}
+                className={`task-item-content relative flex-grow w-full p-0.5 rounded shadow-md text-gray-950 dark:text-gray-100 ${categoryBgColorClass} ${categoryBorderColorClass} ${highlightedClass} cursor-pointer transition-all duration-75`}
             >
                 <div className="flex justify-between items-start">
                     <div className="flex-1 flex pt-2">

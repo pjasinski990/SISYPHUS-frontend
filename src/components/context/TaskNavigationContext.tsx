@@ -138,7 +138,6 @@ export const TaskNavigationProvider: React.FC<{
                 !highlightedTaskId ||
                 !visibleLists.includes(highlightedListName)
             ) {
-                // Initialize highlight to the first non-empty list
                 const firstList = getNextListName(true);
                 const firstTask = firstList
                     ? tasksLists[firstList]?.tasks[0]
@@ -165,7 +164,7 @@ export const TaskNavigationProvider: React.FC<{
 
             switch (direction) {
                 case 'h': {
-                    const previousListName = getPreviousListName(true); // Skip empty lists
+                    const previousListName = getPreviousListName(true);
                     if (previousListName) {
                         newHighlightedListName = previousListName;
                         const newTaskList =
@@ -180,7 +179,7 @@ export const TaskNavigationProvider: React.FC<{
                     break;
                 }
                 case 'l': {
-                    const nextListName = getNextListName(true); // Skip empty lists
+                    const nextListName = getNextListName(true);
                     if (nextListName) {
                         newHighlightedListName = nextListName;
                         const newTaskList =
@@ -261,7 +260,7 @@ export const TaskNavigationProvider: React.FC<{
                     taskActionContext.openTaskDetailsDialog(task);
                     break;
                 case 'move-next': {
-                    const nextListName = getNextListName(false); // Do not skip empty lists
+                    const nextListName = getNextListName(false);
                     if (nextListName) {
                         taskActionContext.moveTask(task, nextListName);
                         setHighlightedListName(nextListName);
@@ -270,7 +269,7 @@ export const TaskNavigationProvider: React.FC<{
                     break;
                 }
                 case 'move-prev': {
-                    const previousListName = getPreviousListName(false); // Do not skip empty lists
+                    const previousListName = getPreviousListName(false);
                     if (previousListName) {
                         taskActionContext.moveTask(task, previousListName);
                         setHighlightedListName(previousListName);
@@ -305,7 +304,7 @@ export const TaskNavigationProvider: React.FC<{
             !visibleLists.includes(highlightedListName)
         ) {
             if (visibleLists.length > 0) {
-                const firstVisibleList = getNextListName(true); // Skip empty lists
+                const firstVisibleList = getNextListName(true);
                 const firstTask = firstVisibleList
                     ? tasksLists[firstVisibleList]?.tasks[0]
                     : null;
