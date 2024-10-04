@@ -15,7 +15,7 @@ interface TaskNavigationContextType {
     clearHighlight: () => void;
     moveHighlight: (direction: 'h' | 'j' | 'k' | 'l') => void;
     performAction: (
-        action: 'edit' | 'delete' | 'move-next' | 'move-prev'
+        action: 'edit' | 'delete' | 'move-next' | 'move-prev' | 'show-details'
     ) => void;
     highlightedTask: Task | null;
     registerList: (listName: string, atFront: boolean) => void;
@@ -183,7 +183,7 @@ export const TaskNavigationProvider: React.FC<{
     );
 
     const performAction = useCallback(
-        async (action: 'edit' | 'delete' | 'move-next' | 'move-prev') => {
+        async (action: 'edit' | 'delete' | 'move-next' | 'move-prev' | 'show-details') => {
             if (!highlightedTaskId || !highlightedListName) {
                 return;
             }
@@ -201,6 +201,9 @@ export const TaskNavigationProvider: React.FC<{
                     break;
                 case 'delete':
                     taskActionContext.openRemoveTaskDialog(task);
+                    break;
+                case 'show-details':
+                    taskActionContext.openTaskDetailsDialog(task);
                     break;
                 case 'move-next': {
                     const nextListName = getNextListName();

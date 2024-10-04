@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
     Dialog,
     DialogContent,
@@ -26,6 +26,18 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({
     title,
 }) => {
     const formRef = useRef<HTMLFormElement | null>(null);
+    const [currentTitle, setCurrentTitle] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (open) {
+            setCurrentTitle(title);
+        } else if (currentTitle) {
+            const timer = setTimeout(() => {
+                setCurrentTitle(null);
+            }, 500);
+            return () => clearTimeout(timer);
+        }
+    }, [currentTitle, open, title]);
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
@@ -46,6 +58,9 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({
         };
     }, [open]);
 
+    if (!currentTitle) {
+        return null;
+    }
     return (
         <Dialog open={open} onOpenChange={isOpen => !isOpen && onCancel()}>
             <DialogContent
@@ -53,7 +68,7 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({
                 aria-describedby={'task dialog'}
             >
                 <DialogHeader>
-                    <DialogTitle>{title}</DialogTitle>
+                    <DialogTitle>{currentTitle}</DialogTitle>
                 </DialogHeader>
                 <TaskForm
                     ref={formRef}

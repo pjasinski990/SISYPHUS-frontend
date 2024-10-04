@@ -6,7 +6,6 @@ import { CSSTransition } from 'react-transition-group';
 import './TaskItemContent.css';
 import { categoryStyles } from 'src/components/task/categoryShades';
 import { useTaskExtensions } from 'src/components/context/TaskExtensionContext';
-import { TaskDetailsDialog } from './TaskDetailsDialog';
 import { ContextMenu } from 'src/components/task/TaskContextMenu';
 import MarkdownRenderer from 'src/components/markdown/MarkdownRenderer';
 import { useTaskAction } from 'src/components/context/TaskActionContext';
@@ -17,29 +16,29 @@ interface TaskItemContentProps {
     isHighlighted?: boolean;
 }
 
-export const TaskDetails: React.FC<{ task: Task }> = ({ task }) => (
-    <>
-        <TaskDescription task={task} />
-        <div className="text-xs mt-1 dark:text-gray-100">
-            <div className="p-2 flex flex-col items-end">
-                {task.startTime && <span>Start: {task.startTime}</span>}
-                <span>Category: {task.category}</span>
-                <span className="pb-2">Size: {task.size}</span>
-                <span>Created: {task.createdAt}</span>
-                <span>Updated: {task.updatedAt}</span>
-                <span>Finished: {task.finishedAt}</span>
+export const TaskDetails: React.FC<{ task: Task }> = ({ task }) => {
+    return (
+        <>
+            <TaskDescription task={task} />
+            <div className="text-xs mt-1 dark:text-gray-100">
+                <div className="p-2 flex flex-col items-end">
+                    {task.startTime && <span>Start: {task.startTime}</span>}
+                    <span>Category: {task.category}</span>
+                    <span className="pb-2">Size: {task.size}</span>
+                    <span>Created: {task.createdAt}</span>
+                    <span>Updated: {task.updatedAt}</span>
+                    <span>Finished: {task.finishedAt}</span>
+                </div>
             </div>
-        </div>
-    </>
-);
+        </>
+    );
+};
 
 const TaskDescription: React.FC<{ task: Task }> = ({ task }) => {
     const { categoryMarkerColorClass } = categoryStyles[task.category];
 
     return (
-        <div
-            className={`${categoryMarkerColorClass} prose dark:prose-invert px-2`}
-        >
+        <div className={`${categoryMarkerColorClass} break-words`}>
             <MarkdownRenderer content={task.description} />
         </div>
     );
@@ -122,11 +121,6 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
     const highlightedClass = isHighlighted ? categoryHighlightClass : '';
     return (
         <>
-            <TaskDetailsDialog
-                task={task}
-                open={showDetailsDialog}
-                onClose={() => setShowDetailsDialog(false)}
-            />
             <div
                 onContextMenu={handleContextMenu}
                 className={`task-item-content relative flex-grow w-full p-0.5 rounded shadow-md text-gray-950 dark:text-gray-100 ${categoryBgColorClass} ${defaultBorderClass} ${categoryBorderColorClass} ${highlightedClass} cursor-pointer transition-all duration-75`}
@@ -148,7 +142,7 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                             className={`mr-2 inline flex-shrink-0 self-start ${iconClass}`}
                             fill="currentColor"
                         />
-                        <h4 className="font-semibold leading-snug">
+                        <h4 className="font-semibold leading-snug break-words">
                             {task.title}
                         </h4>
                     </div>

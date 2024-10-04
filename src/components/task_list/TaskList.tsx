@@ -41,7 +41,7 @@ const TaskListComponent: React.FC<TaskListProps> = ({
     }, [listName, registerList, unregisterList]);
 
     return (
-        <div className="bg-slate-50 dark:bg-slate-900 px-4 py-2 rounded-md min-h-[300px] shadow shadow-slate-200 dark:shadow-slate-950 w-[350px] max-h-[calc(100vh-200px)] overflow-auto">
+        <div className="bg-slate-50 dark:bg-slate-900 border dark:border-transparent px-4 py-2 rounded-md min-h-[300px] w-[350px] max-h-[calc(100vh-200px)] overflow-auto">
             <TaskListHeader
                 title={title}
                 showAddButton={showCreateButton}

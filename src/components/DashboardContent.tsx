@@ -177,9 +177,20 @@ const TaskNavigationHandler: React.FC = () => {
     const deleteTaskShortcut: Shortcut = useMemo(
         () => ({
             id: 'delete-highlighted-task',
-            keys: ['d'],
+            keys: ['x'],
             action: () => performAction('delete'),
             description: 'Delete highlighted task',
+            order: 3,
+        }),
+        [performAction]
+    );
+
+    const taskDetailsShortcut: Shortcut = useMemo(
+        () => ({
+            id: 'show-highlighted-task-details',
+            keys: ['d'],
+            action: () => performAction('show-details'),
+            description: 'Show highlighted task details',
             order: 3,
         }),
         [performAction]
@@ -214,6 +225,7 @@ const TaskNavigationHandler: React.FC = () => {
     useRegisterShortcut(clearHighlightShortcut);
     useRegisterShortcut(editTaskShortcut);
     useRegisterShortcut(deleteTaskShortcut);
+    useRegisterShortcut(taskDetailsShortcut);
     useRegisterShortcut(moveTaskRightShortcut);
     useRegisterShortcut(moveTaskLeftShortcut);
 

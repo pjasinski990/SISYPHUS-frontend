@@ -7,10 +7,12 @@ import { TaskFormData } from 'src/components/task/TaskForm';
 import { TaskItem } from 'src/components/task/TaskItem';
 import { util } from 'zod';
 import objectKeys = util.objectKeys;
+import { TaskDetailsDialog } from 'src/components/task/TaskDetailsDialog';
 
 interface TaskActionContextType {
     openEditTaskDialog: (task: Task) => void;
     openRemoveTaskDialog: (task: Task) => void;
+    openTaskDetailsDialog: (task: Task) => void;
     moveTask: (task: Task, destinationList: string) => void;
 }
 
@@ -21,6 +23,8 @@ const TaskActionContext = createContext<TaskActionContextType | undefined>(
 export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
     children,
 }) => {
+    const [showingDetailsTask, setShowingDetailsTask] =
+        React.useState<Task | null>(null);
     const [editingTask, setEditingTask] = useState<Task | null>(null);
     const [removingTask, setRemovingTask] = useState<Task | null>(null);
 
@@ -35,17 +39,31 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
     }, []);
 
     const handleMoveTask = useCallback(
-        (task: Task, destinationList: string) => {
+        async (task: Task, destinationList: string) => {
             if (!objectKeys(tasksLists).includes(destinationList)) {
                 return;
             }
             const currentList = task.listName;
-            const updatedTask = { ...task, listName: destinationList };
+            const updatedTask = {
+                ...task,
+                listName: destinationList,
+                finishedAt:
+                    destinationList === 'DAILY_DONE'
+                        ? new Date().toISOString()
+                        : null,
+            };
 
-            taskService.updateTask(updatedTask).then();
-            tasksLists[currentList].setTasks(
-                tasksLists[currentList].tasks.filter(t => t.id !== task.id)
-            );
+            if (currentList === 'REUSABLE') {
+                const savedTask = await taskService
+                    .createTask(updatedTask)
+                    .then();
+                updatedTask.id = savedTask.id;
+            } else {
+                taskService.updateTask(updatedTask).then();
+                tasksLists[currentList].setTasks(
+                    tasksLists[currentList].tasks.filter(t => t.id !== task.id)
+                );
+            }
 
             tasksLists[destinationList].setTasks([
                 ...tasksLists[destinationList].tasks,
@@ -54,6 +72,14 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
         },
         [tasksLists]
     );
+
+    const openTaskDetailsDialog = useCallback((task: Task) => {
+        setShowingDetailsTask(task);
+    }, []);
+
+    const closeTaskDetailsDialog = useCallback(() => {
+        setShowingDetailsTask(null);
+    }, []);
 
     const handleTaskFormSubmit = useCallback(
         async (taskData: TaskFormData) => {
@@ -118,9 +144,16 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
             value={{
                 openEditTaskDialog,
                 openRemoveTaskDialog,
+                openTaskDetailsDialog,
                 moveTask: handleMoveTask,
             }}
         >
+            <TaskDetailsDialog
+                open={!!showingDetailsTask}
+                task={showingDetailsTask!}
+                onClose={closeTaskDetailsDialog}
+            />
+
             <TaskDialog
                 open={!!editingTask}
                 listName={editingTask?.listName || ''}
@@ -133,7 +166,7 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
             <ConfirmDialog
                 open={!!removingTask}
                 title="Confirmation"
-                message="Remove this task from inbox?"
+                message={`Remove this task from ${removingTask?.listName.replace(/[^a-zA-Z]+/g, ' ').toLowerCase()}?`}
                 onConfirm={handleConfirmRemoveTask}
                 onCancel={handleCancelRemoveTask}
             >
