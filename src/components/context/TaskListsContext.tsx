@@ -97,6 +97,7 @@ export const TaskListsProvider: React.FC<TaskListsProviderProps> = ({
                 fetchTasksForList(listName);
             }
         });
+        console.log(taskLists)
     }, [listNames, taskLists]);
 
     const setTaskList = useCallback((newList: TaskList) => {

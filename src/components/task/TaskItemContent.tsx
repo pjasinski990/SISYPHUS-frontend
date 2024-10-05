@@ -40,7 +40,7 @@ const TaskDescription: React.FC<{ task: Task }> = ({ task }) => {
 
     return (
         <div className={`${categoryMarkerColorClass} break-words`}>
-            <MarkdownRenderer content={task.description} />
+            <MarkdownRenderer content={task.description ?? ''} />
         </div>
     );
 };

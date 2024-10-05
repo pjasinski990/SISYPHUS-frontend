@@ -18,13 +18,16 @@ export enum TaskSize {
 export interface Task {
     id: string | null;
     ownerUsername: string;
+    title: string;
     category: TaskCategory;
     size: TaskSize;
-    title: string;
-    description: string;
     listName: string;
-    startTime: string;
-    duration: string; // ISO-8601 format (PT2H30M)
+    description: string | null;
+    startTime: string | null;
+    duration: string | null; // ISO-8601 format (PT2H30M)
+    deadline: string | null;
+    dependencies: string[] | null; // taskIds
+    flexibility: number | null; // float [0-1]
     createdAt: string;
     updatedAt: string;
     finishedAt: string | null;

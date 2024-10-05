@@ -15,12 +15,15 @@ import { Input } from 'src/components/ui/input';
 
 export interface TaskFormData {
     title: string;
-    description: string;
     category: TaskCategory;
     size: TaskSize;
     listName: string;
-    startTime: string;
-    duration: string;
+    description: string | null;
+    startTime: string | null;
+    duration: string | null;
+    deadline: string | null;
+    dependencies: string[] | null;
+    flexibility: number | null;
 }
 
 interface TaskFormProps {
@@ -137,6 +140,7 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                             <EmojiTextarea
                                 id="description"
                                 {...field}
+                                value={field.value ?? ''}
                                 placeholder="Task Description"
                             />
                         )}
