@@ -2,18 +2,18 @@ import React, { useMemo } from 'react';
 import { TaskList } from 'src/components/task_list/TaskList';
 import { useRegisterShortcut } from 'src/components/context/RegisterShortcutContext';
 import { Shortcut } from 'src/components/context/ShortcutsContext';
-import { useTaskInteraction } from 'src/components/context/TaskInteractionContext';
 import { useTaskList } from 'src/components/context/TaskListsContext';
+import { useTaskAction } from 'src/components/context/TaskActionContext';
 
 export const DailyPlanTodo: React.FC = () => {
-    const { openCreateTaskDialog } = useTaskInteraction();
+    const { openCreateTaskDialog } = useTaskAction();
     const { taskList } = useTaskList('DAILY_TODO');
 
     const addTaskShortcut: Shortcut = useMemo(
         () => ({
             id: 'add-task-daily-plan',
             keys: ['C'],
-            action: openCreateTaskDialog,
+            action: () => openCreateTaskDialog('DAILY_TODO'),
             description: "Add a new task to today's todo list",
             order: 1,
         }),
@@ -30,7 +30,7 @@ export const DailyPlanTodo: React.FC = () => {
             droppableId="DAILY_TODO"
             placeholderNode={<span>empty. well done!</span>}
             showCreateButton={true}
-            onCreateTask={openCreateTaskDialog}
+            onCreateTask={() => openCreateTaskDialog('DAILY_TODO')}
         />
     );
 };

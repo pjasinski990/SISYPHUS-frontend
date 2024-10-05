@@ -7,7 +7,6 @@ import {
     useTaskList,
 } from 'src/components/context/TaskListsContext';
 import { DailyPlanTodo } from 'src/components/daily_plan/DailyPlanTodo';
-import { TaskInteractionProvider } from 'src/components/context/TaskInteractionContext';
 import { getTimestamp, happenedToday } from 'src/lib/utils';
 import { Task } from '../../service/taskService';
 
@@ -25,28 +24,22 @@ export const DailyPlanContent: React.FC = () => {
 
     return (
         <div className="flex gap-4 h-[calc(100vh-200px)]">
-            <TaskInteractionProvider listName={'DAILY_TODO'}>
-                <TaskPropertiesProvider isDraggable={true} isFoldable={true}>
-                    <DailyPlanTodo />
-                </TaskPropertiesProvider>
-            </TaskInteractionProvider>
-            <TaskInteractionProvider listName={'DAILY_DONE'}>
-                <TaskPropertiesProvider
-                    isDraggable={true}
-                    isFoldable={true}
-                    initiallyFolded={true}
-                >
-                    <TaskList
-                        title={'Done'}
-                        listName="DAILY_DONE"
-                        tasks={doneTasks}
-                        droppableId="DAILY_DONE"
-                        placeholderNode={
-                            <span>drop your done tasks here.</span>
-                        }
-                    />
-                </TaskPropertiesProvider>
-            </TaskInteractionProvider>
+            <TaskPropertiesProvider isDraggable={true} isFoldable={true}>
+                <DailyPlanTodo />
+            </TaskPropertiesProvider>
+            <TaskPropertiesProvider
+                isDraggable={true}
+                isFoldable={true}
+                initiallyFolded={true}
+            >
+                <TaskList
+                    title={'Done'}
+                    listName="DAILY_DONE"
+                    tasks={doneTasks}
+                    droppableId="DAILY_DONE"
+                    placeholderNode={<span>drop your done tasks here.</span>}
+                />
+            </TaskPropertiesProvider>
         </div>
     );
 };

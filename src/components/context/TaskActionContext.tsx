@@ -8,8 +8,10 @@ import { TaskItem } from 'src/components/task/TaskItem';
 import { util } from 'zod';
 import objectKeys = util.objectKeys;
 import { TaskDetailsDialog } from 'src/components/task/TaskDetailsDialog';
+import { useAuth } from 'src/components/context/AuthContext';
 
 interface TaskActionContextType {
+    openCreateTaskDialog: (listName: string) => void;
     openEditTaskDialog: (task: Task) => void;
     openRemoveTaskDialog: (task: Task) => void;
     openTaskDetailsDialog: (task: Task) => void;
@@ -23,12 +25,21 @@ const TaskActionContext = createContext<TaskActionContextType | undefined>(
 export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
     children,
 }) => {
-    const [showingDetailsTask, setShowingDetailsTask] =
-        React.useState<Task | null>(null);
+    const { username } = useAuth();
+    const [showingDetailsTask, setShowingDetailsTask] = useState<Task | null>(
+        null
+    );
+    const [creatingTaskForList, setCreatingTaskForList] = useState<
+        string | null
+    >(null);
     const [editingTask, setEditingTask] = useState<Task | null>(null);
     const [removingTask, setRemovingTask] = useState<Task | null>(null);
 
     const taskLists = useAllTaskLists();
+
+    const openCreateTaskDialog = useCallback((listName: string) => {
+        setCreatingTaskForList(listName);
+    }, []);
 
     const openEditTaskDialog = useCallback((task: Task) => {
         setEditingTask(task);
@@ -54,9 +65,7 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
             };
 
             if (currentList === 'REUSABLE') {
-                const savedTask = await taskService
-                    .createTask(updatedTask)
-                    .then();
+                const savedTask = await taskService.createTask(updatedTask);
                 taskLists[currentList].setTasks(
                     taskLists[currentList].taskList.tasks.map((t: Task) => {
                         if (t.id === task.id) {
@@ -66,7 +75,7 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
                     })
                 );
             } else {
-                taskService.updateTask(updatedTask).then();
+                await taskService.updateTask(updatedTask);
                 taskLists[currentList].setTasks(
                     taskLists[currentList].taskList.tasks.filter(
                         t => t.id !== task.id
@@ -89,6 +98,35 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
     const closeTaskDetailsDialog = useCallback(() => {
         setShowingDetailsTask(null);
     }, []);
+
+    const createTask = useCallback(
+        async (taskData: TaskFormData, listName: string) => {
+            if (!username) {
+                throw Error('Error retrieving username');
+            }
+            try {
+                let newTask: Task = {
+                    id: null,
+                    ...taskData,
+                    ownerUsername: username,
+                    listName: listName,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    finishedAt: null,
+                };
+                const created = await taskService.createTask(newTask);
+                taskLists[listName].setTasks([
+                    ...taskLists[listName].taskList.tasks,
+                    created,
+                ]);
+            } catch (err) {
+                console.error('Failed to create task', err);
+            } finally {
+                setCreatingTaskForList(null);
+            }
+        },
+        [username, taskLists]
+    );
 
     const handleTaskFormSubmit = useCallback(
         async (taskData: TaskFormData) => {
@@ -115,13 +153,16 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
                 } finally {
                     setEditingTask(null);
                 }
+            } else if (creatingTaskForList) {
+                await createTask(taskData, creatingTaskForList);
             }
         },
-        [editingTask, taskLists]
+        [editingTask, taskLists, createTask, creatingTaskForList]
     );
 
     const handleTaskFormCancel = useCallback(() => {
         setEditingTask(null);
+        setCreatingTaskForList(null);
     }, []);
 
     const handleConfirmRemoveTask = useCallback(async () => {
@@ -152,6 +193,7 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
     return (
         <TaskActionContext.Provider
             value={{
+                openCreateTaskDialog,
                 openEditTaskDialog,
                 openRemoveTaskDialog,
                 openTaskDetailsDialog,
@@ -165,18 +207,28 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
             />
 
             <TaskDialog
-                open={!!editingTask}
-                listName={editingTask?.listName || ''}
+                open={!!editingTask || !!creatingTaskForList}
+                listName={editingTask?.listName || creatingTaskForList || ''}
                 initialData={editingTask}
                 onSubmit={handleTaskFormSubmit}
                 onCancel={handleTaskFormCancel}
-                title={`Edit ${editingTask?.listName.replace(/[^a-zA-Z]+/g, ' ').toLowerCase()} task`}
+                title={
+                    editingTask
+                        ? `Edit ${editingTask.listName
+                              .replace(/[^a-zA-Z]+/g, ' ')
+                              .toLowerCase()} task`
+                        : `Create ${creatingTaskForList
+                              ?.replace(/[^a-zA-Z]+/g, ' ')
+                              .toLowerCase()} task`
+                }
             />
 
             <ConfirmDialog
                 open={!!removingTask}
                 title="Confirmation"
-                message={`Remove this task from ${removingTask?.listName.replace(/[^a-zA-Z]+/g, ' ').toLowerCase()}?`}
+                message={`Remove this task from ${removingTask?.listName
+                    .replace(/[^a-zA-Z]+/g, ' ')
+                    .toLowerCase()}?`}
                 onConfirm={handleConfirmRemoveTask}
                 onCancel={handleCancelRemoveTask}
             >

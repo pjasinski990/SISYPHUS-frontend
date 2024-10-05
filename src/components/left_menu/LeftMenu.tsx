@@ -9,7 +9,6 @@ import { ReusableTaskPicker } from 'src/components/left_menu/ReusableTaskPicker'
 import { motion } from 'framer-motion';
 import { Inbox } from 'src/components/left_menu/Inbox';
 import { TaskPropertiesProvider } from 'src/components/context/TaskPropertiesContext';
-import { TaskInteractionProvider } from 'src/components/context/TaskInteractionContext';
 
 export type TabValue = 'inbox' | 'reusableTasks';
 
@@ -99,14 +98,12 @@ const LeftMenuComponent: React.FC<LeftMenuProps> = ({
                         transition={{ duration: 0.2 }}
                         className="h-full flex"
                     >
-                        <TaskInteractionProvider listName="INBOX">
-                            <TaskPropertiesProvider
-                                isDraggable={true}
-                                isFoldable={true}
-                            >
-                                <Inbox />
-                            </TaskPropertiesProvider>
-                        </TaskInteractionProvider>
+                        <TaskPropertiesProvider
+                            isDraggable={true}
+                            isFoldable={true}
+                        >
+                            <Inbox />
+                        </TaskPropertiesProvider>
                     </motion.div>
                 )}
             </TabsContent>
@@ -123,15 +120,13 @@ const LeftMenuComponent: React.FC<LeftMenuProps> = ({
                         custom={direction}
                         transition={{ duration: 0.2 }}
                     >
-                        <TaskInteractionProvider listName="REUSABLE">
-                            <TaskPropertiesProvider
-                                isDraggable={false}
-                                isFoldable={true}
-                                initiallyFolded={true}
-                            >
-                                <ReusableTaskPicker />
-                            </TaskPropertiesProvider>
-                        </TaskInteractionProvider>
+                        <TaskPropertiesProvider
+                            isDraggable={false}
+                            isFoldable={true}
+                            initiallyFolded={true}
+                        >
+                            <ReusableTaskPicker />
+                        </TaskPropertiesProvider>
                     </motion.div>
                 )}
             </TabsContent>

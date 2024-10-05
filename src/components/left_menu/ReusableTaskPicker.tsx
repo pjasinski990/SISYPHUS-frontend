@@ -5,9 +5,9 @@ import { useRegisterShortcut } from 'src/components/context/RegisterShortcutCont
 import { TaskList } from 'src/components/task_list/TaskList';
 import { TaskExtensionProvider } from 'src/components/context/TaskExtensionContext';
 import { ArrowRight } from 'lucide-react';
-import { useTaskInteraction } from 'src/components/context/TaskInteractionContext';
 import { useTaskList } from 'src/components/context/TaskListsContext';
 import { Task, taskService } from '../../service/taskService';
+import { useTaskAction } from 'src/components/context/TaskActionContext';
 
 export const ReusableTaskPicker: React.FC = () => {
     const todoContext = useTaskList('DAILY_TODO');
@@ -19,7 +19,7 @@ export const ReusableTaskPicker: React.FC = () => {
     };
 
     const tasks = useTaskList('REUSABLE').taskList.tasks;
-    const { openCreateTaskDialog } = useTaskInteraction();
+    const { openCreateTaskDialog } = useTaskAction();
 
     const cardContentRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
@@ -35,7 +35,7 @@ export const ReusableTaskPicker: React.FC = () => {
         () => ({
             id: 'add-task-reusable',
             keys: ['A'],
-            action: openCreateTaskDialog,
+            action: () => openCreateTaskDialog('REUSABLE'),
             description: 'Add a new task to reusable tasks',
             order: 1,
         }),
@@ -70,7 +70,9 @@ export const ReusableTaskPicker: React.FC = () => {
                             }
                             isDroppable={false}
                             showCreateButton={true}
-                            onCreateTask={openCreateTaskDialog}
+                            onCreateTask={() =>
+                                openCreateTaskDialog('REUSABLE')
+                            }
                         />
                     </div>
                 </TaskExtensionProvider>
