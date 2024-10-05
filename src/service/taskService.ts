@@ -23,14 +23,14 @@ export interface Task {
     size: TaskSize;
     listName: string;
     description: string | null;
-    startTime: string | null;
-    duration: string | null; // ISO-8601 format (PT2H30M)
-    deadline: string | null;
+    startTime: string | null; // iso-8601 (PT2H30M)
+    duration: string | null; // iso-8601
+    deadline: string | null; // iso datetime
     dependencies: string[] | null; // taskIds
     flexibility: number | null; // float [0-1]
-    createdAt: string;
-    updatedAt: string;
-    finishedAt: string | null;
+    createdAt: string; // iso datetime
+    updatedAt: string; // iso datetime
+    finishedAt: string | null; // iso datetime
 }
 
 class TaskService {

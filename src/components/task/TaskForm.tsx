@@ -46,7 +46,7 @@ interface TaskFormProps {
     listName: string;
     onSubmit: (task: TaskFormData) => void;
     onCancel: () => void;
-    availableTasks: Task[]; // List of tasks for dependencies
+    availableTasks: Task[];
 }
 
 export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
@@ -68,7 +68,7 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                       startTime: initialData.startTime,
                       deadline: initialData.deadline,
                       dependencies: initialData.dependencies || [],
-                      flexibility: initialData.flexibility ?? 0.5,
+                      flexibility: initialData.flexibility ?? 0.1,
                   }
                 : {
                       title: '',
@@ -79,7 +79,7 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                       startTime: '',
                       deadline: null,
                       dependencies: [],
-                      flexibility: 0.0,
+                      flexibility: 0.1,
                   },
         });
 
@@ -367,7 +367,6 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                     />
                 </div>
 
-                {/* Dependencies Field */}
                 <div>
                     <label
                         htmlFor="dependencies"
@@ -382,9 +381,13 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                             <div>
                                 <Popover>
                                     <PopoverTrigger asChild>
-                                        <div
-                                            className="w-full p-2 border rounded cursor-pointer flex flex-wrap gap-1"
-                                            onClick={() => {}}
+                                        <button
+                                            type="button"
+                                            className="w-full p-2 border rounded cursor-pointer flex flex-wrap gap-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            aria-haspopup="dialog"
+                                            aria-expanded={
+                                                selectedDependencies.length > 0
+                                            }
                                         >
                                             {selectedDependencies.length > 0 ? (
                                                 selectedDependencies.map(id => {
@@ -406,11 +409,18 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                                                     Select dependencies
                                                 </span>
                                             )}
-                                        </div>
+                                        </button>
                                     </PopoverTrigger>
-                                    <PopoverContent className="w-full p-0">
+                                    <PopoverContent
+                                        className="w-full p-0"
+                                        role="dialog"
+                                        aria-modal="true"
+                                    >
                                         <Command>
-                                            <CommandInput placeholder="Search tasks..." />
+                                            <CommandInput
+                                                placeholder="Search tasks..."
+                                                aria-label="Search tasks"
+                                            />
                                             <CommandList>
                                                 {availableTasks.map(task => {
                                                     if (!task.id) return null;
@@ -423,7 +433,7 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                                                         <CommandItem
                                                             key={taskId}
                                                             onSelect={() => {
-                                                                let newValue: string[] =
+                                                                let newValue =
                                                                     [];
                                                                 if (
                                                                     isSelected
@@ -456,6 +466,11 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                                                                     }
                                                                     readOnly
                                                                     className="mr-2"
+                                                                    aria-label={
+                                                                        isSelected
+                                                                            ? `Deselect ${task.title}`
+                                                                            : `Select ${task.title}`
+                                                                    }
                                                                 />
                                                                 {task.title}
                                                             </div>
@@ -488,7 +503,7 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                                     <Slider
                                         min={0}
                                         max={1}
-                                        step={0.01}
+                                        step={0.05}
                                         value={[field.value ?? 0]}
                                         onValueChange={value =>
                                             field.onChange(value[0])

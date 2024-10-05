@@ -7,6 +7,7 @@ import {
 } from 'src/components/ui/dialog';
 import { TaskForm, TaskFormData } from 'src/components/task/TaskForm';
 import { Task } from '../../service/taskService';
+import { useAllTaskLists } from 'src/components/context/TaskListsContext';
 
 interface TaskDialogProps {
     open: boolean;
@@ -27,6 +28,10 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({
 }) => {
     const formRef = useRef<HTMLFormElement | null>(null);
     const [currentTitle, setCurrentTitle] = useState<string | null>(null);
+    const taskListsContext = useAllTaskLists();
+    const availableTasks: Task[] = Object.values(taskListsContext).flatMap(
+        provider => provider.taskList.tasks
+    );
 
     useEffect(() => {
         if (open) {
@@ -74,7 +79,7 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({
                     <TaskForm
                         ref={formRef}
                         listName={listName}
-                        availableTasks={[]}
+                        availableTasks={availableTasks}
                         initialData={initialData || undefined}
                         onSubmit={onSubmit}
                         onCancel={onCancel}
