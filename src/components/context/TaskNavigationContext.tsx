@@ -5,15 +5,23 @@ import React, {
     useCallback,
     useEffect,
 } from 'react';
-import { useAllTaskLists } from './TaskListsContext';
+import { TaskListProviderType, useAllTaskLists } from './TaskListsContext';
 import { Task } from '../../service/taskService';
 import { useTaskAction } from './TaskActionContext';
+import {
+    getNextList,
+    getNextNonEmptyList,
+    getOrNull,
+    getPrevList,
+    getPrevNonEmptyList,
+} from 'src/lib/taskNavigationHelper';
+import { TaskList } from 'src/lib/taskList';
 
 interface TaskNavigationContextType {
     highlightedTaskId: string | null;
     highlightedListName: string | null;
     clearHighlight: () => void;
-    moveHighlight: (direction: 'h' | 'j' | 'k' | 'l') => void;
+    moveHighlight: (direction: 'left' | 'down' | 'up' | 'right') => void;
     performAction: (
         action: 'edit' | 'delete' | 'move-next' | 'move-prev' | 'show-details'
     ) => void;
@@ -37,7 +45,7 @@ export const TaskNavigationProvider: React.FC<{
     >(null);
     const [visibleLists, setVisibleLists] = useState<string[]>([]);
 
-    const tasksLists = useAllTaskLists();
+    const taskListProviders = useAllTaskLists();
     const taskActionContext = useTaskAction();
 
     const registerList = useCallback((listName: string, atFront: boolean) => {
@@ -58,152 +66,103 @@ export const TaskNavigationProvider: React.FC<{
 
     const clearHighlight = useCallback(() => {
         setHighlightedTaskId(null);
-        setHighlightedListName(null);
     }, []);
 
-    const getNextListName = useCallback(
-        (skipEmpty: boolean = true): string | null => {
-            if (!highlightedListName) {
-                if (skipEmpty) {
-                    for (const list of visibleLists) {
-                        if (tasksLists[list]?.taskList.tasks.length > 0) {
-                            return list;
-                        }
-                    }
-                    return null;
-                }
-                return visibleLists.length > 0 ? visibleLists[0] : null;
-            }
-            const currentIndex = visibleLists.indexOf(highlightedListName);
-            if (
-                currentIndex === -1 ||
-                currentIndex >= visibleLists.length - 1
-            ) {
-                return null;
-            }
-            for (let i = currentIndex + 1; i < visibleLists.length; i++) {
-                if (
-                    !skipEmpty ||
-                    tasksLists[visibleLists[i]]?.taskList.tasks.length > 0
-                ) {
-                    return visibleLists[i];
-                }
-            }
-            return null;
-        },
-        [highlightedListName, visibleLists, tasksLists]
-    );
+    const isTaskHighlighted = useCallback(() => {
+        return (
+            highlightedListName &&
+            highlightedTaskId &&
+            visibleLists.includes(highlightedListName)
+        );
+    }, [highlightedListName, highlightedTaskId, visibleLists]);
 
-    const getPreviousListName = useCallback(
-        (skipEmpty: boolean = true): string | null => {
-            if (!highlightedListName) {
-                if (skipEmpty) {
-                    for (let i = visibleLists.length - 1; i >= 0; i--) {
-                        const list = visibleLists[i];
-                        if (tasksLists[list]?.taskList.tasks.length > 0) {
-                            return list;
-                        }
-                    }
-                    return null;
-                }
-                return visibleLists.length > 0
-                    ? visibleLists[visibleLists.length - 1]
-                    : null;
-            }
-            const currentIndex = visibleLists.indexOf(highlightedListName);
-            if (currentIndex <= 0) {
-                return null;
-            }
-            for (let i = currentIndex - 1; i >= 0; i--) {
-                if (
-                    !skipEmpty ||
-                    tasksLists[visibleLists[i]]?.taskList.tasks.length > 0
-                ) {
-                    return visibleLists[i];
-                }
-            }
-            return null;
-        },
-        [highlightedListName, visibleLists, tasksLists]
-    );
+    const applyHighlightToFirstTask = useCallback(() => {
+        const currentList = highlightedListName
+            ? taskListProviders[highlightedListName].taskList
+            : getNextNonEmptyList(
+                  null,
+                  visibleLists.map(ln => taskListProviders[ln].taskList)
+              );
+        const firstTask = currentList ? currentList.tasks[0] : null;
+        setHighlightedListName(currentList?.name || null);
+        setHighlightedTaskId(firstTask?.id || null);
+    }, [highlightedListName, taskListProviders, visibleLists]);
 
     const moveHighlight = useCallback(
-        (direction: 'h' | 'j' | 'k' | 'l') => {
+        (direction: 'left' | 'down' | 'up' | 'right') => {
             if (visibleLists.length === 0) {
                 return;
             }
 
-            if (
-                !highlightedListName ||
-                !highlightedTaskId ||
-                !visibleLists.includes(highlightedListName)
-            ) {
-                const firstList = getNextListName(true);
-                const firstTask = firstList
-                    ? tasksLists[firstList]?.taskList.tasks[0]
-                    : null;
-                setHighlightedListName(firstList);
-                setHighlightedTaskId(firstTask ? firstTask.id : null);
+            const currentTaskList =
+                getOrNull<TaskListProviderType>(
+                    highlightedListName,
+                    taskListProviders
+                )?.taskList || null;
+
+            if (!isTaskHighlighted()) {
+                applyHighlightToFirstTask();
                 return;
             }
 
-            const currentTaskList =
-                tasksLists[highlightedListName]?.taskList.tasks || [];
-            let currentTaskIndex = highlightedTaskId
-                ? currentTaskList.findIndex(
+            const currentTaskIndex = currentTaskList
+                ? currentTaskList.tasks.findIndex(
                       task => task.id === highlightedTaskId
                   )
                 : -1;
 
-            if (currentTaskIndex === -1) {
-                currentTaskIndex = 0;
-            }
-
-            let newHighlightedListName: string | null = highlightedListName;
+            let newHighlightedList: TaskList | null = currentTaskList;
             let newHighlightedTaskId: string | null = highlightedTaskId;
 
             switch (direction) {
-                case 'h': {
-                    const previousListName = getPreviousListName(true);
-                    if (previousListName) {
-                        newHighlightedListName = previousListName;
-                        const newTaskList =
-                            tasksLists[newHighlightedListName]?.taskList.tasks || [];
+                case 'left': {
+                    const prevList = getPrevNonEmptyList(
+                        currentTaskList,
+                        visibleLists.map(ln => taskListProviders[ln].taskList)
+                    );
+                    if (prevList) {
+                        newHighlightedList = prevList;
                         const clampedIndex = Math.min(
                             currentTaskIndex,
-                            newTaskList.length - 1
+                            prevList.tasks.length - 1
                         );
                         newHighlightedTaskId =
-                            newTaskList[clampedIndex]?.id || null;
+                            prevList.tasks[clampedIndex]?.id || null;
                     }
                     break;
                 }
-                case 'l': {
-                    const nextListName = getNextListName(true);
-                    if (nextListName) {
-                        newHighlightedListName = nextListName;
-                        const newTaskList =
-                            tasksLists[newHighlightedListName]?.taskList.tasks || [];
+                case 'right': {
+                    const nextList = getNextNonEmptyList(
+                        currentTaskList,
+                        visibleLists.map(ln => taskListProviders[ln].taskList)
+                    );
+                    if (nextList) {
+                        newHighlightedList = nextList;
                         const clampedIndex = Math.min(
                             currentTaskIndex,
-                            newTaskList.length - 1
+                            nextList.tasks.length - 1
                         );
                         newHighlightedTaskId =
-                            newTaskList[clampedIndex]?.id || null;
+                            nextList.tasks[clampedIndex]?.id || null;
                     }
                     break;
                 }
-                case 'j': {
-                    if (currentTaskIndex < currentTaskList.length - 1) {
+                case 'down': {
+                    if (
+                        currentTaskList &&
+                        currentTaskIndex < currentTaskList.tasks.length - 1
+                    ) {
                         newHighlightedTaskId =
-                            currentTaskList[currentTaskIndex + 1]?.id || null;
+                            currentTaskList.tasks[currentTaskIndex + 1]?.id ||
+                            null;
                     }
                     break;
                 }
-                case 'k': {
-                    if (currentTaskIndex > 0) {
+                case 'up': {
+                    if (currentTaskList && currentTaskIndex > 0) {
                         newHighlightedTaskId =
-                            currentTaskList[currentTaskIndex - 1]?.id || null;
+                            currentTaskList.tasks[currentTaskIndex - 1]?.id ||
+                            null;
                     }
                     break;
                 }
@@ -212,20 +171,21 @@ export const TaskNavigationProvider: React.FC<{
             }
 
             if (
-                newHighlightedListName !== highlightedListName ||
+                (newHighlightedList &&
+                    newHighlightedList.name !== highlightedListName) ||
                 newHighlightedTaskId !== highlightedTaskId
             ) {
-                setHighlightedListName(newHighlightedListName);
+                setHighlightedListName(newHighlightedList?.name || null);
                 setHighlightedTaskId(newHighlightedTaskId);
             }
         },
         [
+            applyHighlightToFirstTask,
             highlightedListName,
             highlightedTaskId,
-            tasksLists,
+            isTaskHighlighted,
+            taskListProviders,
             visibleLists,
-            getNextListName,
-            getPreviousListName,
         ]
     );
 
@@ -241,9 +201,9 @@ export const TaskNavigationProvider: React.FC<{
             if (!highlightedTaskId || !highlightedListName) {
                 return;
             }
-            const task = tasksLists[highlightedListName]?.taskList.tasks.find(
-                t => t.id === highlightedTaskId
-            );
+            const task = taskListProviders[
+                highlightedListName
+            ]?.taskList.tasks.find(t => t.id === highlightedTaskId);
 
             if (!task) {
                 return;
@@ -260,19 +220,31 @@ export const TaskNavigationProvider: React.FC<{
                     taskActionContext.openTaskDetailsDialog(task);
                     break;
                 case 'move-next': {
-                    const nextListName = getNextListName(false);
-                    if (nextListName) {
-                        taskActionContext.moveTask(task, nextListName);
-                        setHighlightedListName(nextListName);
+                    const currentTaskList: TaskList | null =
+                        taskListProviders[highlightedListName]?.taskList ||
+                        null;
+                    const nextList = getNextList(
+                        currentTaskList,
+                        visibleLists.map(ln => taskListProviders[ln].taskList)
+                    );
+                    if (nextList) {
+                        taskActionContext.moveTask(task, nextList.name);
+                        setHighlightedListName(nextList.name);
                         setHighlightedTaskId(task.id);
                     }
                     break;
                 }
                 case 'move-prev': {
-                    const previousListName = getPreviousListName(false);
-                    if (previousListName) {
-                        taskActionContext.moveTask(task, previousListName);
-                        setHighlightedListName(previousListName);
+                    const currentTaskList: TaskList | null =
+                        taskListProviders[highlightedListName]?.taskList ||
+                        null;
+                    const prevList = getPrevList(
+                        currentTaskList,
+                        visibleLists.map(ln => taskListProviders[ln].taskList)
+                    );
+                    if (prevList) {
+                        taskActionContext.moveTask(task, prevList.name);
+                        setHighlightedListName(prevList.name);
                         setHighlightedTaskId(task.id);
                     }
                     break;
@@ -284,16 +256,15 @@ export const TaskNavigationProvider: React.FC<{
         [
             highlightedTaskId,
             highlightedListName,
-            tasksLists,
+            taskListProviders,
             taskActionContext,
-            getNextListName,
-            getPreviousListName,
+            visibleLists,
         ]
     );
 
     const highlightedTask =
         highlightedTaskId && highlightedListName
-            ? tasksLists[highlightedListName]?.taskList.tasks.find(
+            ? taskListProviders[highlightedListName]?.taskList.tasks.find(
                   t => t.id === highlightedTaskId
               ) || null
             : null;
@@ -304,23 +275,20 @@ export const TaskNavigationProvider: React.FC<{
             !visibleLists.includes(highlightedListName)
         ) {
             if (visibleLists.length > 0) {
-                const firstVisibleList = getNextListName(true);
+                const firstVisibleList = getNextNonEmptyList(
+                    null,
+                    visibleLists.map(ln => taskListProviders[ln].taskList)
+                );
                 const firstTask = firstVisibleList
-                    ? tasksLists[firstVisibleList]?.taskList.tasks[0]
+                    ? firstVisibleList.tasks[0]
                     : null;
-                setHighlightedListName(firstVisibleList);
+                setHighlightedListName(firstVisibleList?.name || null);
                 setHighlightedTaskId(firstTask ? firstTask.id : null);
             } else {
                 clearHighlight();
             }
         }
-    }, [
-        visibleLists,
-        highlightedListName,
-        tasksLists,
-        clearHighlight,
-        getNextListName,
-    ]);
+    }, [visibleLists, highlightedListName, taskListProviders, clearHighlight]);
 
     const value: TaskNavigationContextType = {
         highlightedTaskId,

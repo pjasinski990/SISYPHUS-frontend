@@ -25,6 +25,7 @@ export const TaskDetails: React.FC<{ task: Task }> = ({ task }) => {
                     {task.startTime && <span>Start: {task.startTime}</span>}
                     <span>Category: {task.category}</span>
                     <span className="pb-2">Size: {task.size}</span>
+                    <span>ID: {task.id}</span>
                     <span>Created: {task.createdAt}</span>
                     <span>Updated: {task.updatedAt}</span>
                     <span>Finished: {task.finishedAt}</span>

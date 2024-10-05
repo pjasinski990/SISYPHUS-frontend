@@ -19,6 +19,12 @@ interface TaskListsProviderType {
     orderedListNames: string[];
 }
 
+export interface TaskListProviderType {
+    taskList: TaskList;
+    setTaskList: (list: TaskList) => void;
+    setTasks: (tasks: Task[]) => void;
+}
+
 export interface TaskFilter {
     (task: Task): boolean;
 }
@@ -50,7 +56,7 @@ const getSortedAndFiltered = (
     comparators: Record<string, TaskComparator>
 ): TaskList => {
     const rawTasks = taskList.tasks;
-    const filter = filters[taskList.name] || ((task: Task) => true);
+    const filter = filters[taskList.name] || (() => true);
     const comparator = comparators[taskList.name];
 
     const filteredTasks = rawTasks.filter(filter);
@@ -165,14 +171,7 @@ const useTaskListsContext = (): TaskListsProviderType => {
 
 const useTaskListsInternal = (
     listNames: string[] | null
-): Record<
-    string,
-    {
-        taskList: TaskList;
-        setTaskList: (list: TaskList) => void;
-        setTasks: (tasks: Task[]) => void;
-    }
-> => {
+): Record<string, TaskListProviderType> => {
     const { taskLists, setTaskList, filters, comparators, orderedListNames } =
         useTaskListsContext();
 
@@ -211,38 +210,18 @@ const useTaskListsInternal = (
     }, [targetListNames, taskLists, setTaskList, filters, comparators]);
 };
 
-export const useTaskList = (
-    listName: string
-): {
-    taskList: TaskList;
-    setTaskList: (list: TaskList) => void;
-    setTasks: (tasks: Task[]) => void;
-} => {
+export const useTaskList = (listName: string): TaskListProviderType => {
     const lists = useTaskListsInternal([listName]);
     return lists[listName];
 };
 
 export const useTaskLists = (
     listNames: string[]
-): Record<
-    string,
-    {
-        taskList: TaskList;
-        setTaskList: (list: TaskList) => void;
-        setTasks: (tasks: Task[]) => void;
-    }
-> => {
+): Record<string, TaskListProviderType> => {
     return useTaskListsInternal(listNames);
 };
 
-export const useAllTaskLists = (): Record<
-    string,
-    {
-        taskList: TaskList;
-        setTaskList: (list: TaskList) => void;
-        setTasks: (tasks: Task[]) => void;
-    }
-> => {
+export const useAllTaskLists = (): Record<string, TaskListProviderType> => {
     return useTaskListsInternal(null);
 };
 

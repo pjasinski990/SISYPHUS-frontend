@@ -110,7 +110,7 @@ const TaskNavigationHandler: React.FC = () => {
         () => ({
             id: 'move-highlight-left',
             keys: ['h'],
-            action: () => moveHighlight('h'),
+            action: () => moveHighlight('left'),
             description: 'Move highlight left',
             order: 3,
         }),
@@ -121,7 +121,7 @@ const TaskNavigationHandler: React.FC = () => {
         () => ({
             id: 'move-highlight-down',
             keys: ['j'],
-            action: () => moveHighlight('j'),
+            action: () => moveHighlight('down'),
             description: 'Move highlight down',
             order: 3,
         }),
@@ -132,7 +132,7 @@ const TaskNavigationHandler: React.FC = () => {
         () => ({
             id: 'move-highlight-up',
             keys: ['k'],
-            action: () => moveHighlight('k'),
+            action: () => moveHighlight('up'),
             description: 'Move highlight up',
             order: 3,
         }),
@@ -143,7 +143,7 @@ const TaskNavigationHandler: React.FC = () => {
         () => ({
             id: 'move-highlight-right',
             keys: ['l'],
-            action: () => moveHighlight('l'),
+            action: () => moveHighlight('right'),
             description: 'Move highlight right',
             order: 3,
         }),

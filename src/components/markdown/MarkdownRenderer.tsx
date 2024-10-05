@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactMarkdown, { Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import remarkAdmonition from './remarkAdmonition';
+import remarkAdmonition from 'src/lib/remarkAdmonition';
 
 interface MarkdownRendererProps {
     content: string;
