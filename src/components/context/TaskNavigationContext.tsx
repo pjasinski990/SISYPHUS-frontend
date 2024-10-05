@@ -66,7 +66,7 @@ export const TaskNavigationProvider: React.FC<{
             if (!highlightedListName) {
                 if (skipEmpty) {
                     for (const list of visibleLists) {
-                        if (tasksLists[list]?.tasks.length > 0) {
+                        if (tasksLists[list]?.taskList.tasks.length > 0) {
                             return list;
                         }
                     }
@@ -84,7 +84,7 @@ export const TaskNavigationProvider: React.FC<{
             for (let i = currentIndex + 1; i < visibleLists.length; i++) {
                 if (
                     !skipEmpty ||
-                    tasksLists[visibleLists[i]]?.tasks.length > 0
+                    tasksLists[visibleLists[i]]?.taskList.tasks.length > 0
                 ) {
                     return visibleLists[i];
                 }
@@ -100,7 +100,7 @@ export const TaskNavigationProvider: React.FC<{
                 if (skipEmpty) {
                     for (let i = visibleLists.length - 1; i >= 0; i--) {
                         const list = visibleLists[i];
-                        if (tasksLists[list]?.tasks.length > 0) {
+                        if (tasksLists[list]?.taskList.tasks.length > 0) {
                             return list;
                         }
                     }
@@ -117,7 +117,7 @@ export const TaskNavigationProvider: React.FC<{
             for (let i = currentIndex - 1; i >= 0; i--) {
                 if (
                     !skipEmpty ||
-                    tasksLists[visibleLists[i]]?.tasks.length > 0
+                    tasksLists[visibleLists[i]]?.taskList.tasks.length > 0
                 ) {
                     return visibleLists[i];
                 }
@@ -140,7 +140,7 @@ export const TaskNavigationProvider: React.FC<{
             ) {
                 const firstList = getNextListName(true);
                 const firstTask = firstList
-                    ? tasksLists[firstList]?.tasks[0]
+                    ? tasksLists[firstList]?.taskList.tasks[0]
                     : null;
                 setHighlightedListName(firstList);
                 setHighlightedTaskId(firstTask ? firstTask.id : null);
@@ -148,7 +148,7 @@ export const TaskNavigationProvider: React.FC<{
             }
 
             const currentTaskList =
-                tasksLists[highlightedListName]?.tasks || [];
+                tasksLists[highlightedListName]?.taskList.tasks || [];
             let currentTaskIndex = highlightedTaskId
                 ? currentTaskList.findIndex(
                       task => task.id === highlightedTaskId
@@ -168,7 +168,7 @@ export const TaskNavigationProvider: React.FC<{
                     if (previousListName) {
                         newHighlightedListName = previousListName;
                         const newTaskList =
-                            tasksLists[newHighlightedListName]?.tasks || [];
+                            tasksLists[newHighlightedListName]?.taskList.tasks || [];
                         const clampedIndex = Math.min(
                             currentTaskIndex,
                             newTaskList.length - 1
@@ -183,7 +183,7 @@ export const TaskNavigationProvider: React.FC<{
                     if (nextListName) {
                         newHighlightedListName = nextListName;
                         const newTaskList =
-                            tasksLists[newHighlightedListName]?.tasks || [];
+                            tasksLists[newHighlightedListName]?.taskList.tasks || [];
                         const clampedIndex = Math.min(
                             currentTaskIndex,
                             newTaskList.length - 1
@@ -241,7 +241,7 @@ export const TaskNavigationProvider: React.FC<{
             if (!highlightedTaskId || !highlightedListName) {
                 return;
             }
-            const task = tasksLists[highlightedListName]?.tasks.find(
+            const task = tasksLists[highlightedListName]?.taskList.tasks.find(
                 t => t.id === highlightedTaskId
             );
 
@@ -293,7 +293,7 @@ export const TaskNavigationProvider: React.FC<{
 
     const highlightedTask =
         highlightedTaskId && highlightedListName
-            ? tasksLists[highlightedListName]?.tasks.find(
+            ? tasksLists[highlightedListName]?.taskList.tasks.find(
                   t => t.id === highlightedTaskId
               ) || null
             : null;
@@ -306,7 +306,7 @@ export const TaskNavigationProvider: React.FC<{
             if (visibleLists.length > 0) {
                 const firstVisibleList = getNextListName(true);
                 const firstTask = firstVisibleList
-                    ? tasksLists[firstVisibleList]?.tasks[0]
+                    ? tasksLists[firstVisibleList]?.taskList.tasks[0]
                     : null;
                 setHighlightedListName(firstVisibleList);
                 setHighlightedTaskId(firstTask ? firstTask.id : null);

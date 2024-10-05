@@ -14,7 +14,7 @@ import { Task } from '../../service/taskService';
 export const DailyPlanContent: React.FC = () => {
     const { setFilter } = useListFilters();
     const { setComparator } = useListOrder();
-    const doneTasks = useTaskList('DAILY_DONE').tasks;
+    const doneTasks = useTaskList('DAILY_DONE').taskList.tasks;
 
     useEffect(() => {
         setFilter('DAILY_DONE', task => {

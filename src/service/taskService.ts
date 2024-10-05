@@ -1,4 +1,5 @@
 import { apiService } from './apiService';
+import { TaskList } from 'src/lib/taskList';
 
 export enum TaskCategory {
     GREEN = 'GREEN',
@@ -34,10 +35,12 @@ class TaskService {
         return apiService.authenticatedGet(`/api/tasks/`);
     }
 
-    async getTasksList(listName: string): Promise<Task[]> {
-        return apiService.authenticatedGet(`/api/tasks/list`, {
+    async getTasksList(listName: string): Promise<TaskList> {
+        const tasks = (await apiService.authenticatedGet(`/api/tasks/list`, {
             params: { listName },
-        });
+        })) as Task[];
+
+        return { name: listName, tasks: tasks, displayOrder: 0 };
     }
 
     async createTask(task: Task): Promise<Task> {

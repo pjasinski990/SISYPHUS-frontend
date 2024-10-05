@@ -43,7 +43,10 @@ export const TaskDragDropProvider: React.FC<{
             const sourceContext = taskLists[source.droppableId];
             const destContext = taskLists[destination!!.droppableId];
 
-            let [movedTask] = sourceContext.tasks.splice(source.index, 1);
+            let [movedTask] = sourceContext.taskList.tasks.splice(
+                source.index,
+                1
+            );
             if (destination?.droppableId === 'DAILY_DONE') {
                 movedTask = {
                     ...movedTask,
@@ -56,9 +59,13 @@ export const TaskDragDropProvider: React.FC<{
                 };
             }
 
-            destContext.tasks.splice(destination!!.index, 0, movedTask);
-            sourceContext.setTasks(sourceContext.tasks);
-            destContext.setTasks(destContext.tasks);
+            destContext.taskList.tasks.splice(
+                destination!!.index,
+                0,
+                movedTask
+            );
+            sourceContext.setTasks(sourceContext.taskList.tasks);
+            destContext.setTasks(destContext.taskList.tasks);
 
             await taskService.updateTask({
                 ...movedTask,

@@ -7,7 +7,7 @@ import { useRegisterShortcut } from 'src/components/context/RegisterShortcutCont
 import { Shortcut } from 'src/components/context/ShortcutsContext';
 
 export const Inbox: React.FC = () => {
-    const tasks = useTaskList('INBOX').tasks;
+    const tasks = useTaskList('INBOX').taskList.tasks;
     const { openCreateTaskDialog } = useTaskInteraction();
 
     const cardContentRef = useRef<HTMLDivElement>(null);

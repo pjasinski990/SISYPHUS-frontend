@@ -25,7 +25,8 @@ export const TaskInteractionProvider: React.FC<{
     const [editingTask, setEditingTask] = useState<Task | null>(null);
     const [isCreateTaskDialogOpen, setIsCreateTaskDialogOpen] = useState(false);
     const [removingTask, setRemovingTask] = useState<Task | null>(null);
-    const { tasks, setTasks } = useTaskList(listName);
+    const { taskList, setTasks } = useTaskList(listName);
+    const tasks = taskList.tasks;
 
     const createTask = useCallback(
         async (taskData: TaskFormData) => {

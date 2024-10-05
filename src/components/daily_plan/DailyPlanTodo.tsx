@@ -7,7 +7,7 @@ import { useTaskList } from 'src/components/context/TaskListsContext';
 
 export const DailyPlanTodo: React.FC = () => {
     const { openCreateTaskDialog } = useTaskInteraction();
-    const { tasks } = useTaskList('DAILY_TODO');
+    const { taskList } = useTaskList('DAILY_TODO');
 
     const addTaskShortcut: Shortcut = useMemo(
         () => ({
@@ -26,7 +26,7 @@ export const DailyPlanTodo: React.FC = () => {
         <TaskList
             title={'Todo'}
             listName="DAILY_TODO"
-            tasks={tasks}
+            tasks={taskList.tasks}
             droppableId="DAILY_TODO"
             placeholderNode={<span>empty. well done!</span>}
             showCreateButton={true}

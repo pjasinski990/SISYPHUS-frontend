@@ -28,7 +28,7 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
     const [editingTask, setEditingTask] = useState<Task | null>(null);
     const [removingTask, setRemovingTask] = useState<Task | null>(null);
 
-    const tasksLists = useAllTaskLists();
+    const taskLists = useAllTaskLists();
 
     const openEditTaskDialog = useCallback((task: Task) => {
         setEditingTask(task);
@@ -40,7 +40,7 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const handleMoveTask = useCallback(
         async (task: Task, destinationList: string) => {
-            if (!objectKeys(tasksLists).includes(destinationList)) {
+            if (!objectKeys(taskLists).includes(destinationList)) {
                 return;
             }
             const currentList = task.listName;
@@ -57,8 +57,8 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
                 const savedTask = await taskService
                     .createTask(updatedTask)
                     .then();
-                tasksLists[currentList].setTasks(
-                    tasksLists[currentList].tasks.map((t: Task) => {
+                taskLists[currentList].setTasks(
+                    taskLists[currentList].taskList.tasks.map((t: Task) => {
                         if (t.id === task.id) {
                             t.id = savedTask.id;
                         }
@@ -67,17 +67,19 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
                 );
             } else {
                 taskService.updateTask(updatedTask).then();
-                tasksLists[currentList].setTasks(
-                    tasksLists[currentList].tasks.filter(t => t.id !== task.id)
+                taskLists[currentList].setTasks(
+                    taskLists[currentList].taskList.tasks.filter(
+                        t => t.id !== task.id
+                    )
                 );
             }
 
-            tasksLists[destinationList].setTasks([
-                ...tasksLists[destinationList].tasks,
+            taskLists[destinationList].setTasks([
+                ...taskLists[destinationList].taskList.tasks,
                 updatedTask,
             ]);
         },
-        [tasksLists]
+        [taskLists]
     );
 
     const openTaskDetailsDialog = useCallback((task: Task) => {
@@ -96,7 +98,8 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
                     await taskService.updateTask(updatedTask);
 
                     const listName = updatedTask.listName;
-                    const list = tasksLists[listName];
+                    const list = taskLists[listName].taskList;
+                    const setTasks = taskLists[listName].setTasks;
                     if (list) {
                         const tasks = list.tasks;
                         const taskIndex = tasks.findIndex(
@@ -104,7 +107,7 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
                         );
                         if (taskIndex !== -1) {
                             tasks[taskIndex] = updatedTask;
-                            list.setTasks([...tasks]);
+                            setTasks([...tasks]);
                         }
                     }
                 } catch (error) {
@@ -114,7 +117,7 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
                 }
             }
         },
-        [editingTask, tasksLists]
+        [editingTask, taskLists]
     );
 
     const handleTaskFormCancel = useCallback(() => {
@@ -127,9 +130,9 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
                 await taskService.deleteTask(removingTask.id!);
 
                 const listName = removingTask.listName;
-                const list = tasksLists[listName];
+                const list = taskLists[listName];
                 if (list) {
-                    const tasks = list.tasks;
+                    const tasks = list.taskList.tasks;
                     list.setTasks(
                         tasks.filter(task => task.id !== removingTask.id)
                     );
@@ -140,7 +143,7 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
                 setRemovingTask(null);
             }
         }
-    }, [removingTask, tasksLists]);
+    }, [removingTask, taskLists]);
 
     const handleCancelRemoveTask = useCallback(() => {
         setRemovingTask(null);

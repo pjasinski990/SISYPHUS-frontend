@@ -15,10 +15,10 @@ export const ReusableTaskPicker: React.FC = () => {
     const addTaskToDailyPlan = async (newTask: Task) => {
         const addedTask = { ...newTask, listName: 'DAILY_TODO' };
         const createdTask = await taskService.createTask(addedTask);
-        todoContext.setTasks([...todoContext.tasks, createdTask]);
+        todoContext.setTasks([...todoContext.taskList.tasks, createdTask]);
     };
 
-    const tasks = useTaskList('REUSABLE').tasks;
+    const tasks = useTaskList('REUSABLE').taskList.tasks;
     const { openCreateTaskDialog } = useTaskInteraction();
 
     const cardContentRef = useRef<HTMLDivElement>(null);
