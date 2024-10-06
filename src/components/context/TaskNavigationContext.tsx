@@ -228,9 +228,14 @@ export const TaskNavigationProvider: React.FC<{
                         visibleLists.map(ln => taskListProviders[ln].taskList)
                     );
                     if (nextList) {
-                        taskActionContext.moveTask(task, nextList.name);
-                        setHighlightedListName(nextList.name);
-                        setHighlightedTaskId(task.id);
+                        const movedTask = await taskActionContext.moveTask(
+                            task,
+                            nextList.name
+                        );
+                        if (movedTask) {
+                            setHighlightedListName(nextList.name);
+                            setHighlightedTaskId(movedTask.id);
+                        }
                     }
                     break;
                 }
@@ -243,9 +248,14 @@ export const TaskNavigationProvider: React.FC<{
                         visibleLists.map(ln => taskListProviders[ln].taskList)
                     );
                     if (prevList) {
-                        taskActionContext.moveTask(task, prevList.name);
-                        setHighlightedListName(prevList.name);
-                        setHighlightedTaskId(task.id);
+                        const movedTask = await taskActionContext.moveTask(
+                            task,
+                            prevList.name
+                        );
+                        if (movedTask) {
+                            setHighlightedListName(prevList.name);
+                            setHighlightedTaskId(movedTask.id);
+                        }
                     }
                     break;
                 }

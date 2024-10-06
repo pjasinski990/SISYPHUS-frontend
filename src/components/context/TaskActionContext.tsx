@@ -15,7 +15,9 @@ interface TaskActionContextType {
     openEditTaskDialog: (task: Task) => void;
     openRemoveTaskDialog: (task: Task) => void;
     openTaskDetailsDialog: (task: Task) => void;
-    moveTask: (task: Task, destinationList: string) => void;
+    moveTask: (task: Task, destinationList: string) => Promise<Task | null>;
+    setHighlight: (taskId: string | null) => void;
+    highlightedTaskId: string | null;
 }
 
 const TaskActionContext = createContext<TaskActionContextType | undefined>(
@@ -34,8 +36,11 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
     >(null);
     const [editingTask, setEditingTask] = useState<Task | null>(null);
     const [removingTask, setRemovingTask] = useState<Task | null>(null);
+    const [highlightedTaskId, setHighlightedTaskId] = useState<string | null>(
+        null
+    );
 
-    const taskLists = useAllTaskLists();
+    const taskListContexts = useAllTaskLists();
 
     const openCreateTaskDialog = useCallback((listName: string) => {
         setCreatingTaskForList(listName);
@@ -48,48 +53,6 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
     const openRemoveTaskDialog = useCallback((task: Task) => {
         setRemovingTask(task);
     }, []);
-
-    const handleMoveTask = useCallback(
-        async (task: Task, destinationList: string) => {
-            if (!objectKeys(taskLists).includes(destinationList)) {
-                return;
-            }
-            const currentList = task.listName;
-            const updatedTask = {
-                ...task,
-                listName: destinationList,
-                finishedAt:
-                    destinationList === 'DAILY_DONE'
-                        ? new Date().toISOString()
-                        : null,
-            };
-
-            if (currentList === 'REUSABLE') {
-                const savedTask = await taskService.createTask(updatedTask);
-                taskLists[currentList].setTasks(
-                    taskLists[currentList].taskList.tasks.map((t: Task) => {
-                        if (t.id === task.id) {
-                            t.id = savedTask.id;
-                        }
-                        return t;
-                    })
-                );
-            } else {
-                await taskService.updateTask(updatedTask);
-                taskLists[currentList].setTasks(
-                    taskLists[currentList].taskList.tasks.filter(
-                        t => t.id !== task.id
-                    )
-                );
-            }
-
-            taskLists[destinationList].setTasks([
-                ...taskLists[destinationList].taskList.tasks,
-                updatedTask,
-            ]);
-        },
-        [taskLists]
-    );
 
     const openTaskDetailsDialog = useCallback((task: Task) => {
         setShowingDetailsTask(task);
@@ -105,7 +68,7 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
                 throw Error('Error retrieving username');
             }
             try {
-                let newTask: Task = {
+                const newTask: Task = {
                     id: null,
                     ...taskData,
                     ownerUsername: username,
@@ -115,17 +78,20 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
                     finishedAt: null,
                 };
                 const created = await taskService.createTask(newTask);
-                taskLists[listName].setTasks([
-                    ...taskLists[listName].taskList.tasks,
+                taskListContexts[listName].setTasks([
+                    ...taskListContexts[listName].taskList.tasks,
                     created,
                 ]);
+                setHighlightedTaskId(created.id);
+                setCreatingTaskForList(null);
+                return created;
             } catch (err) {
                 console.error('Failed to create task', err);
-            } finally {
                 setCreatingTaskForList(null);
+                return null;
             }
         },
-        [username, taskLists]
+        [username, taskListContexts]
     );
 
     const handleTaskFormSubmit = useCallback(
@@ -136,18 +102,21 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
                     await taskService.updateTask(updatedTask);
 
                     const listName = updatedTask.listName;
-                    const list = taskLists[listName].taskList;
-                    const setTasks = taskLists[listName].setTasks;
+                    const list = taskListContexts[listName].taskList;
+                    const setTasks = taskListContexts[listName].setTasks;
                     if (list) {
                         const tasks = list.tasks;
                         const taskIndex = tasks.findIndex(
                             task => task.id === updatedTask.id
                         );
                         if (taskIndex !== -1) {
-                            tasks[taskIndex] = updatedTask;
-                            setTasks([...tasks]);
+                            const updatedTasks = [...tasks];
+                            updatedTasks[taskIndex] = updatedTask;
+                            setTasks(updatedTasks);
                         }
                     }
+
+                    setHighlightedTaskId(updatedTask.id);
                 } catch (error) {
                     console.error('Failed to update task', error);
                 } finally {
@@ -157,7 +126,7 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
                 await createTask(taskData, creatingTaskForList);
             }
         },
-        [editingTask, taskLists, createTask, creatingTaskForList]
+        [editingTask, taskListContexts, createTask, creatingTaskForList]
     );
 
     const handleTaskFormCancel = useCallback(() => {
@@ -171,12 +140,16 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
                 await taskService.deleteTask(removingTask.id!);
 
                 const listName = removingTask.listName;
-                const list = taskLists[listName];
+                const list = taskListContexts[listName];
                 if (list) {
                     const tasks = list.taskList.tasks;
                     list.setTasks(
                         tasks.filter(task => task.id !== removingTask.id)
                     );
+                }
+
+                if (removingTask.id === highlightedTaskId) {
+                    setHighlightedTaskId(null);
                 }
             } catch (error) {
                 console.error('Failed to delete task', error);
@@ -184,22 +157,73 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
                 setRemovingTask(null);
             }
         }
-    }, [removingTask, taskLists]);
+    }, [removingTask, taskListContexts, highlightedTaskId]);
 
     const handleCancelRemoveTask = useCallback(() => {
         setRemovingTask(null);
     }, []);
 
+    const handleMoveTask = useCallback(
+        async (task: Task, destinationList: string): Promise<Task | null> => {
+            if (!objectKeys(taskListContexts).includes(destinationList)) {
+                console.warn(
+                    `Destination list "${destinationList}" does not exist.`
+                );
+                return null;
+            }
+            const currentList = task.listName;
+            const updatedTask = {
+                ...task,
+                listName: destinationList,
+                finishedAt:
+                    destinationList === 'DAILY_DONE'
+                        ? new Date().toISOString()
+                        : null,
+            };
+
+            try {
+                if (currentList === 'REUSABLE') {
+                    const savedTask = await taskService.createTask(updatedTask);
+                    taskListContexts[destinationList].setTasks([
+                        ...taskListContexts[destinationList].taskList.tasks,
+                        savedTask,
+                    ]);
+                    setHighlightedTaskId(savedTask.id);
+                    return savedTask;
+                } else {
+                    await taskService.updateTask(updatedTask);
+                    taskListContexts[currentList].setTasks(
+                        taskListContexts[currentList].taskList.tasks.filter(
+                            t => t.id !== task.id
+                        )
+                    );
+                    taskListContexts[destinationList].setTasks([
+                        ...taskListContexts[destinationList].taskList.tasks,
+                        updatedTask,
+                    ]);
+                    setHighlightedTaskId(updatedTask.id);
+                    return updatedTask;
+                }
+            } catch (error) {
+                console.error('Failed to move task', error);
+                return null;
+            }
+        },
+        [taskListContexts]
+    );
+
+    const value: TaskActionContextType = {
+        openCreateTaskDialog,
+        openEditTaskDialog,
+        openRemoveTaskDialog,
+        openTaskDetailsDialog,
+        moveTask: handleMoveTask,
+        setHighlight: setHighlightedTaskId,
+        highlightedTaskId,
+    };
+
     return (
-        <TaskActionContext.Provider
-            value={{
-                openCreateTaskDialog,
-                openEditTaskDialog,
-                openRemoveTaskDialog,
-                openTaskDetailsDialog,
-                moveTask: handleMoveTask,
-            }}
-        >
+        <TaskActionContext.Provider value={value}>
             <TaskDetailsDialog
                 open={!!showingDetailsTask}
                 task={showingDetailsTask!}
