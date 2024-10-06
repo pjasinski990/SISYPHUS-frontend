@@ -22,15 +22,17 @@ const ShortcutsInfoDialog: React.FC = () => {
         setOpen(true);
     }, []);
 
+    const platform = navigator.userAgent.toLowerCase();
+    const isMac = platform.includes('darwin') || platform.includes('mac');
     const addTaskShortcut: Shortcut = useMemo(
         () => ({
             id: 'open-shortcut-info-dialog',
-            keys: ['Ctrl', '?'],
+            keys: isMac ? ['Meta', '?'] : ['Ctrl', '?'],
             action: openDialog,
             description: 'Open keyboard shortcuts dialog',
             order: 2,
         }),
-        [openDialog]
+        [isMac, openDialog]
     );
 
     useRegisterShortcut(addTaskShortcut);
