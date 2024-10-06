@@ -9,6 +9,7 @@ import { useTaskExtensions } from 'src/components/context/TaskExtensionContext';
 import { ContextMenu } from 'src/components/task/TaskContextMenu';
 import MarkdownRenderer from 'src/components/markdown/MarkdownRenderer';
 import { useTaskAction } from 'src/components/context/TaskActionContext';
+import { prettyDurationFromIsoTime } from 'src/lib/utils';
 
 interface TaskItemContentProps {
     task: Task;
@@ -23,6 +24,7 @@ export const TaskDetails: React.FC<{ task: Task }> = ({ task }) => {
             <div className="text-xs mt-1 dark:text-gray-100">
                 <div className="p-2 flex flex-col items-end">
                     {task.startTime && <span>Start: {task.startTime}</span>}
+                    {task.duration && <span>Duration: {task.duration}</span>}
                     <span>Category: {task.category}</span>
                     <span className="pb-2">Size: {task.size}</span>
                     <span>ID: {task.id}</span>
@@ -208,6 +210,12 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                         <div className="text-sm p-2 flex flex-col items-end">
                             {task.startTime && (
                                 <span>Start: {task.startTime}</span>
+                            )}
+                            {task.duration && (
+                                <span>
+                                    Duration:{' '}
+                                    {prettyDurationFromIsoTime(task.duration)}
+                                </span>
                             )}
                         </div>
                     </>

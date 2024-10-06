@@ -123,7 +123,6 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
             }
 
             const { durationHours, durationMinutes, ...rest } = data;
-
             onSubmit(rest);
         };
 
