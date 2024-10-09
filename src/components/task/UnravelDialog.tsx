@@ -63,21 +63,19 @@ export const UnravelDialog: React.FC<UnravelDialogProps> = ({
                 console.error('Error fetching proposed tasks:', error);
             })
             .finally(() => setIsLoading(false));
-    }, [currentTask, open, nTasks, additionalContext]);
+    }, [open, currentTask, nTasks, additionalContext]);
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === 'Enter' && open) {
                 event.preventDefault();
                 if (event.ctrlKey) {
-                    if (formRef.current) {
-                        formRef.current.dispatchEvent(
-                            new Event('submit', {
-                                cancelable: true,
-                                bubbles: true,
-                            })
-                        );
-                    }
+                    formRef.current?.dispatchEvent(
+                        new Event('submit', {
+                            cancelable: true,
+                            bubbles: true,
+                        })
+                    );
                 } else {
                     refreshPropositions();
                 }
@@ -92,10 +90,7 @@ export const UnravelDialog: React.FC<UnravelDialogProps> = ({
     }, [open, refreshPropositions]);
 
     const handleTaskFormSubmit = useCallback(
-        (
-            taskData: TaskFormData,
-            editingTask: Task | null,
-        ) => {
+        (taskData: TaskFormData, editingTask: Task | null) => {
             if (editingTask) {
                 setProposedTasks(prevTasks =>
                     prevTasks.map(task =>
@@ -112,17 +107,6 @@ export const UnravelDialog: React.FC<UnravelDialogProps> = ({
     const handleConfirmRemoveTask = useCallback((task: Task) => {
         setProposedTasks(prevTasks => prevTasks.filter(t => t.id !== task.id));
     }, []);
-
-    const handleUnravelTaskSubmit = useCallback(
-        (generatedTasks: Task[]) => {
-            onSubmit(generatedTasks);
-        },
-        [onSubmit]
-    );
-
-    const handleUnravelTaskCancel = useCallback(() => {
-        onCancel();
-    }, [onCancel]);
 
     if (!currentTask) {
         return null;
@@ -142,6 +126,7 @@ export const UnravelDialog: React.FC<UnravelDialogProps> = ({
                     onSubmit={e => {
                         e.preventDefault();
                         onSubmit(proposedTasks);
+                        onCancel();
                     }}
                 >
                     <div className="flex flex-col">
@@ -185,52 +170,58 @@ export const UnravelDialog: React.FC<UnravelDialogProps> = ({
                                 : 'Regenerate propositions'}
                         </Button>
                     </div>
-                </form>
-                <div
-                    className={
-                        'max-h-[600px] overflow-auto px-8 py-2 flex flex-col space-y-2'
-                    }
-                >
-                    <TaskActionProvider
-                        onTaskFormSubmit={handleTaskFormSubmit}
-                        onConfirmRemoveTask={handleConfirmRemoveTask}
+                    <div
+                        className={
+                            'max-h-[600px] overflow-auto px-8 py-2 flex flex-col space-y-2'
+                        }
                     >
-                        <TaskPropertiesProvider
-                            isDraggable={false}
-                            isFoldable={false}
+                        <TaskActionProvider
+                            onTaskFormSubmit={handleTaskFormSubmit}
+                            onConfirmRemoveTask={handleConfirmRemoveTask}
                         >
-                            {isLoading ? (
-                                <div className="flex justify-center items-center h-full">
-                                    <TaskLoadingPlaceholder nTasks={nTasks} />
-                                </div>
-                            ) : proposedTasks.length > 0 ? (
-                                proposedTasks.map(proposedTask => (
-                                    <div
-                                        key={proposedTask.id}
-                                        className="relative"
-                                    >
-                                        <TaskItem task={proposedTask} />
+                            <TaskPropertiesProvider
+                                isDraggable={false}
+                                isFoldable={false}
+                            >
+                                {isLoading ? (
+                                    <div className="flex justify-center items-center h-full">
+                                        <TaskLoadingPlaceholder
+                                            nTasks={nTasks}
+                                        />
                                     </div>
-                                ))
-                            ) : (
-                                <p className="text-gray-500">
-                                    No tasks generated.
-                                </p>
-                            )}
-                        </TaskPropertiesProvider>
-                    </TaskActionProvider>
-                </div>
-                <div className="flex justify-end gap-2 mt-4">
-                    <Button onClick={onCancel} variant="secondary">
-                        Cancel
-                    </Button>
-                    <Button
-                        type="submit"
-                        disabled={proposedTasks.length === 0 || isLoading}
-                    >
-                        Submit
-                    </Button>
-                </div>
+                                ) : proposedTasks.length > 0 ? (
+                                    proposedTasks.map(proposedTask => (
+                                        <div
+                                            key={proposedTask.id}
+                                            className="relative"
+                                        >
+                                            <TaskItem task={proposedTask} />
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p className="text-gray-500">
+                                        No tasks generated.
+                                    </p>
+                                )}
+                            </TaskPropertiesProvider>
+                        </TaskActionProvider>
+                    </div>
+                    <div className="flex justify-end gap-2 mt-4">
+                        <Button
+                            type="button"
+                            onClick={onCancel}
+                            variant="secondary"
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            type="submit"
+                            disabled={proposedTasks.length === 0 || isLoading}
+                        >
+                            Submit
+                        </Button>
+                    </div>
+                </form>
             </DialogContent>
         </Dialog>
     );

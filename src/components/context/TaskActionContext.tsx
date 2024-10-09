@@ -204,11 +204,55 @@ export const TaskActionProvider: React.FC<TaskActionProviderProps> = ({
         setRemovingTask(null);
     }, []);
 
-    const handleUnravelTaskSubmit = useCallback((generatedTasks: Task[]) => {
-        for (const task of generatedTasks) {
-            taskService.createTask(task);
-        }
-    }, []);
+    const handleUnravelTaskSubmit = useCallback(
+        async (generatedTasks: Task[]) => {
+            if (!unravelingTask || generatedTasks.length === 0) {
+                return;
+            }
+
+            try {
+                const createdTasks = await Promise.all(
+                    generatedTasks.map(async task => {
+                        return await taskService.createTask(task);
+                    })
+                );
+
+                const inboxListContext = taskListContexts['INBOX'];
+                if (inboxListContext) {
+                    inboxListContext.setTasks([
+                        ...inboxListContext.taskList.tasks,
+                        ...createdTasks,
+                    ]);
+                } else {
+                    console.warn(
+                        'INBOX task list not found when trying to update with unraveled tasks'
+                    );
+                }
+
+                const createdTaskIds = createdTasks
+                    .map(task => task.id)
+                    .filter((id): id is string => id !== null);
+
+                setHighlightedTaskId(createdTaskIds[0] ?? highlightedTaskId);
+
+                const updatedUnraveledTask: Task = {
+                    ...unravelingTask,
+                    dependencies: [
+                        ...(unravelingTask.dependencies || []),
+                        ...createdTaskIds,
+                    ],
+                    updatedAt: new Date().toISOString(),
+                };
+
+                await taskService.updateTask(updatedUnraveledTask);
+            } catch (error) {
+                console.error('Error handling unravel task submit', error);
+            } finally {
+                setUnravellingTask(null);
+            }
+        },
+        [unravelingTask, taskListContexts]
+    );
 
     const handleUnravelTaskCancel = useCallback(() => {
         setUnravellingTask(null);

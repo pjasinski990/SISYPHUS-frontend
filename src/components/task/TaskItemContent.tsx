@@ -246,7 +246,7 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                     </>
                 </CSSTransition>
                 <ContextMenu
-                    show={showContextMenu}
+                    show={!isVanity && showContextMenu}
                     position={contextMenuPosition}
                     onClose={() => setShowContextMenu(false)}
                     onShowDetails={() => openTaskDetailsDialog(task)}
