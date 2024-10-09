@@ -69,196 +69,191 @@ const StatsPage: React.FC = () => {
         [isDarkMode]
     );
 
-    useEffect(() => {
-        const fetchAndProcessStats = async () => {
-            try {
-                const endDate = new Date();
-                const startDate = new Date();
-                startDate.setDate(endDate.getDate() - 6);
-                endDate.setDate(endDate.getDate() + 1);
+    const processStatsData = useCallback(
+        (stats: StatsResponse[]) => {
+            const categoryTotals: { [key: string]: number } = {};
+            const radarData: { [key: string]: { small: number; big: number } } =
+                {};
+            const weightByDate: {
+                [date: string]: { [category: string]: number };
+            } = {};
+            const sizeByDate: { [date: string]: { [size: string]: number } } =
+                {};
 
-                const endDateStr = endDate.toISOString().split('T')[0];
-                const startDateStr = startDate.toISOString().split('T')[0];
+            stats.forEach(stat => {
+                const category = stat.category;
+                const date = stat.date;
+                const weight = stat.size === TaskSize.BIG ? 3 : 1;
+                if (!categoryTotals[category]) {
+                    categoryTotals[category] = 0;
+                }
+                categoryTotals[category] += stat.count * weight;
 
-                const stats = await statsService.getStatsForDateRange(
-                    startDateStr,
-                    endDateStr
-                );
+                if (!radarData[category]) {
+                    radarData[category] = { small: 0, big: 0 };
+                }
+                if (stat.size === TaskSize.BIG) {
+                    radarData[category].big += stat.count;
+                } else {
+                    radarData[category].small += stat.count;
+                }
 
-                processStatsData(stats);
-            } catch (error) {
-                console.error('Error fetching stats:', error);
-            }
-        };
+                if (!weightByDate[date]) {
+                    weightByDate[date] = {};
+                }
+                if (!weightByDate[date][category]) {
+                    weightByDate[date][category] = 0;
+                }
+                weightByDate[date][category] += stat.count * weight;
 
-        fetchAndProcessStats();
-    }, [getCategoryColor]);
+                if (!sizeByDate[date]) {
+                    sizeByDate[date] = { Small: 0, Big: 0 };
+                }
+                const sizeLabel = stat.size === TaskSize.BIG ? 'Big' : 'Small';
+                sizeByDate[date][sizeLabel] += stat.count;
+            });
 
-    const processStatsData = (stats: StatsResponse[]) => {
-        const categoryTotals: { [key: string]: number } = {};
-        const radarData: { [key: string]: { small: number; big: number } } = {};
-        const weightByDate: { [date: string]: { [category: string]: number } } =
-            {};
-        const sizeByDate: { [date: string]: { [size: string]: number } } = {};
+            const pieData = preparePieChartData(categoryTotals);
+            setPieChartData(pieData);
 
-        stats.forEach(stat => {
-            const category = stat.category;
-            const date = stat.date;
-            const weight = stat.size === TaskSize.BIG ? 3 : 1;
-            if (!categoryTotals[category]) {
-                categoryTotals[category] = 0;
-            }
-            categoryTotals[category] += stat.count * weight;
+            const radarDataFormatted = prepareRadarChartData(radarData);
+            setRadarChartData(radarDataFormatted);
 
-            if (!radarData[category]) {
-                radarData[category] = { small: 0, big: 0 };
-            }
-            if (stat.size === TaskSize.BIG) {
-                radarData[category].big += stat.count;
-            } else {
-                radarData[category].small += stat.count;
-            }
+            const barWeightData = prepareBarChartData(
+                weightByDate,
+                stats,
+                'category',
+                getCategoryColor
+            );
+            setBarWeightChartData(barWeightData);
 
-            if (!weightByDate[date]) {
-                weightByDate[date] = {};
-            }
-            if (!weightByDate[date][category]) {
-                weightByDate[date][category] = 0;
-            }
-            weightByDate[date][category] += stat.count * weight;
+            const barSizeData = prepareBarChartData(sizeByDate, stats, 'size');
+            setBarSizeChartData(barSizeData);
+        },
+        [getCategoryColor, isDarkMode]
+    );
 
-            if (!sizeByDate[date]) {
-                sizeByDate[date] = { Small: 0, Big: 0 };
-            }
-            const sizeLabel = stat.size === TaskSize.BIG ? 'Big' : 'Small';
-            sizeByDate[date][sizeLabel] += stat.count;
-        });
+    const preparePieChartData = useCallback(
+        (categoryTotals: { [key: string]: number }) => {
+            const pieLabels = Object.keys(categoryTotals);
+            const pieValues = pieLabels.map(
+                category => categoryTotals[category]
+            );
+            const pieBackgroundColors = pieLabels.map(category =>
+                getCategoryColor(category)
+            );
 
-        const pieData = preparePieChartData(categoryTotals);
-        setPieChartData(pieData);
-
-        const radarDataFormatted = prepareRadarChartData(radarData);
-        setRadarChartData(radarDataFormatted);
-
-        const barWeightData = prepareBarChartData(
-            weightByDate,
-            stats,
-            'category',
-            getCategoryColor
-        );
-        setBarWeightChartData(barWeightData);
-
-        const barSizeData = prepareBarChartData(sizeByDate, stats, 'size');
-        setBarSizeChartData(barSizeData);
-    };
-
-    const preparePieChartData = (categoryTotals: { [key: string]: number }) => {
-        const pieLabels = Object.keys(categoryTotals);
-        const pieValues = pieLabels.map(category => categoryTotals[category]);
-        const pieBackgroundColors = pieLabels.map(category =>
-            getCategoryColor(category)
-        );
-
-        return {
-            labels: pieLabels,
-            datasets: [
-                {
-                    data: pieValues,
-                    backgroundColor: pieBackgroundColors,
-                    borderWidth: 0,
-                },
-            ],
-        };
-    };
-
-    const prepareRadarChartData = (radarData: {
-        [key: string]: { small: number; big: number };
-    }) => {
-        const radarLabels = Object.keys(radarData);
-        const smallTaskValues = radarLabels.map(
-            category => radarData[category].small
-        );
-        const bigTaskValues = radarLabels.map(
-            category => radarData[category].big
-        );
-
-        const {
-            smallTasksRadarBg,
-            smallTasksRadarBorder,
-            bigTasksRadarBg,
-            bigTasksRadarBorder,
-        } = getTaskSizeColors(isDarkMode);
-
-        return {
-            labels: radarLabels,
-            datasets: [
-                {
-                    label: 'SMALL',
-                    data: smallTaskValues,
-                    backgroundColor: smallTasksRadarBg,
-                    borderColor: smallTasksRadarBorder,
-                    borderWidth: 1,
-                    pointBackgroundColor: smallTasksRadarBorder,
-                    fill: true,
-                },
-                {
-                    label: 'BIG',
-                    data: bigTaskValues,
-                    backgroundColor: bigTasksRadarBg,
-                    borderColor: bigTasksRadarBorder,
-                    borderWidth: 1,
-                    pointBackgroundColor: bigTasksRadarBg,
-                    fill: true,
-                },
-            ],
-        };
-    };
-
-    const prepareBarChartData = (
-        dataByDate: { [date: string]: { [key: string]: number } },
-        stats: StatsResponse[],
-        keyType: 'category' | 'size',
-        getColor?: (key: string) => string
-    ) => {
-        const sortedDates = Object.keys(dataByDate).sort();
-        let keys: string[] = [];
-        if (keyType === 'category') {
-            keys = Array.from(new Set(stats.map(stat => stat.category)));
-        } else if (keyType === 'size') {
-            keys = ['Small', 'Big'];
-        }
-
-        const datasets = keys.map(key => {
-            const data = sortedDates.map(date => dataByDate[date][key] || 0);
-            const color =
-                keyType === 'category'
-                    ? getColor!(key)
-                    : key === 'Small'
-                      ? TAILWIND_COLORS['sky-500']
-                      : TAILWIND_COLORS['rose-500'];
             return {
-                label: key,
-                data,
-                backgroundColor: color,
+                labels: pieLabels,
+                datasets: [
+                    {
+                        data: pieValues,
+                        backgroundColor: pieBackgroundColors,
+                        borderWidth: 0,
+                    },
+                ],
             };
-        });
+        },
+        [getCategoryColor]
+    );
 
-        return {
-            labels: sortedDates,
-            datasets,
-        };
-    };
+    const prepareRadarChartData = useCallback(
+        (radarData: { [key: string]: { small: number; big: number } }) => {
+            const radarLabels = Object.keys(radarData);
+            const smallTaskValues = radarLabels.map(
+                category => radarData[category].small
+            );
+            const bigTaskValues = radarLabels.map(
+                category => radarData[category].big
+            );
 
-    const getTaskSizeColors = (isDarkMode: boolean) => ({
-        smallTasksRadarBg: isDarkMode
-            ? hexToRgba(TAILWIND_COLORS['sky-700'], 0.3)
-            : hexToRgba(TAILWIND_COLORS['sky-500'], 0.3),
-        smallTasksRadarBorder: TAILWIND_COLORS['sky-500'],
-        bigTasksRadarBg: isDarkMode
-            ? hexToRgba(TAILWIND_COLORS['rose-700'], 0.3)
-            : hexToRgba(TAILWIND_COLORS['rose-500'], 0.3),
-        bigTasksRadarBorder: TAILWIND_COLORS['rose-500'],
-    });
+            const {
+                smallTasksRadarBg,
+                smallTasksRadarBorder,
+                bigTasksRadarBg,
+                bigTasksRadarBorder,
+            } = getTaskSizeColors(isDarkMode);
+
+            return {
+                labels: radarLabels,
+                datasets: [
+                    {
+                        label: 'SMALL',
+                        data: smallTaskValues,
+                        backgroundColor: smallTasksRadarBg,
+                        borderColor: smallTasksRadarBorder,
+                        borderWidth: 1,
+                        pointBackgroundColor: smallTasksRadarBorder,
+                        fill: true,
+                    },
+                    {
+                        label: 'BIG',
+                        data: bigTaskValues,
+                        backgroundColor: bigTasksRadarBg,
+                        borderColor: bigTasksRadarBorder,
+                        borderWidth: 1,
+                        pointBackgroundColor: bigTasksRadarBg,
+                        fill: true,
+                    },
+                ],
+            };
+        },
+        [isDarkMode]
+    );
+
+    const prepareBarChartData = useCallback(
+        (
+            dataByDate: { [date: string]: { [key: string]: number } },
+            stats: StatsResponse[],
+            keyType: 'category' | 'size',
+            getColor?: (key: string) => string
+        ) => {
+            const sortedDates = Object.keys(dataByDate).sort();
+            let keys: string[] = [];
+            if (keyType === 'category') {
+                keys = Array.from(new Set(stats.map(stat => stat.category)));
+            } else if (keyType === 'size') {
+                keys = ['Small', 'Big'];
+            }
+
+            const datasets = keys.map(key => {
+                const data = sortedDates.map(
+                    date => dataByDate[date][key] || 0
+                );
+                const color =
+                    keyType === 'category'
+                        ? getColor!(key)
+                        : key === 'Small'
+                          ? TAILWIND_COLORS['sky-500']
+                          : TAILWIND_COLORS['rose-500'];
+                return {
+                    label: key,
+                    data,
+                    backgroundColor: color,
+                };
+            });
+
+            return {
+                labels: sortedDates,
+                datasets,
+            };
+        },
+        []
+    );
+
+    const getTaskSizeColors = useCallback(
+        (isDarkMode: boolean) => ({
+            smallTasksRadarBg: isDarkMode
+                ? hexToRgba(TAILWIND_COLORS['sky-700'], 0.3)
+                : hexToRgba(TAILWIND_COLORS['sky-500'], 0.3),
+            smallTasksRadarBorder: TAILWIND_COLORS['sky-500'],
+            bigTasksRadarBg: isDarkMode
+                ? hexToRgba(TAILWIND_COLORS['rose-700'], 0.3)
+                : hexToRgba(TAILWIND_COLORS['rose-500'], 0.3),
+            bigTasksRadarBorder: TAILWIND_COLORS['rose-500'],
+        }),
+        []
+    );
 
     const pieOptions: ChartOptions<'pie'> = {
         ...getCommonChartOptions(isDarkMode),
@@ -307,7 +302,42 @@ const StatsPage: React.FC = () => {
         ...getCommonChartOptions(isDarkMode),
         maintainAspectRatio: false,
         scales: getScalesOptions(isDarkMode, 'bar'),
+        plugins: {
+            ...getCommonChartOptions(isDarkMode).plugins,
+            datalabels: {
+                color: isDarkMode ? '#ffffff' : '#000000',
+                anchor: 'start',
+                align: 'end',
+                offset: 0,
+                formatter: (value: number) => value,
+            },
+        },
     };
+
+    useEffect(() => {
+        const fetchAndProcessStats = async () => {
+            try {
+                const endDate = new Date();
+                const startDate = new Date();
+                startDate.setDate(endDate.getDate() - 6);
+                endDate.setDate(endDate.getDate() + 1);
+
+                const endDateStr = endDate.toISOString().split('T')[0];
+                const startDateStr = startDate.toISOString().split('T')[0];
+
+                const stats = await statsService.getStatsForDateRange(
+                    startDateStr,
+                    endDateStr
+                );
+
+                processStatsData(stats);
+            } catch (error) {
+                console.error('Error fetching stats:', error);
+            }
+        };
+
+        fetchAndProcessStats();
+    }, [processStatsData]);
 
     return (
         <Layout>
