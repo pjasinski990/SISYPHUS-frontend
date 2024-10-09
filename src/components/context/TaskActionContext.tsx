@@ -5,8 +5,6 @@ import { ConfirmDialog } from '../library/ConfirmDialog';
 import { useAllTaskLists } from './TaskListsContext';
 import { TaskFormData } from 'src/components/task/TaskForm';
 import { TaskItem } from 'src/components/task/TaskItem';
-import { util } from 'zod';
-import objectKeys = util.objectKeys;
 import { TaskDetailsDialog } from 'src/components/task/TaskDetailsDialog';
 import { useAuth } from 'src/components/context/AuthContext';
 import { UnravelDialog } from 'src/components/task/UnravelDialog';
@@ -26,8 +24,20 @@ const TaskActionContext = createContext<TaskActionContextType | undefined>(
     undefined
 );
 
-export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
+export interface TaskActionProviderProps {
+    children: React.ReactNode;
+    onTaskFormSubmit?: (
+        taskData: TaskFormData,
+        editingTask: Task | null,
+        creatingTaskForList: string | null
+    ) => void;
+    onConfirmRemoveTask?: (task: Task) => void;
+}
+
+export const TaskActionProvider: React.FC<TaskActionProviderProps> = ({
     children,
+    onTaskFormSubmit,
+    onConfirmRemoveTask,
 }) => {
     const { username } = useAuth();
     const [showingDetailsTask, setShowingDetailsTask] = useState<Task | null>(
@@ -103,37 +113,49 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const handleTaskFormSubmit = useCallback(
         async (taskData: TaskFormData) => {
-            if (editingTask) {
-                try {
-                    const updatedTask = { ...editingTask, ...taskData };
-                    await taskService.updateTask(updatedTask);
+            if (onTaskFormSubmit) {
+                onTaskFormSubmit(taskData, editingTask, creatingTaskForList);
+                setEditingTask(null);
+                setCreatingTaskForList(null);
+            } else {
+                if (editingTask) {
+                    try {
+                        const updatedTask = { ...editingTask, ...taskData };
+                        await taskService.updateTask(updatedTask);
 
-                    const listName = updatedTask.listName;
-                    const list = taskListContexts[listName].taskList;
-                    const setTasks = taskListContexts[listName].setTasks;
-                    if (list) {
-                        const tasks = list.tasks;
-                        const taskIndex = tasks.findIndex(
-                            task => task.id === updatedTask.id
-                        );
-                        if (taskIndex !== -1) {
-                            const updatedTasks = [...tasks];
-                            updatedTasks[taskIndex] = updatedTask;
-                            setTasks(updatedTasks);
+                        const listName = updatedTask.listName;
+                        const list = taskListContexts[listName].taskList;
+                        const setTasks = taskListContexts[listName].setTasks;
+                        if (list) {
+                            const tasks = list.tasks;
+                            const taskIndex = tasks.findIndex(
+                                task => task.id === updatedTask.id
+                            );
+                            if (taskIndex !== -1) {
+                                const updatedTasks = [...tasks];
+                                updatedTasks[taskIndex] = updatedTask;
+                                setTasks(updatedTasks);
+                            }
                         }
-                    }
 
-                    setHighlightedTaskId(updatedTask.id);
-                } catch (error) {
-                    console.error('Failed to update task', error);
-                } finally {
-                    setEditingTask(null);
+                        setHighlightedTaskId(updatedTask.id);
+                    } catch (error) {
+                        console.error('Failed to update task', error);
+                    } finally {
+                        setEditingTask(null);
+                    }
+                } else if (creatingTaskForList) {
+                    await createTask(taskData, creatingTaskForList);
                 }
-            } else if (creatingTaskForList) {
-                await createTask(taskData, creatingTaskForList);
             }
         },
-        [editingTask, taskListContexts, createTask, creatingTaskForList]
+        [
+            editingTask,
+            creatingTaskForList,
+            taskListContexts,
+            createTask,
+            onTaskFormSubmit,
+        ]
     );
 
     const handleTaskFormCancel = useCallback(() => {
@@ -142,35 +164,51 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
     }, []);
 
     const handleConfirmRemoveTask = useCallback(async () => {
-        if (removingTask) {
-            try {
-                await taskService.deleteTask(removingTask.id!);
+        if (onConfirmRemoveTask) {
+            if (removingTask) {
+                onConfirmRemoveTask(removingTask);
+            }
+            setRemovingTask(null);
+        } else {
+            if (removingTask) {
+                try {
+                    await taskService.deleteTask(removingTask.id!);
 
-                const listName = removingTask.listName;
-                const list = taskListContexts[listName];
-                if (list) {
-                    const tasks = list.taskList.tasks;
-                    list.setTasks(
-                        tasks.filter(task => task.id !== removingTask.id)
-                    );
-                }
+                    const listName = removingTask.listName;
+                    const list = taskListContexts[listName];
+                    if (list) {
+                        const tasks = list.taskList.tasks;
+                        list.setTasks(
+                            tasks.filter(task => task.id !== removingTask.id)
+                        );
+                    }
 
-                if (removingTask.id === highlightedTaskId) {
-                    setHighlightedTaskId(null);
+                    if (removingTask.id === highlightedTaskId) {
+                        setHighlightedTaskId(null);
+                    }
+                } catch (error) {
+                    console.error('Failed to delete task', error);
+                } finally {
+                    setRemovingTask(null);
                 }
-            } catch (error) {
-                console.error('Failed to delete task', error);
-            } finally {
-                setRemovingTask(null);
             }
         }
-    }, [removingTask, taskListContexts, highlightedTaskId]);
+    }, [
+        removingTask,
+        taskListContexts,
+        highlightedTaskId,
+        onConfirmRemoveTask,
+    ]);
 
     const handleCancelRemoveTask = useCallback(() => {
         setRemovingTask(null);
     }, []);
 
-    const handleUnravelTaskSubmit = useCallback(() => {}, []);
+    const handleUnravelTaskSubmit = useCallback((generatedTasks: Task[]) => {
+        for (const task of generatedTasks) {
+            taskService.createTask(task);
+        }
+    }, []);
 
     const handleUnravelTaskCancel = useCallback(() => {
         setUnravellingTask(null);
@@ -178,7 +216,7 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const handleMoveTask = useCallback(
         async (task: Task, destinationList: string): Promise<Task | null> => {
-            if (!objectKeys(taskListContexts).includes(destinationList)) {
+            if (!Object.keys(taskListContexts).includes(destinationList)) {
                 console.warn(
                     `Destination list "${destinationList}" does not exist.`
                 );
@@ -238,12 +276,14 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
 
     return (
         <TaskActionContext.Provider value={value}>
+            {/* Task Details Dialog */}
             <TaskDetailsDialog
                 open={!!showingDetailsTask}
                 task={showingDetailsTask!}
                 onClose={closeTaskDetailsDialog}
             />
 
+            {/* Edit/Create Task Dialog */}
             <TaskDialog
                 open={!!editingTask || !!creatingTaskForList}
                 listName={editingTask?.listName || creatingTaskForList || ''}
@@ -261,6 +301,7 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
                 }
             />
 
+            {/* Unravel Dialog */}
             <UnravelDialog
                 open={!!unravelingTask}
                 unraveledTask={unravelingTask}
@@ -268,6 +309,7 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
                 onCancel={handleUnravelTaskCancel}
             />
 
+            {/* Confirm Remove Task Dialog */}
             <ConfirmDialog
                 open={!!removingTask}
                 title="Confirmation"
@@ -281,6 +323,7 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
                     <TaskItem task={removingTask} isVanity={true} />
                 )}
             </ConfirmDialog>
+
             {children}
         </TaskActionContext.Provider>
     );
