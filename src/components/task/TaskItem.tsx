@@ -55,13 +55,11 @@ const TaskItemInternal: React.FC<TaskItemProps> = ({
         return <VanityTask task={task} />;
     }
     return (
-        <div className={'max-h-[400px] overflow-y-auto'}>
-            <TaskDispatcher
-                task={task}
-                index={index}
-                isHighlighted={isHighlighted}
-            />
-        </div>
+        <TaskDispatcher
+            task={task}
+            index={index}
+            isHighlighted={isHighlighted}
+        />
     );
 };
 

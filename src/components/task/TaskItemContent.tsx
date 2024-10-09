@@ -24,7 +24,12 @@ export const TaskDetails: React.FC<{ task: Task }> = ({ task }) => {
             <div className="text-xs mt-1 dark:text-gray-100">
                 <div className="p-2 flex flex-col items-end">
                     {task.startTime && <span>Start: {task.startTime}</span>}
-                    {task.duration && <span>Duration: {task.duration}</span>}
+                    {task.duration && (
+                        <span>
+                                    Duration:{' '}
+                            {prettyDurationFromIsoTime(task.duration)}
+                                </span>
+                    )}
                     <span>Category: {task.category}</span>
                     <span className="pb-2">Size: {task.size}</span>
                     <span>ID: {task.id}</span>
@@ -74,7 +79,7 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
         x: 0,
         y: 0,
     });
-    const [showDetailsDialog, setShowDetailsDialog] = useState(false);
+    const { openTaskDetailsDialog } = useTaskAction();
 
     const handleContextMenu = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -224,7 +229,7 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                     show={showContextMenu}
                     position={contextMenuPosition}
                     onClose={() => setShowContextMenu(false)}
-                    onShowDetails={() => setShowDetailsDialog(true)}
+                    onShowDetails={() => openTaskDetailsDialog(task)}
                 />
             </div>
         </>
