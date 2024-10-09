@@ -92,7 +92,10 @@ export const UnravelDialog: React.FC<UnravelDialogProps> = ({
     }, [open, refreshPropositions]);
 
     const handleTaskFormSubmit = useCallback(
-        (taskData: TaskFormData, editingTask: Task | null) => {
+        (
+            taskData: TaskFormData,
+            editingTask: Task | null,
+        ) => {
             if (editingTask) {
                 setProposedTasks(prevTasks =>
                     prevTasks.map(task =>
@@ -109,6 +112,17 @@ export const UnravelDialog: React.FC<UnravelDialogProps> = ({
     const handleConfirmRemoveTask = useCallback((task: Task) => {
         setProposedTasks(prevTasks => prevTasks.filter(t => t.id !== task.id));
     }, []);
+
+    const handleUnravelTaskSubmit = useCallback(
+        (generatedTasks: Task[]) => {
+            onSubmit(generatedTasks);
+        },
+        [onSubmit]
+    );
+
+    const handleUnravelTaskCancel = useCallback(() => {
+        onCancel();
+    }, [onCancel]);
 
     if (!currentTask) {
         return null;
@@ -195,10 +209,7 @@ export const UnravelDialog: React.FC<UnravelDialogProps> = ({
                                         key={proposedTask.id}
                                         className="relative"
                                     >
-                                        <TaskItem
-                                            task={proposedTask}
-                                            isVanity={true}
-                                        />
+                                        <TaskItem task={proposedTask} />
                                     </div>
                                 ))
                             ) : (

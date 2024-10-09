@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Task, TaskSize } from '../../service/taskService';
 import { Button } from 'src/components/ui/button';
 import { Edit, Square, Trash } from 'lucide-react';
@@ -13,6 +13,7 @@ import { prettyDurationFromIsoTime } from 'src/lib/utils';
 
 interface TaskItemContentProps {
     task: Task;
+    isVanity?: boolean;
     showDetails?: boolean;
     isHighlighted?: boolean;
 }
@@ -53,6 +54,7 @@ const TaskDescription: React.FC<{ task: Task }> = ({ task }) => {
 
 export const TaskItemContent: React.FC<TaskItemContentProps> = ({
     task,
+    isVanity = false,
     showDetails = true,
     isHighlighted = false,
 }) => {
@@ -64,13 +66,16 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
         iconClass,
     } = categoryStyles[task.category];
 
+    const {
+        openEditTaskDialog,
+        openTaskDetailsDialog,
+        openRemoveTaskDialog,
+        openUnravelTaskDialog,
+    } = useTaskAction();
+
     const defaultBorderClass = 'border-4 border-transparent';
-    const { openEditTaskDialog, openRemoveTaskDialog, openUnravelTaskDialog } =
-        useTaskAction();
     const iconSize = task.size === TaskSize.SMALL ? 10 : 20;
-
     const { extraButtons } = useTaskExtensions();
-
     const [showContextMenu, setShowContextMenu] = useState(false);
     const [contextMenuPosition, setContextMenuPosition] = useState<{
         x: number;
@@ -79,7 +84,22 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
         x: 0,
         y: 0,
     });
-    const { openTaskDetailsDialog } = useTaskAction();
+
+    const handleEditTask = useCallback(
+        (task: Task) => {
+            if (isVanity) return;
+            openEditTaskDialog(task);
+        },
+        [isVanity, openEditTaskDialog]
+    );
+
+    const handleRemoveTask = useCallback(
+        (task: Task) => {
+            if (isVanity) return;
+            openRemoveTaskDialog(task);
+        },
+        [isVanity, openRemoveTaskDialog]
+    );
 
     const handleContextMenu = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -162,7 +182,7 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                             size="sm"
                             onClick={e => {
                                 e.stopPropagation();
-                                openEditTaskDialog(task);
+                                handleEditTask(task);
                             }}
                             className={`${categoryBgHoverColorClass} task-item-button`}
                             aria-label="Edit Task"
@@ -175,7 +195,7 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                             size="sm"
                             onClick={e => {
                                 e.stopPropagation();
-                                openRemoveTaskDialog(task);
+                                handleRemoveTask(task);
                             }}
                             className={`${categoryBgHoverColorClass} task-item-button`}
                             aria-label="Remove Task"

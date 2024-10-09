@@ -52,7 +52,7 @@ const TaskItemInternal: React.FC<TaskItemProps> = ({
     isHighlighted,
 }) => {
     if (isVanity) {
-        return <VanityTask task={task} />;
+        return <TaskItemContent task={task} isVanity={isVanity} />;
     }
     return (
         <TaskDispatcher
@@ -61,10 +61,6 @@ const TaskItemInternal: React.FC<TaskItemProps> = ({
             isHighlighted={isHighlighted}
         />
     );
-};
-
-const VanityTask: React.FC<TaskItemProps> = ({ task }) => {
-    return <TaskItemContent task={task} />;
 };
 
 const TaskDispatcher: React.FC<TaskItemProps> = ({
