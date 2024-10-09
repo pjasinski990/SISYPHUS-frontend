@@ -1,7 +1,7 @@
 import React from 'react';
 import { CSSTransition } from 'react-transition-group';
 import { Button } from 'src/components/ui/button';
-import { ReceiptText } from 'lucide-react';
+import { ReceiptText, SquareSplitHorizontal } from 'lucide-react';
 import './ContextMenu.css';
 
 interface ContextMenuProps {
@@ -9,6 +9,7 @@ interface ContextMenuProps {
     position: { x: number; y: number };
     onClose: () => void;
     onShowDetails: () => void;
+    onUnravel: () => void;
 }
 
 export const ContextMenu: React.FC<ContextMenuProps> = ({
@@ -16,6 +17,7 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
     position,
     onClose,
     onShowDetails,
+    onUnravel,
 }) => {
     return (
         <CSSTransition
@@ -43,6 +45,19 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({
                     className="w-full flex items-center justify-start px-3 py-2 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors duration-100"
                 >
                     <ReceiptText className="h-4 w-4 mr-2" /> Show Details
+                </Button>
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={e => {
+                        e.stopPropagation();
+                        onUnravel();
+                        onClose();
+                    }}
+                    className="w-full flex items-center justify-start px-3 py-2 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors duration-100"
+                >
+                    <SquareSplitHorizontal className="h-4 w-4 mr-2" /> Unravel
+                    Task
                 </Button>
             </div>
         </CSSTransition>

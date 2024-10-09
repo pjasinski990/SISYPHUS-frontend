@@ -26,9 +26,8 @@ export const TaskDetails: React.FC<{ task: Task }> = ({ task }) => {
                     {task.startTime && <span>Start: {task.startTime}</span>}
                     {task.duration && (
                         <span>
-                                    Duration:{' '}
-                            {prettyDurationFromIsoTime(task.duration)}
-                                </span>
+                            Duration: {prettyDurationFromIsoTime(task.duration)}
+                        </span>
                     )}
                     <span>Category: {task.category}</span>
                     <span className="pb-2">Size: {task.size}</span>
@@ -66,7 +65,8 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
     } = categoryStyles[task.category];
 
     const defaultBorderClass = 'border-4 border-transparent';
-    const { openEditTaskDialog, openRemoveTaskDialog } = useTaskAction();
+    const { openEditTaskDialog, openRemoveTaskDialog, openUnravelTaskDialog } =
+        useTaskAction();
     const iconSize = task.size === TaskSize.SMALL ? 10 : 20;
 
     const { extraButtons } = useTaskExtensions();
@@ -230,6 +230,7 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                     position={contextMenuPosition}
                     onClose={() => setShowContextMenu(false)}
                     onShowDetails={() => openTaskDetailsDialog(task)}
+                    onUnravel={() => openUnravelTaskDialog(task)}
                 />
             </div>
         </>

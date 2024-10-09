@@ -9,12 +9,14 @@ import { util } from 'zod';
 import objectKeys = util.objectKeys;
 import { TaskDetailsDialog } from 'src/components/task/TaskDetailsDialog';
 import { useAuth } from 'src/components/context/AuthContext';
+import { UnravelDialog } from 'src/components/task/UnravelDialog';
 
 interface TaskActionContextType {
     openCreateTaskDialog: (listName: string) => void;
     openEditTaskDialog: (task: Task) => void;
     openRemoveTaskDialog: (task: Task) => void;
     openTaskDetailsDialog: (task: Task) => void;
+    openUnravelTaskDialog: (task: Task) => void;
     moveTask: (task: Task, destinationList: string) => Promise<Task | null>;
     setHighlight: (taskId: string | null) => void;
     highlightedTaskId: string | null;
@@ -36,6 +38,7 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
     >(null);
     const [editingTask, setEditingTask] = useState<Task | null>(null);
     const [removingTask, setRemovingTask] = useState<Task | null>(null);
+    const [unravelingTask, setUnravellingTask] = useState<Task | null>(null);
     const [highlightedTaskId, setHighlightedTaskId] = useState<string | null>(
         null
     );
@@ -56,6 +59,10 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const openTaskDetailsDialog = useCallback((task: Task) => {
         setShowingDetailsTask(task);
+    }, []);
+
+    const openUnravelTaskDialog = useCallback((task: Task) => {
+        setUnravellingTask(task);
     }, []);
 
     const closeTaskDetailsDialog = useCallback(() => {
@@ -163,6 +170,12 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
         setRemovingTask(null);
     }, []);
 
+    const handleUnravelTaskSubmit = useCallback(() => {}, []);
+
+    const handleUnravelTaskCancel = useCallback(() => {
+        setUnravellingTask(null);
+    }, []);
+
     const handleMoveTask = useCallback(
         async (task: Task, destinationList: string): Promise<Task | null> => {
             if (!objectKeys(taskListContexts).includes(destinationList)) {
@@ -217,6 +230,7 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
         openEditTaskDialog,
         openRemoveTaskDialog,
         openTaskDetailsDialog,
+        openUnravelTaskDialog,
         moveTask: handleMoveTask,
         setHighlight: setHighlightedTaskId,
         highlightedTaskId,
@@ -245,6 +259,13 @@ export const TaskActionProvider: React.FC<{ children: React.ReactNode }> = ({
                               ?.replace(/[^a-zA-Z]+/g, ' ')
                               .toLowerCase()} task`
                 }
+            />
+
+            <UnravelDialog
+                open={!!unravelingTask}
+                unraveledTask={unravelingTask}
+                onSubmit={handleUnravelTaskSubmit}
+                onCancel={handleUnravelTaskCancel}
             />
 
             <ConfirmDialog

@@ -8,7 +8,7 @@ interface MarkdownRendererProps {
 }
 
 const components: Components = {
-    div: ({ node, className, ...props }) => {
+    div: ({ className, ...props }) => {
         if (className && className.includes('admonition')) {
             const typeMatch = className.match(/admonition (\w+)/);
             const type = typeMatch ? typeMatch[1] : '';

@@ -66,7 +66,6 @@ export const TaskNavigationProvider: React.FC<{
 
     const clearHighlight = useCallback(() => {
         setHighlightedTaskId(null);
-        setHighlightedListName(null);
     }, []);
 
     const isTaskHighlighted = useCallback(() => {

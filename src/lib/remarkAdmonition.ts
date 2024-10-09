@@ -3,27 +3,31 @@ import { visit } from 'unist-util-visit';
 import { Paragraph, Parent, Text } from 'mdast';
 
 const remarkAdmonition: Plugin = () => {
-    return tree => {
+    return (tree) => {
         visit(tree, 'blockquote', (node: Parent) => {
-            const paragraph = node.children?.[0] as Paragraph;
-            if (paragraph && paragraph.type === 'paragraph') {
-                const textNode = paragraph.children[0] as Text;
-                if (textNode && textNode.type === 'text') {
-                    const match = textNode.value.match(/^\[!(\w+)\]\s*(.*)/);
-                    if (match) {
-                        const type = match[1].toLowerCase();
-                        const content = match[2];
+            if (!node.children || node.children.length === 0) return;
 
-                        if (!node.data) node.data = {};
-                        node.data.hName! = 'div';
-                        node.data.hProperties = {
-                            className: `admonition ${type}`,
-                        };
+            const firstChild = node.children[0];
+            if (firstChild.type !== 'paragraph') return;
 
-                        textNode.value = content;
-                    }
-                }
-            }
+            const textNode = firstChild.children[0];
+            if (textNode.type !== 'text') return;
+
+            const match = textNode.value.match(/^\[!(\w+)\]\s*(.*)/);
+            if (!match) return;
+
+            const type = match[1].toLowerCase();
+            const content = match[2];
+
+            // Modify the first paragraph to remove the admonition syntax
+            textNode.value = content;
+
+            // Transform blockquote to div.admonition
+            if (!node.data) node.data = {};
+            node.data.hName = 'div'; // Removed the non-null assertion
+            node.data.hProperties = {
+                className: `admonition ${type}`,
+            };
         });
     };
 };
