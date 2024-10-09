@@ -46,8 +46,9 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.key === 'Enter' && open) {
+            if (event.ctrlKey && event.key === 'Enter' && open) {
                 event.preventDefault();
+                event.stopPropagation();
                 if (formRef.current) {
                     formRef.current.dispatchEvent(
                         new Event('submit', { cancelable: true, bubbles: true })
@@ -56,12 +57,18 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({
             }
         };
 
-        window.addEventListener('keydown', handleKeyDown);
+        if (open) {
+            window.addEventListener('keydown', handleKeyDown, {
+                capture: true,
+            });
+        }
 
         return () => {
-            window.removeEventListener('keydown', handleKeyDown);
+            window.removeEventListener('keydown', handleKeyDown, {
+                capture: true,
+            });
         };
-    }, [open]);
+    }, [open, onCancel]);
 
     if (!currentTitle) {
         return null;

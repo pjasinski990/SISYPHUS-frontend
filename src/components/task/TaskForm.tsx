@@ -52,7 +52,6 @@ interface TaskFormProps {
 export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
     ({ initialData, listName, onSubmit, onCancel, availableTasks }, ref) => {
         const {
-            register,
             control,
             handleSubmit,
             formState: { errors },
@@ -432,8 +431,7 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                                                         <CommandItem
                                                             key={taskId}
                                                             onSelect={() => {
-                                                                let newValue =
-                                                                    [];
+                                                                let newValue: any[];
                                                                 if (
                                                                     isSelected
                                                                 ) {
