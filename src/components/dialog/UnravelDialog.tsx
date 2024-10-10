@@ -109,6 +109,7 @@ export const UnravelDialog: React.FC<UnravelDialogProps> = ({
                     </label>
                     <Input
                         id="nTasks"
+                        name="nTasks"
                         type="number"
                         min={1}
                         max={12}
@@ -125,6 +126,7 @@ export const UnravelDialog: React.FC<UnravelDialogProps> = ({
                     </label>
                     <Input
                         id="additionalContext"
+                        name="additionalContext"
                         type="text"
                         value={additionalContext}
                         onChange={e => setAdditionalContext(e.target.value)}

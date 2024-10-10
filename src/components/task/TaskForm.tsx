@@ -232,11 +232,12 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                         control={control}
                         render={({ field }) => (
                             <Select
+                                {...field}
+                                name="category"
                                 onValueChange={field.onChange}
                                 value={field.value}
                             >
                                 <SelectTrigger
-                                    id="category"
                                     onKeyDown={preventActionWhenCtrlPressed}
                                 >
                                     <SelectValue placeholder="Select category">
@@ -268,11 +269,12 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                         control={control}
                         render={({ field }) => (
                             <Select
+                                {...field}
+                                name="size"
                                 onValueChange={field.onChange}
                                 value={field.value}
                             >
                                 <SelectTrigger
-                                    id="size"
                                     onKeyDown={preventActionWhenCtrlPressed}
                                 >
                                     <SelectValue placeholder="Select size">
@@ -291,82 +293,58 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                     />
                 </div>
 
-                {/* Start Time Field */}
-                <div>
-                    <label
-                        htmlFor="startTime"
-                        className="block text-sm font-medium text-gray-700"
-                    >
-                        Start Time
-                    </label>
-                    <Controller
-                        name="startTime"
-                        control={control}
-                        render={({ field }) => (
-                            <Input
-                                id="startTime"
-                                type="time"
-                                {...field}
-                                value={field.value ?? ''}
-                                placeholder="Start Time"
-                            />
-                        )}
-                    />
-                </div>
-
                 {/* Duration Field */}
                 <div>
-                    <label
-                        htmlFor="duration"
-                        className="block text-sm font-medium text-gray-700"
-                    >
-                        Duration
-                    </label>
-                    <div className="flex space-x-2">
-                        <Controller
-                            name="durationHours"
-                            control={control}
-                            render={({ field }) => (
-                                <Input
-                                    id="durationHours"
-                                    type="number"
-                                    min="0"
-                                    placeholder="Hours"
-                                    {...field}
-                                    value={field.value ?? undefined}
-                                    onChange={e => {
-                                        const value =
-                                            e.target.value === ''
-                                                ? null
-                                                : parseInt(e.target.value, 10);
-                                        field.onChange(value);
-                                    }}
-                                />
-                            )}
-                        />
-                        <Controller
-                            name="durationMinutes"
-                            control={control}
-                            render={({ field }) => (
-                                <Input
-                                    id="durationMinutes"
-                                    type="number"
-                                    min="0"
-                                    max="59"
-                                    placeholder="Minutes"
-                                    {...field}
-                                    value={field.value ?? undefined}
-                                    onChange={e => {
-                                        const value =
-                                            e.target.value === ''
-                                                ? null
-                                                : parseInt(e.target.value, 10);
-                                        field.onChange(value);
-                                    }}
-                                />
-                            )}
-                        />
-                    </div>
+                    <fieldset>
+                        <legend className="block text-sm font-medium text-gray-700">
+                            Duration
+                        </legend>
+                        <div className="flex space-x-2">
+                            <Controller
+                                name="durationHours"
+                                control={control}
+                                render={({ field }) => (
+                                    <Input
+                                        id="durationHours"
+                                        type="number"
+                                        min="0"
+                                        placeholder="Hours"
+                                        {...field}
+                                        value={field.value ?? undefined}
+                                        onChange={e => {
+                                            const value =
+                                                e.target.value === ''
+                                                    ? null
+                                                    : parseInt(e.target.value, 10);
+                                            field.onChange(value);
+                                        }}
+                                    />
+                                )}
+                            />
+                            <Controller
+                                name="durationMinutes"
+                                control={control}
+                                render={({ field }) => (
+                                    <Input
+                                        id="durationMinutes"
+                                        type="number"
+                                        min="0"
+                                        max="59"
+                                        placeholder="Minutes"
+                                        {...field}
+                                        value={field.value ?? undefined}
+                                        onChange={e => {
+                                            const value =
+                                                e.target.value === ''
+                                                    ? null
+                                                    : parseInt(e.target.value, 10);
+                                            field.onChange(value);
+                                        }}
+                                    />
+                                )}
+                            />
+                        </div>
+                    </fieldset>
                 </div>
 
                 {/* Deadline Field */}
@@ -382,9 +360,10 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                         control={control}
                         render={({ field }) => (
                             <Input
-                                id="deadline"
-                                type="datetime-local"
                                 {...field}
+                                id="deadline"
+                                name="deadline"
+                                type="datetime-local"
                                 value={field.value ?? ''}
                                 placeholder="Select deadline"
                             />
@@ -432,8 +411,8 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                                                 })
                                             ) : (
                                                 <span className="text-gray-500">
-                                                    Select dependencies
-                                                </span>
+                                        Select dependencies
+                                    </span>
                                             )}
                                         </button>
                                     </PopoverTrigger>
@@ -526,6 +505,8 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                             <div>
                                 <div className="flex items-center space-x-4">
                                     <Slider
+                                        id="flexibility-slider"
+                                        name="flexibility-slider"
                                         min={0}
                                         max={1}
                                         step={0.05}
@@ -537,6 +518,8 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                                     />
                                     <Input
                                         type="number"
+                                        id="flexibility"
+                                        name="flexibility"
                                         min="0"
                                         max="1"
                                         step="0.01"

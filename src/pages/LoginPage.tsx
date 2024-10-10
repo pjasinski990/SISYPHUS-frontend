@@ -74,18 +74,24 @@ const LoginPage: React.FC = () => {
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <Input
+                            id="username"
+                            name="username"
                             type="text"
                             placeholder="Username"
                             value={username}
                             onChange={e => setUsername(e.target.value)}
                             required
+                            aria-label="Username"
                         />
                         <Input
+                            id="password"
+                            name="password"
                             type="password"
                             placeholder="Password"
                             value={password}
                             onChange={e => setPassword(e.target.value)}
                             required
+                            aria-label="Password"
                         />
                         <Button type="submit" className="w-full">
                             {isLogin ? 'Login' : 'Register'}
