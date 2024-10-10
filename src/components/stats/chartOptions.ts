@@ -1,4 +1,4 @@
-import { TAILWIND_COLORS } from 'src/components/library/TailwindColors';
+import { TAILWIND_COLORS } from '../library/TailwindColors';
 
 export const getCommonChartOptions = (isDarkMode: boolean) => ({
     responsive: true,

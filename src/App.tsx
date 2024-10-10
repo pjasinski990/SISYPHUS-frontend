@@ -6,13 +6,14 @@ import {
     Routes,
     Navigate,
 } from 'react-router-dom';
-import { AuthProvider, useAuth } from 'src/components/context/AuthContext';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import ProfilePage from './pages/ProfilePage';
-import { ShortcutsProvider } from 'src/components/context/ShortcutsContext';
-import KeyboardShortcuts from 'src/components/keyboard/KeyboardShortcutHandler';
 import StatsPage from './pages/StatsPage';
+import { AuthProvider, useAuth } from './components/context/AuthContext';
+import { ShortcutsProvider } from './components/context/ShortcutsContext';
+import KeyboardShortcuts from './components/keyboard/KeyboardShortcutHandler';
+
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
     children,
 }) => {
