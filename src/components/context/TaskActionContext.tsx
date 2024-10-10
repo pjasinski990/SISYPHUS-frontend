@@ -20,9 +20,9 @@ interface TaskActionContextType {
     highlightedTaskId: string | null;
 }
 
-const TaskActionContext = createContext<TaskActionContextType | undefined>(
-    undefined
-);
+export const TaskActionContext = createContext<
+    TaskActionContextType | undefined
+>(undefined);
 
 export interface TaskActionProviderProps {
     children: React.ReactNode;
@@ -251,7 +251,7 @@ export const TaskActionProvider: React.FC<TaskActionProviderProps> = ({
                 setUnravellingTask(null);
             }
         },
-        [unravelingTask, taskListContexts]
+        [unravelingTask, taskListContexts, highlightedTaskId]
     );
 
     const handleUnravelTaskCancel = useCallback(() => {

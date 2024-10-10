@@ -14,6 +14,7 @@ import { Input } from 'src/components/ui/input';
 import { TaskLoadingPlaceholder } from 'src/components/library/LoadingPlaceholder';
 import { TaskActionProvider } from 'src/components/context/TaskActionContext';
 import { TaskFormData } from 'src/components/task/TaskForm';
+import { TaskListsProvider } from 'src/components/context/TaskListsContext';
 
 interface UnravelDialogProps {
     open: boolean;
@@ -84,10 +85,16 @@ export const UnravelDialog: React.FC<UnravelDialogProps> = ({
             }
         };
 
-        window.addEventListener('keydown', handleKeyDown);
+        if (open) {
+            window.addEventListener('keydown', handleKeyDown, {
+                capture: true,
+            });
+        }
 
         return () => {
-            window.removeEventListener('keydown', handleKeyDown);
+            window.removeEventListener('keydown', handleKeyDown, {
+                capture: true,
+            });
         };
     }, [handleSubmitProposedTasks, open, refreshPropositions]);
 
@@ -172,34 +179,47 @@ export const UnravelDialog: React.FC<UnravelDialogProps> = ({
                         'max-h-[600px] overflow-auto px-8 py-2 flex flex-col space-y-2'
                     }
                 >
-                    <TaskActionProvider
-                        onTaskFormSubmit={handleTaskFormSubmit}
-                        onConfirmRemoveTask={handleConfirmRemoveTask}
+                    <TaskListsProvider
+                        listNames={['INBOX']}
+                        initialTaskLists={[
+                            {
+                                name: 'INBOX',
+                                tasks: proposedTasks,
+                                displayOrder: 0,
+                            },
+                        ]}
                     >
-                        <TaskPropertiesProvider
-                            isDraggable={false}
-                            isFoldable={false}
+                        <TaskActionProvider
+                            onTaskFormSubmit={handleTaskFormSubmit}
+                            onConfirmRemoveTask={handleConfirmRemoveTask}
                         >
-                            {isLoading ? (
-                                <div className="flex justify-center items-center h-full">
-                                    <TaskLoadingPlaceholder nTasks={nTasks} />
-                                </div>
-                            ) : proposedTasks.length > 0 ? (
-                                proposedTasks.map(proposedTask => (
-                                    <div
-                                        key={proposedTask.id}
-                                        className="relative"
-                                    >
-                                        <TaskItem task={proposedTask} />
+                            <TaskPropertiesProvider
+                                isDraggable={false}
+                                isFoldable={false}
+                            >
+                                {isLoading ? (
+                                    <div className="flex justify-center items-center h-full">
+                                        <TaskLoadingPlaceholder
+                                            nTasks={nTasks}
+                                        />
                                     </div>
-                                ))
-                            ) : (
-                                <p className="text-gray-500">
-                                    No tasks generated.
-                                </p>
-                            )}
-                        </TaskPropertiesProvider>
-                    </TaskActionProvider>
+                                ) : proposedTasks.length > 0 ? (
+                                    proposedTasks.map(proposedTask => (
+                                        <div
+                                            key={proposedTask.id}
+                                            className="relative"
+                                        >
+                                            <TaskItem task={proposedTask} />
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p className="text-gray-500">
+                                        No tasks generated.
+                                    </p>
+                                )}
+                            </TaskPropertiesProvider>
+                        </TaskActionProvider>
+                    </TaskListsProvider>
                 </div>
                 <div className="flex justify-end gap-2 mt-4">
                     <Button

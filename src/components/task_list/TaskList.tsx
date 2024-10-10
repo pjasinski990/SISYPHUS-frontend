@@ -26,12 +26,8 @@ const TaskListComponent: React.FC<TaskListProps> = ({
     onCreateTask,
     isDroppable = true,
 }) => {
-    const {
-        registerList,
-        unregisterList,
-        highlightedTaskId,
-        highlightedListName,
-    } = useTaskNavigation();
+    const { registerList, unregisterList, highlightedTaskId } =
+        useTaskNavigation();
 
     useEffect(() => {
         const isPositionedAtLeft =

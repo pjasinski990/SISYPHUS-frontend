@@ -69,68 +69,18 @@ const StatsPage: React.FC = () => {
         [isDarkMode]
     );
 
-    const processStatsData = useCallback(
-        (stats: StatsResponse[]) => {
-            const categoryTotals: { [key: string]: number } = {};
-            const radarData: { [key: string]: { small: number; big: number } } =
-                {};
-            const weightByDate: {
-                [date: string]: { [category: string]: number };
-            } = {};
-            const sizeByDate: { [date: string]: { [size: string]: number } } =
-                {};
-
-            stats.forEach(stat => {
-                const category = stat.category;
-                const date = stat.date;
-                const weight = stat.size === TaskSize.BIG ? 3 : 1;
-                if (!categoryTotals[category]) {
-                    categoryTotals[category] = 0;
-                }
-                categoryTotals[category] += stat.count * weight;
-
-                if (!radarData[category]) {
-                    radarData[category] = { small: 0, big: 0 };
-                }
-                if (stat.size === TaskSize.BIG) {
-                    radarData[category].big += stat.count;
-                } else {
-                    radarData[category].small += stat.count;
-                }
-
-                if (!weightByDate[date]) {
-                    weightByDate[date] = {};
-                }
-                if (!weightByDate[date][category]) {
-                    weightByDate[date][category] = 0;
-                }
-                weightByDate[date][category] += stat.count * weight;
-
-                if (!sizeByDate[date]) {
-                    sizeByDate[date] = { Small: 0, Big: 0 };
-                }
-                const sizeLabel = stat.size === TaskSize.BIG ? 'Big' : 'Small';
-                sizeByDate[date][sizeLabel] += stat.count;
-            });
-
-            const pieData = preparePieChartData(categoryTotals);
-            setPieChartData(pieData);
-
-            const radarDataFormatted = prepareRadarChartData(radarData);
-            setRadarChartData(radarDataFormatted);
-
-            const barWeightData = prepareBarChartData(
-                weightByDate,
-                stats,
-                'category',
-                getCategoryColor
-            );
-            setBarWeightChartData(barWeightData);
-
-            const barSizeData = prepareBarChartData(sizeByDate, stats, 'size');
-            setBarSizeChartData(barSizeData);
-        },
-        [getCategoryColor, isDarkMode]
+    const getTaskSizeColors = useCallback(
+        (isDarkMode: boolean) => ({
+            smallTasksRadarBg: isDarkMode
+                ? hexToRgba(TAILWIND_COLORS['sky-700'], 0.3)
+                : hexToRgba(TAILWIND_COLORS['sky-500'], 0.3),
+            smallTasksRadarBorder: TAILWIND_COLORS['sky-500'],
+            bigTasksRadarBg: isDarkMode
+                ? hexToRgba(TAILWIND_COLORS['rose-700'], 0.3)
+                : hexToRgba(TAILWIND_COLORS['rose-500'], 0.3),
+            bigTasksRadarBorder: TAILWIND_COLORS['rose-500'],
+        }),
+        []
     );
 
     const preparePieChartData = useCallback(
@@ -198,7 +148,7 @@ const StatsPage: React.FC = () => {
                 ],
             };
         },
-        [isDarkMode]
+        [getTaskSizeColors, isDarkMode]
     );
 
     const prepareBarChartData = useCallback(
@@ -241,18 +191,73 @@ const StatsPage: React.FC = () => {
         []
     );
 
-    const getTaskSizeColors = useCallback(
-        (isDarkMode: boolean) => ({
-            smallTasksRadarBg: isDarkMode
-                ? hexToRgba(TAILWIND_COLORS['sky-700'], 0.3)
-                : hexToRgba(TAILWIND_COLORS['sky-500'], 0.3),
-            smallTasksRadarBorder: TAILWIND_COLORS['sky-500'],
-            bigTasksRadarBg: isDarkMode
-                ? hexToRgba(TAILWIND_COLORS['rose-700'], 0.3)
-                : hexToRgba(TAILWIND_COLORS['rose-500'], 0.3),
-            bigTasksRadarBorder: TAILWIND_COLORS['rose-500'],
-        }),
-        []
+    const processStatsData = useCallback(
+        (stats: StatsResponse[]) => {
+            const categoryTotals: { [key: string]: number } = {};
+            const radarData: { [key: string]: { small: number; big: number } } =
+                {};
+            const weightByDate: {
+                [date: string]: { [category: string]: number };
+            } = {};
+            const sizeByDate: { [date: string]: { [size: string]: number } } =
+                {};
+
+            stats.forEach(stat => {
+                const category = stat.category;
+                const date = stat.date;
+                const weight = stat.size === TaskSize.BIG ? 3 : 1;
+                if (!categoryTotals[category]) {
+                    categoryTotals[category] = 0;
+                }
+                categoryTotals[category] += stat.count * weight;
+
+                if (!radarData[category]) {
+                    radarData[category] = { small: 0, big: 0 };
+                }
+                if (stat.size === TaskSize.BIG) {
+                    radarData[category].big += stat.count;
+                } else {
+                    radarData[category].small += stat.count;
+                }
+
+                if (!weightByDate[date]) {
+                    weightByDate[date] = {};
+                }
+                if (!weightByDate[date][category]) {
+                    weightByDate[date][category] = 0;
+                }
+                weightByDate[date][category] += stat.count * weight;
+
+                if (!sizeByDate[date]) {
+                    sizeByDate[date] = { Small: 0, Big: 0 };
+                }
+                const sizeLabel = stat.size === TaskSize.BIG ? 'Big' : 'Small';
+                sizeByDate[date][sizeLabel] += stat.count;
+            });
+
+            const pieData = preparePieChartData(categoryTotals);
+            setPieChartData(pieData);
+
+            const radarDataFormatted = prepareRadarChartData(radarData);
+            setRadarChartData(radarDataFormatted);
+
+            const barWeightData = prepareBarChartData(
+                weightByDate,
+                stats,
+                'category',
+                getCategoryColor
+            );
+            setBarWeightChartData(barWeightData);
+
+            const barSizeData = prepareBarChartData(sizeByDate, stats, 'size');
+            setBarSizeChartData(barSizeData);
+        },
+        [
+            getCategoryColor,
+            prepareBarChartData,
+            preparePieChartData,
+            prepareRadarChartData,
+        ]
     );
 
     const pieOptions: ChartOptions<'pie'> = {
@@ -336,7 +341,7 @@ const StatsPage: React.FC = () => {
             }
         };
 
-        fetchAndProcessStats();
+        fetchAndProcessStats().catch(err => console.log(err));
     }, [processStatsData]);
 
     return (

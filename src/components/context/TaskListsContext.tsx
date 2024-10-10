@@ -36,6 +36,7 @@ export interface TaskComparator {
 interface TaskListsProviderProps {
     children: React.ReactNode;
     listNames: string[];
+    initialTaskLists?: TaskList[]; // Added optional prop
 }
 
 const TaskListsContext = createContext<TaskListsProviderType | undefined>(
@@ -70,8 +71,11 @@ const getSortedAndFiltered = (
 export const TaskListsProvider: React.FC<TaskListsProviderProps> = ({
     children,
     listNames,
+    initialTaskLists,
 }) => {
-    const [taskLists, setTaskLists] = useState<TaskList[]>([]);
+    const [taskLists, setTaskLists] = useState<TaskList[]>(
+        initialTaskLists || []
+    );
     const [filters, setFilters] = useState<Record<string, TaskFilter>>({});
     const [comparators, setComparators] = useState<
         Record<string, TaskComparator>
@@ -80,6 +84,8 @@ export const TaskListsProvider: React.FC<TaskListsProviderProps> = ({
     const orderedListNames = useMemo(() => listNames, [listNames]);
 
     useEffect(() => {
+        if (initialTaskLists) return; // Skip fetching if custom tasks are provided
+
         const fetchTasksForList = async (listName: string) => {
             try {
                 const taskList = await taskService.getTasksList(listName);
@@ -97,7 +103,7 @@ export const TaskListsProvider: React.FC<TaskListsProviderProps> = ({
                 fetchTasksForList(listName);
             }
         });
-    }, [listNames, taskLists]);
+    }, [listNames, taskLists, initialTaskLists]);
 
     const setTaskList = useCallback((newList: TaskList) => {
         setTaskLists(prevLists => {
