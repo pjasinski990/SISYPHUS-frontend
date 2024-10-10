@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Task, TaskSize } from '../../service/taskService';
 import { Button } from 'src/components/ui/button';
 import { Edit, Square, Trash } from 'lucide-react';
@@ -84,6 +84,7 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
         x: 0,
         y: 0,
     });
+    const transitionNodeRef = useRef(null);
 
     const handleEditTask = useCallback(
         (task: Task) => {
@@ -225,12 +226,13 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                     </div>
                 </div>
                 <CSSTransition
+                    nodeRef={transitionNodeRef}
                     in={showDetails}
                     timeout={300}
                     classNames="task-details"
                     unmountOnExit
                 >
-                    <>
+                    <div ref={transitionNodeRef}>
                         <TaskDescription task={task} />
                         <div className="text-sm p-2 flex flex-col items-end">
                             {task.startTime && (
@@ -243,7 +245,7 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                                 </span>
                             )}
                         </div>
-                    </>
+                    </div>
                 </CSSTransition>
                 <ContextMenu
                     show={!isVanity && showContextMenu}

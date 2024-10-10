@@ -1,7 +1,7 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 import {
     Dialog,
-    DialogContent,
+    DialogContent, DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
@@ -75,7 +75,10 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
 
     return (
         <Dialog open={open} onOpenChange={isOpen => !isOpen && onCancel()}>
-            <DialogContent aria-describedby={'confirmation'}>
+            <DialogDescription className={'hidden'}>
+                Confirmation
+            </DialogDescription>
+            <DialogContent>
                 <DialogHeader>
                     <DialogTitle>{title}</DialogTitle>
                 </DialogHeader>

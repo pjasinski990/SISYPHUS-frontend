@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
     Dialog,
-    DialogContent,
+    DialogContent, DialogDescription,
     DialogHeader,
     DialogTitle,
 } from 'src/components/ui/dialog';
@@ -60,9 +60,11 @@ export const TaskDetailsDialog: React.FC<TaskDetailsDialogProps> = ({
     const { categoryBgColorClass } = categoryStyles[currentTask!.category];
     return (
         <Dialog open={open} onOpenChange={isOpen => !isOpen && onClose()}>
+            <DialogDescription className={'hidden'}>
+                Task details dialog
+            </DialogDescription>
             <DialogContent
                 className={`min-w-[400px] ${categoryBgColorClass}`}
-                aria-describedby="task-details-dialog"
             >
                 <DialogHeader>
                     <DialogTitle className="text-2xl font-semibold mb-4">

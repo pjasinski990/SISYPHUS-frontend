@@ -4,7 +4,7 @@ import { Keyboard } from 'lucide-react';
 import {
     Dialog,
     DialogClose,
-    DialogContent,
+    DialogContent, DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
@@ -49,9 +49,11 @@ const ShortcutsInfoDialog: React.FC = () => {
                     <span>Shortcuts</span>
                 </Button>
             </DialogTrigger>
+            <DialogDescription className={'hidden'}>
+                List of shortcuts
+            </DialogDescription>
             <DialogContent
                 className="max-w-xl"
-                aria-describedby={'list of shortcuts'}
             >
                 <DialogHeader>
                     <DialogTitle>Keyboard Shortcuts</DialogTitle>

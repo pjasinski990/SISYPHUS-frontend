@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
     Dialog,
-    DialogContent,
+    DialogContent, DialogDescription,
     DialogHeader,
     DialogTitle,
 } from 'src/components/ui/dialog';
@@ -75,9 +75,11 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({
     }
     return (
         <Dialog open={open} onOpenChange={isOpen => !isOpen && onCancel()}>
+            <DialogDescription className={'hidden'}>
+                Task edit or create dialog
+            </DialogDescription>
             <DialogContent
                 className={'min-w-[800px]'}
-                aria-describedby={'task dialog'}
             >
                 <DialogHeader>
                     <DialogTitle>{currentTitle}</DialogTitle>

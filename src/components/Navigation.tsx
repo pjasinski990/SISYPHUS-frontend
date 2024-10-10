@@ -25,7 +25,9 @@ const Navigation: React.FC<NavigationProps> = ({
     return (
         <nav className="flex justify-between items-center px-4 py-2 bg-white dark:bg-gray-800 shadow">
             <RouterLink to="/" className="text-xl font-bold">
-                🤯 mind=blown 🤯
+                <div className={'flex items-center'}>
+                    <span>🤯 mind=blown 🤯</span>
+                </div>
             </RouterLink>
             <div className="flex items-center space-x-4">
                 <ShortcutsInfoDialog />

@@ -36,7 +36,7 @@ export interface TaskComparator {
 interface TaskListsProviderProps {
     children: React.ReactNode;
     listNames: string[];
-    initialTaskLists?: TaskList[]; // Added optional prop
+    initialTaskLists?: TaskList[];
 }
 
 const TaskListsContext = createContext<TaskListsProviderType | undefined>(
@@ -84,7 +84,7 @@ export const TaskListsProvider: React.FC<TaskListsProviderProps> = ({
     const orderedListNames = useMemo(() => listNames, [listNames]);
 
     useEffect(() => {
-        if (initialTaskLists) return; // Skip fetching if custom tasks are provided
+        if (initialTaskLists) return;
 
         const fetchTasksForList = async (listName: string) => {
             try {
