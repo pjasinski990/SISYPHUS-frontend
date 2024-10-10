@@ -23,7 +23,7 @@ export const Inbox: React.FC = () => {
     const addTaskShortcut: Shortcut = useMemo(
         () => ({
             id: 'add-task-inbox',
-            keys: ['A'],
+            keys: ['a'],
             action: () => openCreateTaskDialog('INBOX'),
             description: 'Add a new task to inbox',
             order: 1,

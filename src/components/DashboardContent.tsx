@@ -38,7 +38,7 @@ export const DashboardContent: React.FC = () => {
     const toggleTaskPickerShortcut: Shortcut = useMemo(
         () => ({
             id: 'toggle-reusable-tasks-picker',
-            keys: ['Q'],
+            keys: ['q'],
             action: toggleLeftMenu,
             description: 'Toggle reusable tasks picker',
             order: 2,

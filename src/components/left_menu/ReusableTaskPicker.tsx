@@ -34,7 +34,7 @@ export const ReusableTaskPicker: React.FC = () => {
     const addTaskShortcut: Shortcut = useMemo(
         () => ({
             id: 'add-task-reusable',
-            keys: ['A'],
+            keys: ['a'],
             action: () => openCreateTaskDialog('REUSABLE'),
             description: 'Add a new task to reusable tasks',
             order: 1,

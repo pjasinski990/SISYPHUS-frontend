@@ -61,7 +61,7 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
     const {
         categoryBgColorClass,
         categoryBgHoverColorClass,
-        categoryBorderColorClass,
+        categoryButtonHoverColorClass,
         categoryHighlightClass,
         iconClass,
     } = categoryStyles[task.category];
@@ -154,7 +154,7 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
         <>
             <div
                 onContextMenu={handleContextMenu}
-                className={`task-item-content relative flex-grow w-full p-0.5 rounded shadow-md text-gray-950 dark:text-gray-100 ${categoryBgColorClass} ${categoryBorderColorClass} ${highlightedClass} cursor-pointer transition-all duration-75`}
+                className={`task-item-content relative flex-grow w-full p-0.5 rounded shadow-md text-gray-950 dark:text-gray-100 ${categoryBgColorClass} ${highlightedClass} ${categoryBgHoverColorClass} cursor-pointer transition-all duration-75`}
             >
                 <div className="flex justify-between items-start">
                     <div className="flex-1 flex pt-2">
@@ -185,7 +185,7 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                                 e.stopPropagation();
                                 handleEditTask(task);
                             }}
-                            className={`${categoryBgHoverColorClass} task-item-button`}
+                            className={`${categoryButtonHoverColorClass} task-item-button`}
                             aria-label="Edit Task"
                             title="Edit Task"
                         >
@@ -198,7 +198,7 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                                 e.stopPropagation();
                                 handleRemoveTask(task);
                             }}
-                            className={`${categoryBgHoverColorClass} task-item-button`}
+                            className={`${categoryButtonHoverColorClass} task-item-button`}
                             aria-label="Remove Task"
                             title="Remove Task"
                         >

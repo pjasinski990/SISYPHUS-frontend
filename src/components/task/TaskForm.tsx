@@ -25,6 +25,7 @@ import {
 } from 'src/components/ui/command';
 import { Badge } from 'src/components/ui/badge';
 import { Task, TaskCategory, TaskSize } from '../../service/taskService';
+import { extractHoursFromIsoTime, extractMinutesFromIsoTime } from '../../lib/utils';
 
 export interface TaskFormData {
     title: string;
@@ -37,8 +38,8 @@ export interface TaskFormData {
     deadline: string | null;
     dependencies: string[] | null;
     flexibility: number | null;
-    durationHours?: number;
-    durationMinutes?: number;
+    durationHours: number | null;
+    durationMinutes: number | null;
 }
 
 interface TaskFormProps {
@@ -58,33 +59,37 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
         } = useForm<TaskFormData>({
             defaultValues: initialData
                 ? {
-                      title: initialData.title,
-                      description: initialData.description,
-                      category: initialData.category,
-                      size: initialData.size,
-                      listName: initialData.listName,
-                      duration: initialData.duration,
-                      startTime: initialData.startTime,
-                      deadline: initialData.deadline,
-                      dependencies: initialData.dependencies || [],
-                      flexibility: initialData.flexibility ?? 0.1,
-                  }
+                    title: initialData.title,
+                    description: initialData.description,
+                    category: initialData.category,
+                    size: initialData.size,
+                    listName: initialData.listName,
+                    duration: initialData.duration,
+                    durationHours: extractHoursFromIsoTime(initialData.duration),
+                    durationMinutes: extractMinutesFromIsoTime(initialData.duration),
+                    startTime: initialData.startTime,
+                    deadline: initialData.deadline,
+                    dependencies: initialData.dependencies || [],
+                    flexibility: initialData.flexibility ?? 0.1,
+                }
                 : {
-                      title: '',
-                      description: '',
-                      category: TaskCategory.WHITE,
-                      size: TaskSize.SMALL,
-                      duration: null,
-                      startTime: '',
-                      deadline: null,
-                      dependencies: [],
-                      flexibility: 0.1,
-                  },
+                    title: '',
+                    description: '',
+                    category: TaskCategory.WHITE,
+                    size: TaskSize.SMALL,
+                    duration: null,
+                    startTime: '',
+                    deadline: null,
+                    dependencies: [],
+                    flexibility: 0.1,
+                    durationHours: null,
+                    durationMinutes: null,
+                },
         });
 
-        const [selectedDependencies, setSelectedDependencies] = useState<
-            string[]
-        >(initialData?.dependencies || []);
+        const [selectedDependencies, setSelectedDependencies] = useState<string[]>(
+            initialData?.dependencies || []
+        );
 
         useEffect(() => {
             if (initialData?.dependencies) {
@@ -121,8 +126,7 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                 data.duration = null;
             }
 
-            const { durationHours, durationMinutes, ...rest } = data;
-            onSubmit(rest);
+            onSubmit(data);
         };
 
         const handleKeyDown = (event: React.KeyboardEvent) => {
@@ -322,6 +326,11 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                                     min="0"
                                     placeholder="Hours"
                                     {...field}
+                                    value={field.value ?? undefined}
+                                    onChange={(e) => {
+                                        const value = e.target.value === '' ? null : parseInt(e.target.value, 10);
+                                        field.onChange(value);
+                                    }}
                                 />
                             )}
                         />
@@ -336,6 +345,11 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                                     max="59"
                                     placeholder="Minutes"
                                     {...field}
+                                    value={field.value ?? undefined}
+                                    onChange={(e) => {
+                                        const value = e.target.value === '' ? null : parseInt(e.target.value, 10);
+                                        field.onChange(value);
+                                    }}
                                 />
                             )}
                         />
@@ -365,6 +379,7 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                     />
                 </div>
 
+                {/* Dependencies Field */}
                 <div>
                     <label
                         htmlFor="dependencies"
@@ -431,7 +446,7 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                                                         <CommandItem
                                                             key={taskId}
                                                             onSelect={() => {
-                                                                let newValue: any[];
+                                                                let newValue: string[];
                                                                 if (
                                                                     isSelected
                                                                 ) {

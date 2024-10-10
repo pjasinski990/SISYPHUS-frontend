@@ -3,7 +3,11 @@ import react from '@vitejs/plugin-react';
 import path from 'node:path';
 
 export default defineConfig({
-    plugins: [react()],
+    plugins: [
+        react({
+            fastRefresh: true,
+        }),
+    ],
     server: {
         port: 3000,
     },

@@ -3,10 +3,12 @@ import { TaskCategory } from '../../service/taskService';
 export interface CategoryShades {
     lightBg: string;
     darkBg: string;
-    lightHoverBg: string;
-    darkHoverBg: string;
+    lightBgHover: string;
+    darkBgHover: string;
     lightBorderHover: string;
     darkBorderHover: string;
+    lightButtonHover: string;
+    darkButtonHover: string;
     lightIcon: string;
     darkIcon: string;
     lightMarkers: string;
@@ -17,8 +19,10 @@ export const categoryShades: Record<TaskCategory, CategoryShades> = {
     [TaskCategory.GREEN]: {
         lightBg: 'green-100',
         darkBg: 'green-800',
-        lightHoverBg: 'green-200',
-        darkHoverBg: 'green-900',
+        lightBgHover: 'green-200',
+        darkBgHover: 'green-700',
+        lightButtonHover: 'green-300',
+        darkButtonHover: 'green-800',
         lightBorderHover: 'green-300',
         darkBorderHover: 'green-400',
         lightIcon: 'green-500',
@@ -29,8 +33,10 @@ export const categoryShades: Record<TaskCategory, CategoryShades> = {
     [TaskCategory.BLUE]: {
         lightBg: 'blue-100',
         darkBg: 'blue-800',
-        lightHoverBg: 'blue-200',
-        darkHoverBg: 'blue-900',
+        lightBgHover: 'blue-200',
+        darkBgHover: 'blue-700',
+        lightButtonHover: 'blue-300',
+        darkButtonHover: 'blue-800',
         lightBorderHover: 'blue-300',
         darkBorderHover: 'blue-400',
         lightIcon: 'blue-500',
@@ -41,8 +47,10 @@ export const categoryShades: Record<TaskCategory, CategoryShades> = {
     [TaskCategory.RED]: {
         lightBg: 'red-100',
         darkBg: 'red-800',
-        lightHoverBg: 'red-200',
-        darkHoverBg: 'red-900',
+        lightBgHover: 'red-200',
+        darkBgHover: 'red-700',
+        lightButtonHover: 'red-300',
+        darkButtonHover: 'red-800',
         lightBorderHover: 'red-300',
         darkBorderHover: 'red-400',
         lightIcon: 'red-500',
@@ -53,8 +61,10 @@ export const categoryShades: Record<TaskCategory, CategoryShades> = {
     [TaskCategory.YELLOW]: {
         lightBg: 'yellow-100',
         darkBg: 'yellow-700',
-        lightHoverBg: 'yellow-200',
-        darkHoverBg: 'yellow-800',
+        lightBgHover: 'yellow-200',
+        darkBgHover: 'yellow-700',
+        lightButtonHover: 'yellow-300',
+        darkButtonHover: 'green-800',
         lightBorderHover: 'yellow-300',
         darkBorderHover: 'yellow-400',
         lightIcon: 'yellow-500',
@@ -65,8 +75,10 @@ export const categoryShades: Record<TaskCategory, CategoryShades> = {
     [TaskCategory.WHITE]: {
         lightBg: 'gray-100',
         darkBg: 'gray-600',
-        lightHoverBg: 'gray-200',
-        darkHoverBg: 'gray-700',
+        lightBgHover: 'gray-200',
+        darkBgHover: 'gray-500',
+        lightButtonHover: 'gray-300',
+        darkButtonHover: 'gray-600',
         lightBorderHover: 'gray-300',
         darkBorderHover: 'gray-400',
         lightIcon: 'gray-300',
@@ -77,8 +89,10 @@ export const categoryShades: Record<TaskCategory, CategoryShades> = {
     [TaskCategory.PINK]: {
         lightBg: 'pink-100',
         darkBg: 'pink-800',
-        lightHoverBg: 'pink-200',
-        darkHoverBg: 'pink-900',
+        lightBgHover: 'pink-200',
+        darkBgHover: 'pink-700',
+        lightButtonHover: 'pink-300',
+        darkButtonHover: 'pink-800',
         lightBorderHover: 'pink-300',
         darkBorderHover: 'pink-400',
         lightIcon: 'pink-500',
@@ -93,7 +107,7 @@ interface CategoryStyleClasses {
     categoryMarkerColorClass: string;
     categoryBgColorClass: string;
     categoryBgHoverColorClass: string;
-    categoryBorderColorClass: string;
+    categoryButtonHoverColorClass: string;
     iconClass: string;
 }
 
@@ -103,8 +117,8 @@ const generateCategoryStyles = (
     categoryHighlightClass: `border-4 border-${shades.lightBorderHover} dark:border-${shades.darkBorderHover}`,
     categoryMarkerColorClass: `marker:text-${shades.lightMarkers} dark:marker:text-${shades.darkMarkers}`,
     categoryBgColorClass: `bg-${shades.lightBg} dark:bg-${shades.darkBg}`,
-    categoryBgHoverColorClass: `hover:bg-${shades.lightHoverBg} dark:hover:bg-${shades.darkHoverBg}`,
-    categoryBorderColorClass: `hover:border-4 hover:border-${shades.lightBorderHover} dark:hover:border-${shades.darkBorderHover}`,
+    categoryBgHoverColorClass: `hover:bg-${shades.lightBgHover} dark:hover:bg-${shades.darkBgHover}`,
+    categoryButtonHoverColorClass: `hover:bg-${shades.lightButtonHover} dark:hover:bg-${shades.darkButtonHover}`,
     iconClass: `stroke-${shades.lightIcon} dark:stroke-${shades.darkIcon} fill-${shades.lightIcon} dark:fill-${shades.darkIcon}`,
 });
 
