@@ -60,13 +60,13 @@ export function prettyDurationFromIsoTime(duration: string): string {
 }
 
 export function extractHoursFromIsoTime(time: string | null): number | null {
-    if (time === null) return null
+    if (time === null) return null;
     const hoursMatch = time.match(/(\d+)H/);
     return hoursMatch ? parseInt(hoursMatch[1], 10) : 0;
 }
 
 export function extractMinutesFromIsoTime(time: string | null): number | null {
-    if (time === null) return null
+    if (time === null) return null;
     const minutesMatch = time.match(/(\d+)M/);
     return minutesMatch ? parseInt(minutesMatch[1], 10) : 0;
 }

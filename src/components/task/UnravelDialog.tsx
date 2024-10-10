@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     Dialog,
-    DialogContent, DialogDescription,
+    DialogContent,
+    DialogDescription,
     DialogHeader,
     DialogTitle,
 } from 'src/components/ui/dialog';
@@ -123,13 +124,9 @@ export const UnravelDialog: React.FC<UnravelDialogProps> = ({
 
     return (
         <Dialog open={open} onOpenChange={isOpen => !isOpen && onCancel()}>
-            <DialogContent
-                className={'min-w-[600px]'}
-            >
+            <DialogContent className={'min-w-[600px]'}>
                 <DialogHeader>
-                    <DialogTitle>
-                        Unravel Task: {currentTask.title}
-                    </DialogTitle>
+                    <DialogTitle>Unravel Task: {currentTask.title}</DialogTitle>
                 </DialogHeader>
                 <DialogDescription className={'hidden'}>
                     Unravel Task: {currentTask.title}

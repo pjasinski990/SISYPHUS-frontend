@@ -1,7 +1,8 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 import {
     Dialog,
-    DialogContent, DialogDescription,
+    DialogContent,
+    DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,

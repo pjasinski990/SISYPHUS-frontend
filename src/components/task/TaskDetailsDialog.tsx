@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import {
     Dialog,
-    DialogContent, DialogDescription,
+    DialogContent,
+    DialogDescription,
     DialogHeader,
     DialogTitle,
 } from 'src/components/ui/dialog';
@@ -63,9 +64,7 @@ export const TaskDetailsDialog: React.FC<TaskDetailsDialogProps> = ({
             <DialogDescription className={'hidden'}>
                 Task details dialog
             </DialogDescription>
-            <DialogContent
-                className={`min-w-[400px] ${categoryBgColorClass}`}
-            >
+            <DialogContent className={`min-w-[400px] ${categoryBgColorClass}`}>
                 <DialogHeader>
                     <DialogTitle className="text-2xl font-semibold mb-4">
                         {currentTask!.title}

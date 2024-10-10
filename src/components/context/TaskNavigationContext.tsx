@@ -23,7 +23,13 @@ interface TaskNavigationContextType {
     clearHighlight: () => void;
     moveHighlight: (direction: 'left' | 'down' | 'up' | 'right') => void;
     performAction: (
-        action: 'edit' | 'delete' | 'move-next' | 'move-prev' | 'show-details' | 'show-unravel'
+        action:
+            | 'edit'
+            | 'delete'
+            | 'move-next'
+            | 'move-prev'
+            | 'show-details'
+            | 'show-unravel'
     ) => void;
     highlightedTask: Task | null;
     registerList: (listName: string, atFront: boolean) => void;
@@ -222,7 +228,7 @@ export const TaskNavigationProvider: React.FC<{
                     break;
                 case 'show-unravel':
                     taskActionContext.openUnravelTaskDialog(task);
-                    break
+                    break;
                 case 'move-next': {
                     const currentTaskList: TaskList | null =
                         taskListProviders[highlightedListName]?.taskList ||

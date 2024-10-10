@@ -54,7 +54,7 @@ export const EmojiInput = forwardRef<HTMLInputElement, EmojiInputProps>(
                         {filteredEmojis.map((emoji, index) => (
                             <li
                                 key={emoji.id}
-                                ref={(el) => (listItemRefs.current[index] = el)}
+                                ref={el => (listItemRefs.current[index] = el)}
                                 className={`p-2 cursor-pointer ease-in-out ${
                                     index === selectedIndex
                                         ? 'bg-slate-200 dark:bg-slate-950'
