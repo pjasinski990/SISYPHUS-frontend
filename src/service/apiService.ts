@@ -4,7 +4,7 @@ import { AuthService } from './authService';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 class ApiService {
-    private api: AxiosInstance;
+    private readonly api: AxiosInstance;
 
     constructor(baseURL: string) {
         this.api = axios.create({
@@ -86,7 +86,7 @@ class ApiService {
 
     public async authenticatedPost<T>(
         endpoint: string,
-        data: any,
+        data: object,
         config: AxiosRequestConfig = {}
     ): Promise<T> {
         try {
@@ -103,7 +103,7 @@ class ApiService {
 
     public async authenticatedPut<T>(
         endpoint: string,
-        data: any,
+        data: object,
         config: AxiosRequestConfig = {}
     ): Promise<T> {
         try {
@@ -143,7 +143,7 @@ class ApiService {
 
     public async post<T>(
         endpoint: string,
-        data: any,
+        data: object,
         config: AxiosRequestConfig = {}
     ): Promise<T> {
         const response: AxiosResponse<T> = await this.api.post(
@@ -155,4 +155,4 @@ class ApiService {
     }
 }
 
-export const apiService = new ApiService(API_BASE_URL!!);
+export const apiService = new ApiService(API_BASE_URL);

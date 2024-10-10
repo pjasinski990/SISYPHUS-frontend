@@ -1,13 +1,13 @@
 import React, { createContext, useCallback, useContext, useState } from 'react';
 import { Task, taskService } from '../../service/taskService';
-import { TaskDialog } from '../task/TaskDialog';
-import { ConfirmDialog } from '../library/ConfirmDialog';
+import { TaskDialog } from '../dialog/TaskDialog';
+import { ConfirmDialog } from '../dialog/ConfirmDialog';
 import { useAllTaskLists } from './TaskListsContext';
 import { TaskFormData } from 'src/components/task/TaskForm';
 import { TaskItem } from 'src/components/task/TaskItem';
-import { TaskDetailsDialog } from 'src/components/task/TaskDetailsDialog';
+import { TaskDetailsDialog } from 'src/components/dialog/TaskDetailsDialog';
 import { useAuth } from 'src/components/context/AuthContext';
-import { UnravelDialog } from 'src/components/task/UnravelDialog';
+import { UnravelDialog } from 'src/components/dialog/UnravelDialog';
 
 interface TaskActionContextType {
     openCreateTaskDialog: (listName: string) => void;
