@@ -218,6 +218,17 @@ const TaskNavigationHandler: React.FC = () => {
         [performAction]
     );
 
+    const openUnravelDialogShortcut: Shortcut = useMemo(
+        () => ({
+            id: 'open-unravel-dialog',
+            keys: ['u'],
+            action: () => performAction('show-unravel'),
+            description: 'Open unravel dialog for the highlighted task',
+            order: 3,
+        }),
+        [performAction]
+    );
+
     useRegisterShortcut(moveLeftShortcut);
     useRegisterShortcut(moveDownShortcut);
     useRegisterShortcut(moveUpShortcut);
@@ -228,6 +239,7 @@ const TaskNavigationHandler: React.FC = () => {
     useRegisterShortcut(taskDetailsShortcut);
     useRegisterShortcut(moveTaskRightShortcut);
     useRegisterShortcut(moveTaskLeftShortcut);
+    useRegisterShortcut(openUnravelDialogShortcut);
 
     return null;
 };
