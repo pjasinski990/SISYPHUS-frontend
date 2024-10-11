@@ -6,8 +6,9 @@ import React, {
     useMemo,
     useState,
 } from 'react';
-import { Task, taskService } from '../../service/taskService';
+import { Task } from '../../service/taskService';
 import { TaskList } from 'src/lib/taskList';
+import { PersistenceProvider } from '../../persistence_provider/PersistenceProvider';
 
 interface TaskListsProviderType {
     taskLists: TaskList[];
@@ -36,6 +37,7 @@ export interface TaskComparator {
 interface TaskListsProviderProps {
     children: React.ReactNode;
     listNames: string[];
+    persistenceProvider: PersistenceProvider;
     initialTaskLists?: TaskList[];
 }
 
@@ -71,11 +73,9 @@ const getSortedAndFiltered = (
 export const TaskListsProvider: React.FC<TaskListsProviderProps> = ({
     children,
     listNames,
-    initialTaskLists,
+    persistenceProvider,
 }) => {
-    const [taskLists, setTaskLists] = useState<TaskList[]>(
-        initialTaskLists || []
-    );
+    const [taskLists, setTaskLists] = useState<TaskList[]>([]);
     const [filters, setFilters] = useState<Record<string, TaskFilter>>({});
     const [comparators, setComparators] = useState<
         Record<string, TaskComparator>
@@ -84,12 +84,28 @@ export const TaskListsProvider: React.FC<TaskListsProviderProps> = ({
     const orderedListNames = useMemo(() => listNames, [listNames]);
 
     useEffect(() => {
-        if (initialTaskLists) return;
-
         const fetchTasksForList = async (listName: string) => {
             try {
-                const taskList = await taskService.getTasksList(listName);
-                setTaskLists(prev => [...prev, taskList]);
+                const taskList: TaskList | null =
+                    await persistenceProvider.fetchTaskList(listName);
+                if (!taskList) {
+                    console.log(
+                        `Error fetching list: ${listName} - returns ${taskList}`
+                    );
+                    return;
+                }
+                setTaskLists(prev => {
+                    const index = prev.findIndex(
+                        list => list.name === listName
+                    );
+                    if (index !== -1) {
+                        const newLists = [...prev];
+                        newLists[index] = taskList;
+                        return newLists;
+                    } else {
+                        return [...prev, taskList];
+                    }
+                });
             } catch (error) {
                 console.error(
                     `Error fetching tasks for list "${listName}":`,
@@ -99,11 +115,9 @@ export const TaskListsProvider: React.FC<TaskListsProviderProps> = ({
         };
 
         listNames.forEach(listName => {
-            if (!taskLists.find(list => list.name === listName)) {
-                fetchTasksForList(listName);
-            }
+            fetchTasksForList(listName);
         });
-    }, [listNames, taskLists, initialTaskLists]);
+    }, [listNames, persistenceProvider]);
 
     const setTaskList = useCallback((newList: TaskList) => {
         setTaskLists(prevLists => {
@@ -184,14 +198,7 @@ const useTaskListsInternal = (
     const targetListNames = listNames === null ? orderedListNames : listNames;
 
     return useMemo(() => {
-        const result: Record<
-            string,
-            {
-                taskList: TaskList;
-                setTaskList: (list: TaskList) => void;
-                setTasks: (tasks: Task[]) => void;
-            }
-        > = {};
+        const result: Record<string, TaskListProviderType> = {};
 
         targetListNames.forEach(listName => {
             const taskList = findOrEmpty(taskLists, listName);

@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { Card, CardContent } from 'src/components/ui/card';
 import { Shortcut } from 'src/components/context/ShortcutsContext';
-import { useRegisterShortcut } from 'src/components/context/RegisterShortcutContext';
+import { useRegisterShortcut } from 'src/components/hooks/useRegisterShortcut';
 import { TaskList } from 'src/components/task_list/TaskList';
 import { TaskExtensionProvider } from 'src/components/context/TaskExtensionContext';
 import { ArrowRight } from 'lucide-react';

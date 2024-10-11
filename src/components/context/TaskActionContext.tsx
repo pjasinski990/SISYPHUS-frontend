@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useContext, useState } from 'react';
-import { Task, taskService } from '../../service/taskService';
+import { Task } from '../../service/taskService';
 import { TaskDialog } from '../dialog/TaskDialog';
 import { ConfirmDialog } from '../dialog/ConfirmDialog';
 import { useAllTaskLists } from './TaskListsContext';
@@ -8,6 +8,7 @@ import { TaskItem } from 'src/components/task/TaskItem';
 import { TaskDetailsDialog } from 'src/components/dialog/TaskDetailsDialog';
 import { useAuth } from 'src/components/context/AuthContext';
 import { UnravelDialog } from 'src/components/dialog/UnravelDialog';
+import { PersistenceProvider } from '../../persistence_provider/PersistenceProvider';
 
 interface TaskActionContextType {
     openCreateTaskDialog: (listName: string) => void;
@@ -26,18 +27,12 @@ export const TaskActionContext = createContext<
 
 export interface TaskActionProviderProps {
     children: React.ReactNode;
-    onTaskFormSubmit?: (
-        taskData: TaskFormData,
-        editingTask: Task | null,
-        creatingTaskForList: string | null
-    ) => void;
-    onConfirmRemoveTask?: (task: Task) => void;
+    persistenceProvider: PersistenceProvider;
 }
 
 export const TaskActionProvider: React.FC<TaskActionProviderProps> = ({
     children,
-    onTaskFormSubmit,
-    onConfirmRemoveTask,
+    persistenceProvider,
 }) => {
     const { username } = useAuth();
     const [showingDetailsTask, setShowingDetailsTask] = useState<Task | null>(
@@ -79,6 +74,43 @@ export const TaskActionProvider: React.FC<TaskActionProviderProps> = ({
         setShowingDetailsTask(null);
     }, []);
 
+    const editTask = useCallback(
+        async (taskData: TaskFormData) => {
+            console.log(`editing task ${JSON.stringify(editingTask)}`);
+
+            if (!editingTask) {
+                console.log('return due to no task');
+                return;
+            }
+            try {
+                const updatedTask: Task = { ...editingTask, ...taskData };
+                console.log('calling persistence');
+                await persistenceProvider.updateTask(updatedTask);
+
+                const listName = updatedTask.listName;
+                const list = taskListContexts[listName].taskList;
+                const setTasks = taskListContexts[listName].setTasks;
+                if (list) {
+                    const tasks = list.tasks;
+                    const taskIndex = tasks.findIndex(
+                        task => task.id === updatedTask.id
+                    );
+                    if (taskIndex !== -1) {
+                        const updatedTasks = [...tasks];
+                        updatedTasks[taskIndex] = updatedTask;
+                        setTasks(updatedTasks);
+                    }
+                }
+                setHighlightedTaskId(updatedTask.id);
+            } catch (error) {
+                console.error('Failed to update task', error);
+            } finally {
+                setEditingTask(null);
+            }
+        },
+        [editingTask, persistenceProvider, taskListContexts]
+    );
+
     const createTask = useCallback(
         async (taskData: TaskFormData, listName: string) => {
             if (!username) {
@@ -94,7 +126,7 @@ export const TaskActionProvider: React.FC<TaskActionProviderProps> = ({
                     updatedAt: new Date().toISOString(),
                     finishedAt: null,
                 };
-                const created = await taskService.createTask(newTask);
+                const created = await persistenceProvider.createTask(newTask);
                 taskListContexts[listName].setTasks([
                     ...taskListContexts[listName].taskList.tasks,
                     created,
@@ -108,54 +140,19 @@ export const TaskActionProvider: React.FC<TaskActionProviderProps> = ({
                 return null;
             }
         },
-        [username, taskListContexts]
+        [username, persistenceProvider, taskListContexts]
     );
 
     const handleTaskFormSubmit = useCallback(
         async (taskData: TaskFormData) => {
-            if (onTaskFormSubmit) {
-                onTaskFormSubmit(taskData, editingTask, creatingTaskForList);
-                setEditingTask(null);
-                setCreatingTaskForList(null);
-            } else {
-                if (editingTask) {
-                    try {
-                        const updatedTask = { ...editingTask, ...taskData };
-                        await taskService.updateTask(updatedTask);
-
-                        const listName = updatedTask.listName;
-                        const list = taskListContexts[listName].taskList;
-                        const setTasks = taskListContexts[listName].setTasks;
-                        if (list) {
-                            const tasks = list.tasks;
-                            const taskIndex = tasks.findIndex(
-                                task => task.id === updatedTask.id
-                            );
-                            if (taskIndex !== -1) {
-                                const updatedTasks = [...tasks];
-                                updatedTasks[taskIndex] = updatedTask;
-                                setTasks(updatedTasks);
-                            }
-                        }
-
-                        setHighlightedTaskId(updatedTask.id);
-                    } catch (error) {
-                        console.error('Failed to update task', error);
-                    } finally {
-                        setEditingTask(null);
-                    }
-                } else if (creatingTaskForList) {
-                    await createTask(taskData, creatingTaskForList);
-                }
+            console.log(editingTask);
+            if (editingTask) {
+                await editTask(taskData);
+            } else if (creatingTaskForList) {
+                await createTask(taskData, creatingTaskForList);
             }
         },
-        [
-            editingTask,
-            creatingTaskForList,
-            taskListContexts,
-            createTask,
-            onTaskFormSubmit,
-        ]
+        [editingTask, creatingTaskForList, editTask, createTask]
     );
 
     const handleTaskFormCancel = useCallback(() => {
@@ -164,40 +161,31 @@ export const TaskActionProvider: React.FC<TaskActionProviderProps> = ({
     }, []);
 
     const handleConfirmRemoveTask = useCallback(async () => {
-        if (onConfirmRemoveTask) {
-            if (removingTask) {
-                onConfirmRemoveTask(removingTask);
-            }
+        if (!removingTask) {
+            return;
+        }
+
+        const listName = removingTask.listName;
+        const list = taskListContexts[listName];
+        if (list) {
+            const tasks = list.taskList.tasks;
+            list.setTasks(tasks.filter(task => task.id !== removingTask.id));
+        }
+        if (removingTask.id === highlightedTaskId) {
+            setHighlightedTaskId(null);
+        }
+        try {
+            await persistenceProvider.deleteTask(removingTask.id!);
+        } catch (error) {
+            console.error('Failed to delete task', error);
+        } finally {
             setRemovingTask(null);
-        } else {
-            if (removingTask) {
-                try {
-                    await taskService.deleteTask(removingTask.id!);
-
-                    const listName = removingTask.listName;
-                    const list = taskListContexts[listName];
-                    if (list) {
-                        const tasks = list.taskList.tasks;
-                        list.setTasks(
-                            tasks.filter(task => task.id !== removingTask.id)
-                        );
-                    }
-
-                    if (removingTask.id === highlightedTaskId) {
-                        setHighlightedTaskId(null);
-                    }
-                } catch (error) {
-                    console.error('Failed to delete task', error);
-                } finally {
-                    setRemovingTask(null);
-                }
-            }
         }
     }, [
         removingTask,
         taskListContexts,
         highlightedTaskId,
-        onConfirmRemoveTask,
+        persistenceProvider,
     ]);
 
     const handleCancelRemoveTask = useCallback(() => {
@@ -213,7 +201,7 @@ export const TaskActionProvider: React.FC<TaskActionProviderProps> = ({
             try {
                 const createdTasks = await Promise.all(
                     generatedTasks.map(async task => {
-                        return await taskService.createTask(task);
+                        return await persistenceProvider.createTask(task);
                     })
                 );
 
@@ -244,14 +232,19 @@ export const TaskActionProvider: React.FC<TaskActionProviderProps> = ({
                     updatedAt: new Date().toISOString(),
                 };
 
-                await taskService.updateTask(updatedUnraveledTask);
+                await persistenceProvider.updateTask(updatedUnraveledTask);
             } catch (error) {
                 console.error('Error handling unravel task submit', error);
             } finally {
                 setUnravellingTask(null);
             }
         },
-        [unravelingTask, taskListContexts, highlightedTaskId]
+        [
+            unravelingTask,
+            taskListContexts,
+            highlightedTaskId,
+            persistenceProvider,
+        ]
     );
 
     const handleUnravelTaskCancel = useCallback(() => {
@@ -278,7 +271,8 @@ export const TaskActionProvider: React.FC<TaskActionProviderProps> = ({
 
             try {
                 if (currentList === 'REUSABLE') {
-                    const savedTask = await taskService.createTask(updatedTask);
+                    const savedTask =
+                        await persistenceProvider.createTask(updatedTask);
                     taskListContexts[destinationList].setTasks([
                         ...taskListContexts[destinationList].taskList.tasks,
                         savedTask,
@@ -286,7 +280,7 @@ export const TaskActionProvider: React.FC<TaskActionProviderProps> = ({
                     setHighlightedTaskId(savedTask.id);
                     return savedTask;
                 } else {
-                    await taskService.updateTask(updatedTask);
+                    await persistenceProvider.updateTask(updatedTask);
                     taskListContexts[currentList].setTasks(
                         taskListContexts[currentList].taskList.tasks.filter(
                             t => t.id !== task.id
@@ -304,7 +298,7 @@ export const TaskActionProvider: React.FC<TaskActionProviderProps> = ({
                 return null;
             }
         },
-        [taskListContexts]
+        [persistenceProvider, taskListContexts]
     );
 
     const value: TaskActionContextType = {

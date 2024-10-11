@@ -19,7 +19,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
     onCancel,
     children,
 }) => {
-    const extraKeyHandlers = (event: KeyboardEvent) => {
+    const extraKeyHandlers = (event: React.KeyboardEvent) => {
         if (event.key === 'Enter') {
             event.preventDefault();
             event.stopPropagation();

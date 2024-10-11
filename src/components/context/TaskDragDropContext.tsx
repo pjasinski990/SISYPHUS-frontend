@@ -41,7 +41,7 @@ export const TaskDragDropProvider: React.FC<{
             }
 
             const sourceContext = taskLists[source.droppableId];
-            const destContext = taskLists[destination!!.droppableId];
+            const destContext = taskLists[destination!.droppableId];
 
             let [movedTask] = sourceContext.taskList.tasks.splice(
                 source.index,
@@ -59,17 +59,13 @@ export const TaskDragDropProvider: React.FC<{
                 };
             }
 
-            destContext.taskList.tasks.splice(
-                destination!!.index,
-                0,
-                movedTask
-            );
+            destContext.taskList.tasks.splice(destination!.index, 0, movedTask);
             sourceContext.setTasks(sourceContext.taskList.tasks);
             destContext.setTasks(destContext.taskList.tasks);
 
             await taskService.updateTask({
                 ...movedTask,
-                listName: destination!!.droppableId,
+                listName: destination!.droppableId,
             });
         },
         [isValidDragAction, taskLists]

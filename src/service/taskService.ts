@@ -38,7 +38,7 @@ class TaskService {
         return apiService.authenticatedGet(`/api/tasks/`);
     }
 
-    async getTasksList(listName: string): Promise<TaskList> {
+    async getTaskList(listName: string): Promise<TaskList> {
         const tasks = (await apiService.authenticatedGet(`/api/tasks/list`, {
             params: { listName },
         })) as Task[];

@@ -5,13 +5,14 @@ import { DailyPlanDashboard } from 'src/components/daily_plan/DailyPlanDashboard
 import React, { useCallback, useMemo, useState } from 'react';
 import { DragDropContext } from '@hello-pangea/dnd';
 import { Shortcut } from 'src/components/context/ShortcutsContext';
-import { useRegisterShortcut } from 'src/components/context/RegisterShortcutContext';
+import { useRegisterShortcut } from 'src/components/hooks/useRegisterShortcut';
 import { useTaskDragAndDrop } from 'src/components/context/TaskDragDropContext';
 import {
     TaskNavigationProvider,
     useTaskNavigation,
 } from 'src/components/context/TaskNavigationContext';
 import { TaskActionProvider } from 'src/components/context/TaskActionContext';
+import { mongoPersistenceProvider } from '../persistence_provider/MongoPersistenceProvider';
 
 export const DashboardContent: React.FC = () => {
     const [isLeftMenuOpen, setIsLeftMenuOpen] = useState(true);
@@ -74,7 +75,7 @@ export const DashboardContent: React.FC = () => {
 
     return (
         <TaskNavigationProvider>
-            <TaskActionProvider>
+            <TaskActionProvider persistenceProvider={mongoPersistenceProvider}>
                 <div className={'flex flex-1'}>
                     <DragDropContext onDragEnd={onDragEnd}>
                         <SlidingPanel

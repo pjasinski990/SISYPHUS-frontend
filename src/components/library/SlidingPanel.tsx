@@ -10,7 +10,6 @@ interface SlidingPanelProps {
 
 export const SlidingPanel: React.FC<SlidingPanelProps> = ({
     isOpen,
-    setIsOpen,
     children,
     maxWidth,
 }) => {

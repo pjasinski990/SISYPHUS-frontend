@@ -315,7 +315,10 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                                             const value =
                                                 e.target.value === ''
                                                     ? null
-                                                    : parseInt(e.target.value, 10);
+                                                    : parseInt(
+                                                          e.target.value,
+                                                          10
+                                                      );
                                             field.onChange(value);
                                         }}
                                     />
@@ -337,7 +340,10 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                                             const value =
                                                 e.target.value === ''
                                                     ? null
-                                                    : parseInt(e.target.value, 10);
+                                                    : parseInt(
+                                                          e.target.value,
+                                                          10
+                                                      );
                                             field.onChange(value);
                                         }}
                                     />
@@ -411,8 +417,8 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                                                 })
                                             ) : (
                                                 <span className="text-gray-500">
-                                        Select dependencies
-                                    </span>
+                                                    Select dependencies
+                                                </span>
                                             )}
                                         </button>
                                     </PopoverTrigger>

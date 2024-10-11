@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import { Card, CardContent } from 'src/components/ui/card';
 import { TaskList } from 'src/components/task_list/TaskList';
 import { useTaskList } from 'src/components/context/TaskListsContext';
-import { useRegisterShortcut } from 'src/components/context/RegisterShortcutContext';
+import { useRegisterShortcut } from 'src/components/hooks/useRegisterShortcut';
 import { Shortcut } from 'src/components/context/ShortcutsContext';
 import { useTaskAction } from 'src/components/context/TaskActionContext';
 

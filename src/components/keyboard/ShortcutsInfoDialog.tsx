@@ -14,7 +14,7 @@ import {
 import ShortcutsList from './ShortcutsList';
 import { Description } from '@radix-ui/react-dialog';
 import { Shortcut } from 'src/components/context/ShortcutsContext';
-import { useRegisterShortcut } from 'src/components/context/RegisterShortcutContext';
+import { useRegisterShortcut } from 'src/components/hooks/useRegisterShortcut';
 
 const ShortcutsInfoDialog: React.FC = () => {
     const [open, setOpen] = React.useState(false);

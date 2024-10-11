@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useShortcuts, Shortcut } from './ShortcutsContext';
+import { useShortcuts, Shortcut } from '../context/ShortcutsContext';
 
 export const useRegisterShortcut = (shortcut: Shortcut) => {
     const { setShortcuts } = useShortcuts();

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { TaskList } from 'src/components/task_list/TaskList';
-import { useRegisterShortcut } from 'src/components/context/RegisterShortcutContext';
+import { useRegisterShortcut } from 'src/components/hooks/useRegisterShortcut';
 import { Shortcut } from 'src/components/context/ShortcutsContext';
 import { useTaskList } from 'src/components/context/TaskListsContext';
 import { useTaskAction } from 'src/components/context/TaskActionContext';
@@ -12,7 +12,7 @@ export const DailyPlanTodo: React.FC = () => {
     const addTaskShortcut: Shortcut = useMemo(
         () => ({
             id: 'add-task-daily-plan',
-            keys: ['c'],
+            keys: ['C'],
             action: () => openCreateTaskDialog('DAILY_TODO'),
             description: "Add a new task to today's todo list",
             order: 1,
