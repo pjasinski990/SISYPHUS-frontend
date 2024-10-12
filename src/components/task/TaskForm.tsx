@@ -232,12 +232,11 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                         control={control}
                         render={({ field }) => (
                             <Select
-                                {...field}
-                                name="category"
                                 onValueChange={field.onChange}
                                 value={field.value}
                             >
                                 <SelectTrigger
+                                    id={'category'}
                                     onKeyDown={preventActionWhenCtrlPressed}
                                 >
                                     <SelectValue placeholder="Select category">
@@ -269,12 +268,11 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                         control={control}
                         render={({ field }) => (
                             <Select
-                                {...field}
-                                name="size"
                                 onValueChange={field.onChange}
                                 value={field.value}
                             >
                                 <SelectTrigger
+                                    id={'size'}
                                     onKeyDown={preventActionWhenCtrlPressed}
                                 >
                                     <SelectValue placeholder="Select size">

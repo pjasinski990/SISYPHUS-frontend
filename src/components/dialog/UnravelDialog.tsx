@@ -38,7 +38,6 @@ export const UnravelDialog: React.FC<UnravelDialogProps> = ({
 }) => {
     const formRef = useRef<HTMLFormElement | null>(null);
     const [proposedTasks, setProposedTasks] = useState<Task[]>([]);
-    const [nTasks, setNTasks] = useState<number>(3);
     const [additionalContext, setAdditionalContext] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -72,7 +71,6 @@ export const UnravelDialog: React.FC<UnravelDialogProps> = ({
     useEffect(() => {
         if (open) {
             setProposedTasks([]);
-            setNTasks(3);
             setAdditionalContext('');
             setIsLoading(false);
         }
@@ -92,13 +90,13 @@ export const UnravelDialog: React.FC<UnravelDialogProps> = ({
         setIsLoading(true);
 
         generativeService
-            .unravel({ taskId: currentTask.id!, nTasks, additionalContext })
+            .unravel({ taskId: currentTask.id!, additionalContext })
             .then(res => setProposedTasks(res))
             .catch(error => {
                 console.error('Error fetching proposed tasks:', error);
             })
             .finally(() => setIsLoading(false));
-    }, [open, currentTask, nTasks, additionalContext]);
+    }, [open, currentTask, additionalContext]);
 
     const extraKeyHandlers = useCallback(
         (event: React.KeyboardEvent) => {
@@ -139,23 +137,6 @@ export const UnravelDialog: React.FC<UnravelDialogProps> = ({
             <form ref={formRef} onSubmit={handleSubmitProposedTasks}>
                 <div className="flex flex-col">
                     <label
-                        htmlFor="nTasks"
-                        className="block text-sm font-medium text-gray-700"
-                    >
-                        Number of tasks to generate
-                    </label>
-                    <Input
-                        id="nTasks"
-                        name="nTasks"
-                        type="number"
-                        min={1}
-                        max={12}
-                        value={nTasks}
-                        onChange={e => setNTasks(Number(e.target.value))}
-                        required
-                        className={'mb-2'}
-                    />
-                    <label
                         htmlFor="additionalContext"
                         className="block text-sm font-medium text-gray-700"
                     >
@@ -186,7 +167,7 @@ export const UnravelDialog: React.FC<UnravelDialogProps> = ({
             >
                 {isLoading ? (
                     <div className="flex justify-center items-center h-full">
-                        <TaskLoadingPlaceholder nTasks={nTasks} />
+                        <TaskLoadingPlaceholder nTasks={3} />
                     </div>
                 ) : proposedTasks.length > 0 ? (
                     <>

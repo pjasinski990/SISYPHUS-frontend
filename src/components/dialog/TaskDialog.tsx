@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { BaseDialog } from './BaseDialog';
 import { TaskForm, TaskFormData } from 'src/components/task/TaskForm';
 import { Task } from '../../service/taskService';
@@ -27,6 +27,19 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({
         provider => provider.taskList.tasks
     );
 
+    const [visibleTitle, setVisibleTitle] = useState<string | null>(title);
+
+    useEffect(() => {
+        if (open) {
+            setVisibleTitle(title);
+        } else {
+            const timer = setTimeout(() => {
+                setVisibleTitle(null);
+            }, 500);
+            return () => clearTimeout(timer);
+        }
+    }, [title, open]);
+
     const handleSubmit = () => {
         if (formRef.current) {
             formRef.current.dispatchEvent(
@@ -39,7 +52,7 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({
         <BaseDialog
             open={open}
             onCancel={onCancel}
-            title={title}
+            title={visibleTitle ?? ''}
             description="Task edit or create dialog"
             onSubmit={handleSubmit}
             submitOnCtrlEnter={true}

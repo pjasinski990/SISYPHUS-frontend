@@ -3,7 +3,6 @@ import { Task } from './taskService';
 
 interface TaskUnravelContext {
     taskId: string;
-    nTasks: number;
     additionalContext: string;
 }
 

@@ -34,9 +34,15 @@ export const BaseDialog: React.FC<BaseDialogProps> = ({
     extraKeyHandlers,
     contentClassName,
 }) => {
+    const [isRendered, setIsRendered] = useState<boolean>(false);
+
     useEffect(() => {
-        if (!open) {
-            const timer = setTimeout(() => {}, closeAnimationDuration);
+        if (open) {
+            setIsRendered(true);
+        } else {
+            const timer = setTimeout(() => {
+                setIsRendered(false);
+            }, closeAnimationDuration);
             return () => clearTimeout(timer);
         }
     }, [open, closeAnimationDuration]);
@@ -55,11 +61,15 @@ export const BaseDialog: React.FC<BaseDialogProps> = ({
         }
     };
 
+    if (!isRendered) {
+        return null;
+    }
+
     return (
         <Dialog open={open} onOpenChange={isOpen => !isOpen && onCancel()}>
             <DialogContent
-                onKeyDown={handleKeyDown}
                 className={contentClassName}
+                onKeyDown={handleKeyDown}
             >
                 <DialogDescription className={'hidden'}>
                     {description || title}
