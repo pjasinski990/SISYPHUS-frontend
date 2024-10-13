@@ -5,6 +5,7 @@ import { useTaskProperties } from 'src/components/context/TaskPropertiesContext'
 import { Draggable } from '@hello-pangea/dnd';
 import { DraggableProvider } from 'src/components/context/DraggableContext';
 import { DraggableWrapper } from 'src/components/library/DraggableWrapper';
+import useSmoothScroll from '../hooks/useSmoothScroll';
 
 interface TaskItemProps {
     task: Task;
@@ -22,16 +23,26 @@ export const TaskItem: React.FC<TaskItemProps> = ({
     isHighlighted = false,
 }) => {
     const itemRef = useRef<HTMLDivElement | null>(null);
+    const smoothScroll = useSmoothScroll();
+
+    const findScrollContainer = (element: HTMLElement): HTMLElement => {
+        let el = element.parentElement;
+        while (el) {
+            const style = getComputedStyle(el);
+            if (style.overflowY === 'auto' || style.overflowY === 'scroll') {
+                return el;
+            }
+            el = el.parentElement;
+        }
+        throw `Could not find scroll container for ${element}`;
+    };
 
     useEffect(() => {
         if (isHighlighted && itemRef.current) {
-            itemRef.current.scrollIntoView({
-                behavior: 'smooth',
-                block: 'center',
-                inline: 'nearest',
-            });
+            const container = findScrollContainer(itemRef.current);
+            smoothScroll(container, itemRef.current, 300);
         }
-    }, [isHighlighted]);
+    }, [isHighlighted, smoothScroll, task.id]);
 
     return (
         <div ref={itemRef} className={className}>
