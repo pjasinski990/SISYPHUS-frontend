@@ -40,7 +40,7 @@ export const TaskItem: React.FC<TaskItemProps> = ({
     useEffect(() => {
         if (isHighlighted && itemRef.current) {
             const container = findScrollContainer(itemRef.current);
-            smoothScroll(container, itemRef.current, 300);
+            smoothScroll(container, itemRef.current);
         }
     }, [isHighlighted, smoothScroll, task.id]);
 
