@@ -29,6 +29,7 @@ import {
     extractHoursFromIsoTime,
     extractMinutesFromIsoTime,
 } from '../../lib/utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from 'src/components/ui/tooltip';
 
 export interface TaskFormData {
     title: string;
@@ -43,6 +44,7 @@ export interface TaskFormData {
     flexibility: number | null;
     durationHours: number | null;
     durationMinutes: number | null;
+    hasDeadline: boolean;
 }
 
 interface TaskFormProps {
@@ -58,40 +60,43 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
         const {
             control,
             handleSubmit,
+            watch,
             formState: { errors },
         } = useForm<TaskFormData>({
             defaultValues: initialData
                 ? {
-                      title: initialData.title,
-                      description: initialData.description,
-                      category: initialData.category,
-                      size: initialData.size,
-                      listName: initialData.listName,
-                      duration: initialData.duration,
-                      durationHours: extractHoursFromIsoTime(
-                          initialData.duration
-                      ),
-                      durationMinutes: extractMinutesFromIsoTime(
-                          initialData.duration
-                      ),
-                      startTime: initialData.startTime,
-                      deadline: initialData.deadline,
-                      dependencies: initialData.dependencies || [],
-                      flexibility: initialData.flexibility ?? 0.1,
-                  }
+                    title: initialData.title,
+                    description: initialData.description,
+                    category: initialData.category,
+                    size: initialData.size,
+                    listName: initialData.listName,
+                    duration: initialData.duration,
+                    durationHours: extractHoursFromIsoTime(
+                        initialData.duration
+                    ),
+                    durationMinutes: extractMinutesFromIsoTime(
+                        initialData.duration
+                    ),
+                    startTime: initialData.startTime,
+                    deadline: initialData.deadline,
+                    dependencies: initialData.dependencies || [],
+                    flexibility: initialData.flexibility ?? 0.1,
+                    hasDeadline: !!initialData.deadline,
+                }
                 : {
-                      title: '',
-                      description: '',
-                      category: TaskCategory.WHITE,
-                      size: TaskSize.SMALL,
-                      duration: null,
-                      startTime: '',
-                      deadline: null,
-                      dependencies: [],
-                      flexibility: 0.1,
-                      durationHours: null,
-                      durationMinutes: null,
-                  },
+                    title: '',
+                    description: '',
+                    category: TaskCategory.WHITE,
+                    size: TaskSize.SMALL,
+                    duration: null,
+                    startTime: '',
+                    deadline: null,
+                    dependencies: [],
+                    flexibility: 0.1,
+                    durationHours: null,
+                    durationMinutes: null,
+                    hasDeadline: false,
+                },
         });
 
         const [selectedDependencies, setSelectedDependencies] = useState<
@@ -133,6 +138,10 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                 data.duration = null;
             }
 
+            if (!data.hasDeadline) {
+                data.deadline = null;
+            }
+
             onSubmit(data);
         };
 
@@ -159,6 +168,8 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                 event.preventDefault();
             }
         };
+
+        const hasDeadline = watch('hasDeadline');
 
         return (
             <form
@@ -314,9 +325,9 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                                                 e.target.value === ''
                                                     ? null
                                                     : parseInt(
-                                                          e.target.value,
-                                                          10
-                                                      );
+                                                        e.target.value,
+                                                        10
+                                                    );
                                             field.onChange(value);
                                         }}
                                     />
@@ -339,9 +350,9 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                                                 e.target.value === ''
                                                     ? null
                                                     : parseInt(
-                                                          e.target.value,
-                                                          10
-                                                      );
+                                                        e.target.value,
+                                                        10
+                                                    );
                                             field.onChange(value);
                                         }}
                                     />
@@ -351,8 +362,54 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                     </fieldset>
                 </div>
 
-                {/* Deadline Field */}
+                {/* Start Time Field */}
                 <div>
+                    <label
+                        htmlFor="startTime"
+                        className="block text-sm font-medium text-gray-700"
+                    >
+                        Start Time
+                    </label>
+                    <Controller
+                        name="startTime"
+                        control={control}
+                        render={({ field }) => (
+                            <Input
+                                id="startTime"
+                                type="time"
+                                {...field}
+                                value={field.value ?? ''}
+                                placeholder="Start Time"
+                            />
+                        )}
+                    />
+                </div>
+
+                {/* Has Deadline Checkbox */}
+                <div className="flex items-center">
+                    <Controller
+                        name="hasDeadline"
+                        control={control}
+                        render={({ field }) => (
+                            <input
+                                type="checkbox"
+                                id="hasDeadline"
+                                checked={field.value}
+                                onChange={field.onChange}
+                                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                            />
+                        )}
+                    />
+                    <label
+                        htmlFor="hasDeadline"
+                        className="pl-2 block text-sm font-medium text-gray-700"
+                    >
+                        Has Deadline
+                    </label>
+                </div>
+
+                {/* Deadline Field */}
+                <div className="relative">
                     <label
                         htmlFor="deadline"
                         className="block text-sm font-medium text-gray-700"
@@ -362,17 +419,39 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                     <Controller
                         name="deadline"
                         control={control}
+                        rules={{
+                            required: hasDeadline ? 'Deadline is required' : false,
+                        }}
                         render={({ field }) => (
-                            <Input
-                                {...field}
-                                id="deadline"
-                                name="deadline"
-                                type="datetime-local"
-                                value={field.value ?? ''}
-                                placeholder="Select deadline"
-                            />
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <div>
+                                            <Input
+                                                {...field}
+                                                id="deadline"
+                                                name="deadline"
+                                                type="datetime-local"
+                                                value={field.value ?? ''}
+                                                placeholder="Select deadline"
+                                                disabled={!hasDeadline}
+                                            />
+                                        </div>
+                                    </TooltipTrigger>
+                                    {!hasDeadline && (
+                                        <TooltipContent>
+                                            Enable &quot;Has Deadline&quot; to set a deadline.
+                                        </TooltipContent>
+                                    )}
+                                </Tooltip>
+                            </TooltipProvider>
                         )}
                     />
+                    {errors.deadline && (
+                        <p className="mt-1 text-sm text-red-600">
+                            {errors.deadline.message}
+                        </p>
+                    )}
                 </div>
 
                 {/* Dependencies Field */}
