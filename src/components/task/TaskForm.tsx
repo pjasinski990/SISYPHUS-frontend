@@ -153,6 +153,11 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
 
                 const target = event.target as HTMLElement;
                 const tagName = target.tagName.toLowerCase();
+
+                if (tagName === 'button') {
+                    return;
+                }
+
                 if (tagName === 'textarea' || target.isContentEditable) {
                     event.stopPropagation();
                     return;
@@ -471,6 +476,7 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                                     <PopoverTrigger asChild>
                                         <button
                                             type="button"
+                                            data-testid="dependencies-button"
                                             className="w-full p-2 border rounded cursor-pointer flex flex-wrap gap-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             aria-haspopup="dialog"
                                             aria-expanded={
@@ -503,6 +509,11 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                                         className="w-full p-0"
                                         role="dialog"
                                         aria-modal="true"
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Escape') {
+                                                e.stopPropagation();
+                                            }
+                                        }}
                                     >
                                         <Command>
                                             <CommandInput

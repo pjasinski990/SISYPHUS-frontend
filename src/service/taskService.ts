@@ -23,6 +23,7 @@ export interface Task {
     size: TaskSize;
     listName: string;
     description: string | null;
+    tags: string[] | null;
     startTime: string | null; // iso-8601 (PT2H30M)
     duration: string | null; // iso-8601
     deadline: string | null; // iso datetime
