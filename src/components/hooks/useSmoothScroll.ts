@@ -25,43 +25,44 @@ const useSmoothScroll = () => {
         }
     }, []);
 
-    const springAnimation = useCallback((currentTime: number) => {
-        if (!containerRef.current) return;
+    const springAnimation = useCallback(
+        (currentTime: number) => {
+            if (!containerRef.current) return;
 
-        const deltaTime = currentTime - lastTimeRef.current;
-        lastTimeRef.current = currentTime;
+            const deltaTime = currentTime - lastTimeRef.current;
+            lastTimeRef.current = currentTime;
 
-        const fixedDeltaTime = Math.min(deltaTime, FRAME_DURATION) / 1000;
+            const fixedDeltaTime = Math.min(deltaTime, FRAME_DURATION) / 1000;
 
-        const state = scrollStateRef.current;
-        const distance = targetPositionRef.current - state.position;
+            const state = scrollStateRef.current;
+            const distance = targetPositionRef.current - state.position;
 
-        const springForce = distance * SPRING_TENSION;
-        const dampingForce = -state.velocity * SPRING_FRICTION;
-        const acceleration = springForce + dampingForce;
+            const springForce = distance * SPRING_TENSION;
+            const dampingForce = -state.velocity * SPRING_FRICTION;
+            const acceleration = springForce + dampingForce;
 
-        state.velocity += acceleration * fixedDeltaTime;
-        state.position += state.velocity * fixedDeltaTime;
+            state.velocity += acceleration * fixedDeltaTime;
+            state.position += state.velocity * fixedDeltaTime;
 
-        containerRef.current.scrollTop = state.position;
+            containerRef.current.scrollTop = state.position;
 
-        if (
-            Math.abs(state.velocity) < VELOCITY_THRESHOLD &&
-            Math.abs(distance) < DISTANCE_THRESHOLD
-        ) {
-            cancelScrollAnimation();
-            containerRef.current.scrollTop = targetPositionRef.current;
-            containerRef.current.style.willChange = '';
-        } else {
-            scrollAnimationRef.current = requestAnimationFrame(springAnimation);
-        }
-    }, [cancelScrollAnimation]);
+            if (
+                Math.abs(state.velocity) < VELOCITY_THRESHOLD &&
+                Math.abs(distance) < DISTANCE_THRESHOLD
+            ) {
+                cancelScrollAnimation();
+                containerRef.current.scrollTop = targetPositionRef.current;
+                containerRef.current.style.willChange = '';
+            } else {
+                scrollAnimationRef.current =
+                    requestAnimationFrame(springAnimation);
+            }
+        },
+        [cancelScrollAnimation]
+    );
 
     const smoothScroll = useCallback(
-        (
-            container: HTMLElement,
-            target: HTMLElement,
-        ) => {
+        (container: HTMLElement, target: HTMLElement) => {
             if (!container || !target) {
                 console.warn('Container or target element is not provided.');
                 return;
@@ -82,7 +83,10 @@ const useSmoothScroll = () => {
 
             targetPositionRef.current = Math.max(
                 0,
-                Math.min(targetPositionRef.current, container.scrollHeight - container.clientHeight)
+                Math.min(
+                    targetPositionRef.current,
+                    container.scrollHeight - container.clientHeight
+                )
             );
 
             scrollStateRef.current = {

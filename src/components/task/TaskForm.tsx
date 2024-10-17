@@ -29,7 +29,12 @@ import {
     extractHoursFromIsoTime,
     extractMinutesFromIsoTime,
 } from '../../lib/utils';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from 'src/components/ui/tooltip';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from 'src/components/ui/tooltip';
 
 export interface TaskFormData {
     title: string;
@@ -45,6 +50,7 @@ export interface TaskFormData {
     durationHours: number | null;
     durationMinutes: number | null;
     hasDeadline: boolean;
+    tags: string[] | null;
 }
 
 interface TaskFormProps {
@@ -65,49 +71,72 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
         } = useForm<TaskFormData>({
             defaultValues: initialData
                 ? {
-                    title: initialData.title,
-                    description: initialData.description,
-                    category: initialData.category,
-                    size: initialData.size,
-                    listName: initialData.listName,
-                    duration: initialData.duration,
-                    durationHours: extractHoursFromIsoTime(
-                        initialData.duration
-                    ),
-                    durationMinutes: extractMinutesFromIsoTime(
-                        initialData.duration
-                    ),
-                    startTime: initialData.startTime,
-                    deadline: initialData.deadline,
-                    dependencies: initialData.dependencies || [],
-                    flexibility: initialData.flexibility ?? 0.1,
-                    hasDeadline: !!initialData.deadline,
-                }
+                      title: initialData.title,
+                      description: initialData.description,
+                      category: initialData.category,
+                      size: initialData.size,
+                      listName: initialData.listName,
+                      duration: initialData.duration,
+                      durationHours: extractHoursFromIsoTime(
+                          initialData.duration
+                      ),
+                      durationMinutes: extractMinutesFromIsoTime(
+                          initialData.duration
+                      ),
+                      startTime: initialData.startTime,
+                      deadline: initialData.deadline,
+                      dependencies: initialData.dependencies || [],
+                      flexibility: initialData.flexibility ?? 0.1,
+                      hasDeadline: !!initialData.deadline,
+                      tags: initialData.tags || [],
+                  }
                 : {
-                    title: '',
-                    description: '',
-                    category: TaskCategory.WHITE,
-                    size: TaskSize.SMALL,
-                    duration: null,
-                    startTime: '',
-                    deadline: null,
-                    dependencies: [],
-                    flexibility: 0.1,
-                    durationHours: null,
-                    durationMinutes: null,
-                    hasDeadline: false,
-                },
+                      title: '',
+                      description: '',
+                      category: TaskCategory.WHITE,
+                      size: TaskSize.SMALL,
+                      duration: null,
+                      startTime: '',
+                      deadline: null,
+                      dependencies: [],
+                      flexibility: 0.1,
+                      durationHours: null,
+                      durationMinutes: null,
+                      hasDeadline: false,
+                      tags: [],
+                  },
         });
 
         const [selectedDependencies, setSelectedDependencies] = useState<
             string[]
         >(initialData?.dependencies || []);
+        const [selectedTags, setSelectedTags] = useState<string[]>(
+            initialData?.tags || []
+        );
+
+        const [tagInputValue, setTagInputValue] = useState('');
+        const [dependencyInputValue, setDependencyInputValue] = useState('');
 
         useEffect(() => {
             if (initialData?.dependencies) {
                 setSelectedDependencies(initialData.dependencies);
             }
+            if (initialData?.tags) {
+                setSelectedTags(initialData.tags);
+            }
         }, [initialData]);
+
+        const existingTags = React.useMemo(() => {
+            const tagCounts = new Map<string, number>();
+            for (const task of availableTasks) {
+                if (task.tags) {
+                    for (const tag of task.tags) {
+                        tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
+                    }
+                }
+            }
+            return tagCounts;
+        }, [availableTasks]);
 
         const getFlexibilityMessage = (value: number) => {
             if (value === 0) {
@@ -330,9 +359,9 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                                                 e.target.value === ''
                                                     ? null
                                                     : parseInt(
-                                                        e.target.value,
-                                                        10
-                                                    );
+                                                          e.target.value,
+                                                          10
+                                                      );
                                             field.onChange(value);
                                         }}
                                     />
@@ -355,9 +384,9 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                                                 e.target.value === ''
                                                     ? null
                                                     : parseInt(
-                                                        e.target.value,
-                                                        10
-                                                    );
+                                                          e.target.value,
+                                                          10
+                                                      );
                                             field.onChange(value);
                                         }}
                                     />
@@ -425,7 +454,9 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                         name="deadline"
                         control={control}
                         rules={{
-                            required: hasDeadline ? 'Deadline is required' : false,
+                            required: hasDeadline
+                                ? 'Deadline is required'
+                                : false,
                         }}
                         render={({ field }) => (
                             <TooltipProvider>
@@ -445,7 +476,8 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                                     </TooltipTrigger>
                                     {!hasDeadline && (
                                         <TooltipContent>
-                                            Enable &quot;Has Deadline&quot; to set a deadline.
+                                            Enable &quot;Has Deadline&quot; to
+                                            set a deadline.
                                         </TooltipContent>
                                     )}
                                 </Tooltip>
@@ -457,6 +489,213 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                             {errors.deadline.message}
                         </p>
                     )}
+                </div>
+
+                {/* Tags Field */}
+                <div>
+                    <label
+                        htmlFor="tags"
+                        className="block text-sm font-medium text-gray-700"
+                    >
+                        Tags
+                    </label>
+                    <Controller
+                        name="tags"
+                        control={control}
+                        render={({ field }) => {
+                            const filteredTags = Array.from(
+                                existingTags.entries()
+                            ).filter(
+                                ([tag]) =>
+                                    !selectedTags.includes(tag) &&
+                                    tag
+                                        .toLowerCase()
+                                        .includes(tagInputValue.toLowerCase())
+                            );
+
+                            const showCreateOption =
+                                tagInputValue.trim() !== '' &&
+                                !existingTags.has(tagInputValue.trim()) &&
+                                !selectedTags.includes(tagInputValue.trim());
+
+                            return (
+                                <div>
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <button
+                                                type="button"
+                                                data-testid="tags-button"
+                                                className="w-full p-2 border rounded cursor-pointer flex flex-wrap gap-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                aria-haspopup="dialog"
+                                                aria-expanded={
+                                                    selectedTags.length > 0
+                                                }
+                                            >
+                                                {selectedTags.length > 0 ? (
+                                                    selectedTags.map(tag => (
+                                                        <Badge
+                                                            key={tag}
+                                                            className="mr-1 cursor-pointer"
+                                                            onClick={e => {
+                                                                e.stopPropagation();
+                                                                const newSelectedTags =
+                                                                    selectedTags.filter(
+                                                                        t =>
+                                                                            t !==
+                                                                            tag
+                                                                    );
+                                                                setSelectedTags(
+                                                                    newSelectedTags
+                                                                );
+                                                                field.onChange(
+                                                                    newSelectedTags
+                                                                );
+                                                            }}
+                                                        >
+                                                            {tag}
+                                                            <span className="ml-1">
+                                                                ✕
+                                                            </span>
+                                                        </Badge>
+                                                    ))
+                                                ) : (
+                                                    <span className="text-gray-500">
+                                                        Add or select tags
+                                                    </span>
+                                                )}
+                                            </button>
+                                        </PopoverTrigger>
+                                        <PopoverContent
+                                            className="w-full p-0"
+                                            role="dialog"
+                                            aria-modal="true"
+                                            onKeyDown={e => {
+                                                if (e.key === 'Escape') {
+                                                    e.stopPropagation();
+                                                }
+                                            }}
+                                        >
+                                            <Command>
+                                                <CommandInput
+                                                    placeholder="Type or select tags..."
+                                                    aria-label="Type or select tags"
+                                                    value={tagInputValue}
+                                                    onValueChange={
+                                                        setTagInputValue
+                                                    }
+                                                    onKeyDown={e => {
+                                                        if (e.key === 'Enter') {
+                                                            if (
+                                                                e.shiftKey &&
+                                                                tagInputValue.trim() !==
+                                                                    ''
+                                                            ) {
+                                                                // Shift+Enter creates a new tag
+                                                                const newTag =
+                                                                    tagInputValue.trim();
+                                                                if (
+                                                                    !selectedTags.includes(
+                                                                        newTag
+                                                                    )
+                                                                ) {
+                                                                    const newSelectedTags =
+                                                                        [
+                                                                            ...selectedTags,
+                                                                            newTag,
+                                                                        ];
+                                                                    setSelectedTags(
+                                                                        newSelectedTags
+                                                                    );
+                                                                    field.onChange(
+                                                                        newSelectedTags
+                                                                    );
+                                                                }
+                                                                setTagInputValue(
+                                                                    ''
+                                                                );
+                                                                e.preventDefault();
+                                                            }
+                                                        }
+                                                    }}
+                                                />
+                                                <CommandList>
+                                                    {filteredTags.map(
+                                                        ([tag, count]) => (
+                                                            <CommandItem
+                                                                key={tag}
+                                                                onSelect={() => {
+                                                                    const newSelectedTags =
+                                                                        [
+                                                                            ...selectedTags,
+                                                                            tag,
+                                                                        ];
+                                                                    setSelectedTags(
+                                                                        newSelectedTags
+                                                                    );
+                                                                    field.onChange(
+                                                                        newSelectedTags
+                                                                    );
+                                                                    setTagInputValue(
+                                                                        ''
+                                                                    );
+                                                                }}
+                                                            >
+                                                                <div className="flex items-center justify-between w-full">
+                                                                    <span>
+                                                                        {tag}
+                                                                    </span>
+                                                                    <span className="text-gray-500 text-sm">
+                                                                        {count}{' '}
+                                                                        task
+                                                                        {count >
+                                                                        1
+                                                                            ? 's'
+                                                                            : ''}
+                                                                    </span>
+                                                                </div>
+                                                            </CommandItem>
+                                                        )
+                                                    )}
+                                                    {showCreateOption && (
+                                                        <CommandItem
+                                                            key="create-new-tag"
+                                                            onSelect={() => {
+                                                                const newTag =
+                                                                    tagInputValue.trim();
+                                                                const newSelectedTags =
+                                                                    [
+                                                                        ...selectedTags,
+                                                                        newTag,
+                                                                    ];
+                                                                setSelectedTags(
+                                                                    newSelectedTags
+                                                                );
+                                                                field.onChange(
+                                                                    newSelectedTags
+                                                                );
+                                                                setTagInputValue(
+                                                                    ''
+                                                                );
+                                                            }}
+                                                        >
+                                                            <div className="flex items-center">
+                                                                <span>
+                                                                    Create
+                                                                    &quot;
+                                                                    {tagInputValue.trim()}
+                                                                    &quot;
+                                                                </span>
+                                                            </div>
+                                                        </CommandItem>
+                                                    )}
+                                                </CommandList>
+                                            </Command>
+                                        </PopoverContent>
+                                    </Popover>
+                                </div>
+                            );
+                        }}
+                    />
                 </div>
 
                 {/* Dependencies Field */}
@@ -492,9 +731,27 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                                                     return (
                                                         <Badge
                                                             key={id}
-                                                            className="mr-1"
+                                                            className="mr-1 cursor-pointer"
+                                                            onClick={e => {
+                                                                e.stopPropagation();
+                                                                const newSelectedDependencies =
+                                                                    selectedDependencies.filter(
+                                                                        depId =>
+                                                                            depId !==
+                                                                            id
+                                                                    );
+                                                                setSelectedDependencies(
+                                                                    newSelectedDependencies
+                                                                );
+                                                                field.onChange(
+                                                                    newSelectedDependencies
+                                                                );
+                                                            }}
                                                         >
                                                             {task?.title || id}
+                                                            <span className="ml-1">
+                                                                ✕
+                                                            </span>
                                                         </Badge>
                                                     );
                                                 })
@@ -509,7 +766,7 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                                         className="w-full p-0"
                                         role="dialog"
                                         aria-modal="true"
-                                        onKeyDown={(e) => {
+                                        onKeyDown={e => {
                                             if (e.key === 'Escape') {
                                                 e.stopPropagation();
                                             }
@@ -519,62 +776,76 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                                             <CommandInput
                                                 placeholder="Search tasks..."
                                                 aria-label="Search tasks"
+                                                value={dependencyInputValue}
+                                                onValueChange={
+                                                    setDependencyInputValue
+                                                }
                                             />
                                             <CommandList>
-                                                {availableTasks.map(task => {
-                                                    if (!task.id) return null;
-                                                    const taskId = task.id;
-                                                    const isSelected =
-                                                        selectedDependencies.includes(
-                                                            taskId
+                                                {availableTasks
+                                                    .filter(task =>
+                                                        task.title
+                                                            .toLowerCase()
+                                                            .includes(
+                                                                dependencyInputValue.toLowerCase()
+                                                            )
+                                                    )
+                                                    .map(task => {
+                                                        if (!task.id)
+                                                            return null;
+                                                        const taskId = task.id;
+                                                        const isSelected =
+                                                            selectedDependencies.includes(
+                                                                taskId
+                                                            );
+                                                        return (
+                                                            <CommandItem
+                                                                key={taskId}
+                                                                onSelect={() => {
+                                                                    let newValue: string[];
+                                                                    if (
+                                                                        isSelected
+                                                                    ) {
+                                                                        newValue =
+                                                                            selectedDependencies.filter(
+                                                                                id =>
+                                                                                    id !==
+                                                                                    taskId
+                                                                            );
+                                                                    } else {
+                                                                        newValue =
+                                                                            [
+                                                                                ...selectedDependencies,
+                                                                                taskId,
+                                                                            ];
+                                                                    }
+                                                                    setSelectedDependencies(
+                                                                        newValue
+                                                                    );
+                                                                    field.onChange(
+                                                                        newValue
+                                                                    );
+                                                                }}
+                                                            >
+                                                                <div className="flex items-center">
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        checked={
+                                                                            isSelected
+                                                                        }
+                                                                        readOnly
+                                                                        className="mr-2"
+                                                                        aria-label={
+                                                                            isSelected
+                                                                                ? `Deselect ${task.title}`
+                                                                                : `Select ${task.title}`
+                                                                        }
+                                                                    />
+                                                                    {task.title}
+                                                                </div>
+                                                            </CommandItem>
                                                         );
-                                                    return (
-                                                        <CommandItem
-                                                            key={taskId}
-                                                            onSelect={() => {
-                                                                let newValue: string[];
-                                                                if (
-                                                                    isSelected
-                                                                ) {
-                                                                    newValue =
-                                                                        selectedDependencies.filter(
-                                                                            id =>
-                                                                                id !==
-                                                                                taskId
-                                                                        );
-                                                                } else {
-                                                                    newValue = [
-                                                                        ...selectedDependencies,
-                                                                        taskId,
-                                                                    ];
-                                                                }
-                                                                setSelectedDependencies(
-                                                                    newValue
-                                                                );
-                                                                field.onChange(
-                                                                    newValue
-                                                                );
-                                                            }}
-                                                        >
-                                                            <div className="flex items-center">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    checked={
-                                                                        isSelected
-                                                                    }
-                                                                    readOnly
-                                                                    className="mr-2"
-                                                                    aria-label={
-                                                                        isSelected
-                                                                            ? `Deselect ${task.title}`
-                                                                            : `Select ${task.title}`
-                                                                    }
-                                                                />
-                                                                {task.title}
-                                                            </div>
-                                                        </CommandItem>
-                                                    );
-                                                })}
+                                                    })}
                                             </CommandList>
                                         </Command>
                                     </PopoverContent>
