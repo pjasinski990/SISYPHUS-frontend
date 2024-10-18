@@ -76,15 +76,11 @@ export const TaskActionProvider: React.FC<TaskActionProviderProps> = ({
 
     const editTask = useCallback(
         async (taskData: TaskFormData) => {
-            console.log(`editing task ${JSON.stringify(editingTask)}`);
-
             if (!editingTask) {
-                console.log('return due to no task');
                 return;
             }
             try {
                 const updatedTask: Task = { ...editingTask, ...taskData };
-                console.log('calling persistence');
                 await persistenceProvider.updateTask(updatedTask);
 
                 const listName = updatedTask.listName;
@@ -145,7 +141,6 @@ export const TaskActionProvider: React.FC<TaskActionProviderProps> = ({
 
     const handleTaskFormSubmit = useCallback(
         async (taskData: TaskFormData) => {
-            console.log(editingTask);
             if (editingTask) {
                 await editTask(taskData);
             } else if (creatingTaskForList) {

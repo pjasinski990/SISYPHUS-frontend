@@ -89,7 +89,7 @@ export const TaskListsProvider: React.FC<TaskListsProviderProps> = ({
                 const taskList: TaskList | null =
                     await persistenceProvider.fetchTaskList(listName);
                 if (!taskList) {
-                    console.log(
+                    console.error(
                         `Error fetching list: ${listName} - returns ${taskList}`
                     );
                     return;

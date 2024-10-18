@@ -64,7 +64,7 @@ export const categoryShades: Record<TaskCategory, CategoryShades> = {
         lightBgHover: 'yellow-200',
         darkBgHover: 'yellow-700',
         lightButtonHover: 'yellow-300',
-        darkButtonHover: 'green-800',
+        darkButtonHover: 'yellow-800',
         lightBorderHover: 'yellow-300',
         darkBorderHover: 'yellow-400',
         lightIcon: 'yellow-500',

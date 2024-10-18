@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Task, TaskSize } from '../../service/taskService';
 import { Button } from 'src/components/ui/button';
+import { Badge } from 'src/components/ui/badge';
 import { Edit, Square, Trash } from 'lucide-react';
 import { CSSTransition } from 'react-transition-group';
 import './TaskItemContent.css';
@@ -151,11 +152,27 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
         ? categoryHighlightClass
         : defaultBorderClass;
     return (
-        <>
+        <div>
             <div
                 onContextMenu={handleContextMenu}
                 className={`task-item-content relative flex-grow w-full p-0.5 rounded shadow-md text-gray-950 dark:text-gray-100 ${categoryBgColorClass} ${highlightedClass} ${categoryBgHoverColorClass} cursor-pointer transition-all duration-75`}
             >
+                <div className={'mx-1'}>
+                    {task.tags?.map((tag) => {
+                        const badgeClasses = 'm-0 px-2';
+                        const projectBgClasses = 'bg-violet-500 dark:bg-violet-600 dark:text-white';
+
+                        const isProjectTag = tag.startsWith('p:');
+                        const displayTag = isProjectTag ? tag.substring(2) : tag;
+                        const classes = `${badgeClasses} ${isProjectTag ? projectBgClasses : ''}`;
+
+                        return (
+                            <Badge key={tag} className={classes} style={{ fontSize: '0.65rem' }}>
+                                {displayTag}
+                            </Badge>
+                        );
+                    })}
+                </div>
                 <div className="flex justify-between items-start">
                     <div className="flex-1 flex pt-2">
                         <Square
@@ -255,6 +272,6 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                     onUnravel={() => openUnravelTaskDialog(task)}
                 />
             </div>
-        </>
+        </div>
     );
 };

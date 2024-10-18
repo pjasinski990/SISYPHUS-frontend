@@ -341,7 +341,7 @@ const StatsPage: React.FC = () => {
             }
         };
 
-        fetchAndProcessStats().catch(err => console.log(err));
+        fetchAndProcessStats().catch(err => console.error(err));
     }, [processStatsData]);
 
     return (
