@@ -23,6 +23,10 @@ module.exports = {
         sourceType: 'module',
     },
     plugins: ['react', 'react-hooks', '@typescript-eslint'],
-    rules: {
-    },
+    "rules": {
+        "@typescript-eslint/no-unused-vars": ["error", {
+            "argsIgnorePattern": "^_",
+            "varsIgnorePattern": "^_"
+        }]
+    }
 };
