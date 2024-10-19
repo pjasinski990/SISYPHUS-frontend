@@ -70,3 +70,12 @@ export function extractMinutesFromIsoTime(time: string | null): number | null {
     const minutesMatch = time.match(/(\d+)M/);
     return minutesMatch ? parseInt(minutesMatch[1], 10) : 0;
 }
+
+export function stringToEnum<T extends Record<string, string | number>>(
+    value: string,
+    enumObj: T
+): T[keyof T] | undefined {
+    return Object.values(enumObj).includes(value)
+        ? (value as T[keyof T])
+        : undefined;
+}

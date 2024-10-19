@@ -2,7 +2,10 @@ import { TextCommand, TriggerType } from './textCommand';
 
 export class TextCommandHandler {
     private readonly commands: TextCommand[];
-    private readonly compiledPatterns: { command: TextCommand; pattern: RegExp }[];
+    private readonly compiledPatterns: {
+        command: TextCommand;
+        pattern: RegExp;
+    }[];
 
     constructor(commands: TextCommand[]) {
         this.commands = commands;
@@ -17,16 +20,25 @@ export class TextCommandHandler {
             switch (command.triggerType) {
                 case TriggerType.PREFIX:
                     pattern = new RegExp(
-                        command.prefix!.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + command.matchPattern.source,
+                        command.prefix!.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') +
+                            command.matchPattern.source,
                         'gi'
                     );
                     break;
 
                 case TriggerType.WRAPPER: {
-                    const wrapperStartEscaped = command.wrapperStart!.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                    const wrapperEndEscaped = command.wrapperEnd!.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    const wrapperStartEscaped = command.wrapperStart!.replace(
+                        /[.*+?^${}()|[\]\\]/g,
+                        '\\$&'
+                    );
+                    const wrapperEndEscaped = command.wrapperEnd!.replace(
+                        /[.*+?^${}()|[\]\\]/g,
+                        '\\$&'
+                    );
                     pattern = new RegExp(
-                        wrapperStartEscaped + command.matchPattern.source + wrapperEndEscaped,
+                        wrapperStartEscaped +
+                            command.matchPattern.source +
+                            wrapperEndEscaped,
                         'gi'
                     );
                     break;
@@ -61,13 +73,18 @@ export class TextCommandHandler {
             if (command.getSuggestions) {
                 suggestions.push(...command.getSuggestions(input));
             } else {
-                suggestions.push(...this.generateCommandSuggestions(command, input));
+                suggestions.push(
+                    ...this.generateCommandSuggestions(command, input)
+                );
             }
         }
         return suggestions;
     }
 
-    private generateCommandSuggestions(command: TextCommand, input: string): string[] {
+    private generateCommandSuggestions(
+        command: TextCommand,
+        input: string
+    ): string[] {
         switch (command.triggerType) {
             case TriggerType.NULL_TRIGGER:
                 return [];
@@ -78,16 +95,26 @@ export class TextCommandHandler {
         }
     }
 
-    private generatePrefixCommandSuggestions(command: TextCommand, input: string): string[] {
+    private generatePrefixCommandSuggestions(
+        command: TextCommand,
+        input: string
+    ): string[] {
         if (command.prefix && command.prefix.startsWith(input)) {
             return [command.prefix];
         }
         return [];
     }
 
-    private generateWrapperCommandSuggestions(command: TextCommand, input: string): string[] {
+    private generateWrapperCommandSuggestions(
+        command: TextCommand,
+        input: string
+    ): string[] {
         if (command.wrapperStart && command.wrapperStart.startsWith(input)) {
-            return [command.wrapperStart + command.matchPattern.source + command.wrapperEnd];
+            return [
+                command.wrapperStart +
+                    command.matchPattern.source +
+                    command.wrapperEnd,
+            ];
         }
         return [];
     }

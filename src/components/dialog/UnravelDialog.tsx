@@ -10,7 +10,6 @@ import { Task } from '../../service/taskService';
 import { generativeService } from '../../service/generativeService';
 import { TaskPropertiesProvider } from 'src/components/context/TaskPropertiesContext';
 import { Button } from 'src/components/ui/button';
-import { Input } from 'src/components/ui/input';
 import { TaskLoadingPlaceholder } from 'src/components/library/LoadingPlaceholder';
 import { TaskActionProvider } from 'src/components/context/TaskActionContext';
 import {

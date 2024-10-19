@@ -7,10 +7,11 @@ export default defineConfig({
     plugins: [
         react(),
         eslintPlugin({
-            failOnError: false,
-            failOnWarning: false,
+            failOnError: true,
+            failOnWarning: true,
             include: ['src/**/*.js', 'src/**/*.jsx', 'src/**/*.ts', 'src/**/*.tsx'],
             exclude: ['node_modules', 'dist', 'src/components/ui/**'],
+            overrideConfigFile: path.resolve(__dirname, '.eslintrc.cjs'),
         }),
     ],
     server: {

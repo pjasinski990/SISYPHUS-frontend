@@ -9,7 +9,6 @@ import {
 } from 'src/components/ui/select';
 import { Button } from 'src/components/ui/button';
 import { EmojiInput } from 'src/components/library/EmojiInput';
-import { EmojiTextarea } from 'src/components/library/EmojiTextArea';
 import { Input } from 'src/components/ui/input';
 import { Slider } from 'src/components/ui/slider';
 import {
@@ -28,6 +27,7 @@ import { Task, TaskCategory, TaskSize } from '../../service/taskService';
 import {
     extractHoursFromIsoTime,
     extractMinutesFromIsoTime,
+    stringToEnum,
 } from '../../lib/utils';
 import {
     Tooltip,
@@ -35,6 +35,8 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from 'src/components/ui/tooltip';
+import { TextCommand, TriggerType } from '../../lib/text_commands/textCommand';
+import { EmojiTextareaWithPreview } from '../library/EmojiTextAreaWithPreview';
 
 export interface TaskFormData {
     title: string;
@@ -68,6 +70,7 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
             handleSubmit,
             watch,
             formState: { errors },
+            setValue,
         } = useForm<TaskFormData>({
             defaultValues: initialData
                 ? {
@@ -106,6 +109,20 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                       tags: [],
                   },
         });
+
+        const sizeCommand: TextCommand = {
+            triggerType: TriggerType.PREFIX,
+            prefix: '/',
+            matchPattern: /(big|small)$/,
+            onMatch: match => {
+                const sizeStr = match.slice(1).toUpperCase();
+                const enumVal = stringToEnum(sizeStr, TaskSize);
+                if (enumVal) {
+                    setValue('size', enumVal);
+                }
+            },
+        };
+        const titleTextCommands = [sizeCommand];
 
         const [selectedDependencies, setSelectedDependencies] = useState<
             string[]
@@ -231,6 +248,7 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                                     {...field}
                                     placeholder="Task Title"
                                     autoComplete="off"
+                                    textCommands={titleTextCommands}
                                 />
                                 {errors.title && (
                                     <p className="mt-1 text-sm text-red-600">
@@ -254,11 +272,11 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                         name="description"
                         control={control}
                         render={({ field }) => (
-                            <EmojiTextarea
-                                id="description"
-                                {...field}
+                            <EmojiTextareaWithPreview
                                 value={field.value ?? ''}
+                                onChange={field.onChange}
                                 placeholder="Task Description"
+                                textCommands={[]}
                             />
                         )}
                     />
@@ -590,7 +608,6 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                                                                 tagInputValue.trim() !==
                                                                     ''
                                                             ) {
-                                                                // Shift+Enter creates a new tag
                                                                 const newTag =
                                                                     tagInputValue.trim();
                                                                 if (
