@@ -44,6 +44,7 @@ const ShortcutsInfoDialog: React.FC = () => {
                 <Button
                     variant="ghost"
                     size="sm"
+                    aria-label={'Shortcuts info'}
                     className="flex items-center space-x-2 dark:hover:bg-slate-700"
                 >
                     <Keyboard className="h-4 w-4" />

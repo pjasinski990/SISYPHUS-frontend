@@ -5,9 +5,7 @@ import eslintPlugin from 'vite-plugin-eslint';
 
 export default defineConfig({
     plugins: [
-        react({
-            fastRefresh: true,
-        }),
+        react(),
         eslintPlugin({
             failOnError: false,
             failOnWarning: false,
@@ -18,14 +16,9 @@ export default defineConfig({
     server: {
         port: 3000,
     },
-    test: {
-        globals: true,
-        environment: 'jsdom',
-        setupFiles: './src/setupTests.js',
-    },
     resolve: {
         alias: {
             'src': path.resolve(__dirname, './src'),
         },
-    }
+    },
 });

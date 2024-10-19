@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from 'src/components/ui/button';
 import { LogOut, Moon, PieChartIcon, Sun, User } from 'lucide-react';
 import { useAuth } from 'src/components/context/AuthContext';
@@ -24,16 +24,16 @@ const Navigation: React.FC<NavigationProps> = ({
 
     return (
         <nav className="flex justify-between items-center px-4 py-2 bg-white dark:bg-gray-800 shadow">
-            <RouterLink to="/" className="text-xl font-bold">
+            <Link to="/" className="text-xl font-bold">
                 <div className={'flex items-center'}>
                     <span>🤯 mind=blown 🤯</span>
                 </div>
-            </RouterLink>
+            </Link>
             <div className="flex items-center space-x-4">
                 <ShortcutsInfoDialog />
                 {isAuthenticated && (
                     <>
-                        <RouterLink
+                        <Link
                             to={'/profile'}
                             className="flex items-center space-x-2 text-sm"
                         >
@@ -45,8 +45,8 @@ const Navigation: React.FC<NavigationProps> = ({
                                 <User className="h-4 w-4" />
                                 <span>{username}</span>
                             </Button>
-                        </RouterLink>
-                        <RouterLink
+                        </Link>
+                        <Link
                             to={'/stats'}
                             className="flex items-center space-x-2 text-sm"
                         >
@@ -58,7 +58,7 @@ const Navigation: React.FC<NavigationProps> = ({
                                 <PieChartIcon className="h-4 w-4" />
                                 <span>Stats</span>
                             </Button>
-                        </RouterLink>
+                        </Link>
                         <Button
                             variant="ghost"
                             size="sm"
@@ -77,9 +77,15 @@ const Navigation: React.FC<NavigationProps> = ({
                     className="dark:hover:bg-slate-700"
                 >
                     {darkMode ? (
-                        <Sun className="h-[1.2rem] w-[1.2rem]" />
+                        <Sun
+                            className="h-[1.2rem] w-[1.2rem]"
+                            data-testid={'SunIcon'}
+                        />
                     ) : (
-                        <Moon className="h-[1.2rem] w-[1.2rem]" />
+                        <Moon
+                            className="h-[1.2rem] w-[1.2rem]"
+                            data-testid={'MoonIcon'}
+                        />
                     )}
                     <span className="sr-only">Toggle theme</span>
                 </Button>

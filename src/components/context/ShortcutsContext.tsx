@@ -11,12 +11,12 @@ export interface Shortcut {
     order?: number;
 }
 
-interface ShortcutsContextType {
+export interface ShortcutsContextType {
     shortcuts: Shortcut[];
     setShortcuts: React.Dispatch<React.SetStateAction<Shortcut[]>>;
 }
 
-const ShortcutsContext = createContext<ShortcutsContextType | undefined>(
+export const ShortcutsContext = createContext<ShortcutsContextType | undefined>(
     undefined
 );
 

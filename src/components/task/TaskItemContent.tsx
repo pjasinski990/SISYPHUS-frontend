@@ -158,16 +158,23 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                 className={`task-item-content relative flex-grow w-full p-0.5 rounded shadow-md text-gray-950 dark:text-gray-100 ${categoryBgColorClass} ${highlightedClass} ${categoryBgHoverColorClass} cursor-pointer transition-all duration-75`}
             >
                 <div className={'mx-1'}>
-                    {task.tags?.map((tag) => {
+                    {task.tags?.map(tag => {
                         const badgeClasses = 'm-0 px-2';
-                        const projectBgClasses = 'bg-violet-500 dark:bg-violet-600 dark:text-white';
+                        const projectBgClasses =
+                            'bg-violet-500 dark:bg-violet-600 dark:text-white';
 
                         const isProjectTag = tag.startsWith('p:');
-                        const displayTag = isProjectTag ? tag.substring(2) : tag;
+                        const displayTag = isProjectTag
+                            ? tag.substring(2)
+                            : tag;
                         const classes = `${badgeClasses} ${isProjectTag ? projectBgClasses : ''}`;
 
                         return (
-                            <Badge key={tag} className={classes} style={{ fontSize: '0.65rem' }}>
+                            <Badge
+                                key={tag}
+                                className={classes}
+                                style={{ fontSize: '0.65rem' }}
+                            >
                                 {displayTag}
                             </Badge>
                         );
