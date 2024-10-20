@@ -121,6 +121,7 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                     setValue('size', enumVal);
                 }
             },
+            removeCommandOnMatch: true,
         };
         const titleTextCommands = [sizeCommand];
 

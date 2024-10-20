@@ -76,9 +76,20 @@ export function useEnhancedInput<
 
     const handleInputChange = (e: React.ChangeEvent<T>) => {
         const newText = e.target.value;
-        setText(newText);
 
-        textCommandHandler.current.inputUpdated(newText);
+        const textAfterParsingCommands =
+            textCommandHandler.current.onInputUpdated(newText);
+        setText(textAfterParsingCommands);
+
+        const syntheticEvent = {
+            ...e,
+            target: {
+                ...e.target,
+                value: textAfterParsingCommands,
+            },
+        } as React.ChangeEvent<T>;
+
+        onChange(syntheticEvent);
 
         const cursorPosition = e.target.selectionStart || 0;
         const textUpToCursor = newText.slice(0, cursorPosition);
@@ -136,21 +147,22 @@ export function useEnhancedInput<
                         }
                     }, 0);
 
-                    const syntheticEvent = {
+                    const updatedSyntheticEvent = {
+                        ...e,
                         target: {
+                            ...e.target,
                             value: updatedText,
-                            name: name,
                         },
-                    } as unknown as React.ChangeEvent<T>;
+                    } as React.ChangeEvent<T>;
 
-                    onChange(syntheticEvent);
+                    onChange(updatedSyntheticEvent);
 
                     return;
                 }
             }
         }
 
-        onChange(e);
+        // Removed the else part to ensure onChange is always called with the updated text
     };
 
     const handleEmojiSelect = (emoji: Emoji) => {

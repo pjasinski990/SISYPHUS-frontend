@@ -12,4 +12,5 @@ export interface TextCommand {
     wrapperStart?: string;
     wrapperEnd?: string;
     getSuggestions?: (input: string) => string[];
+    removeCommandOnMatch?: boolean;
 }

@@ -15,7 +15,7 @@ describe('TextCommandHandler', () => {
 
         const handler = new TextCommandHandler([command]);
 
-        handler.inputUpdated('!hello world !hello again');
+        handler.onInputUpdated('!hello world !hello again');
 
         expect(onMatchMock).toHaveBeenCalledTimes(2);
         expect(onMatchMock).toHaveBeenCalledWith('!hello');
@@ -34,7 +34,7 @@ describe('TextCommandHandler', () => {
 
         const handler = new TextCommandHandler([command]);
 
-        handler.inputUpdated('This is a [command] test. Another [command] here.');
+        handler.onInputUpdated('This is a [command] test. Another [command] here.');
 
         expect(onMatchMock).toHaveBeenCalledTimes(2);
         expect(onMatchMock).toHaveBeenCalledWith('[command]');
@@ -51,7 +51,7 @@ describe('TextCommandHandler', () => {
 
         const handler = new TextCommandHandler([command]);
 
-        handler.inputUpdated('Please matchme in this text. matchme again.');
+        handler.onInputUpdated('Please matchme in this text. matchme again.');
 
         expect(onMatchMock).toHaveBeenCalledTimes(2);
         expect(onMatchMock).toHaveBeenCalledWith('matchme');
@@ -69,7 +69,7 @@ describe('TextCommandHandler', () => {
 
         const handler = new TextCommandHandler([command]);
 
-        handler.inputUpdated('!*command test');
+        handler.onInputUpdated('!*command test');
 
         expect(onMatchMock).toHaveBeenCalledWith('!*command');
     });
@@ -87,7 +87,7 @@ describe('TextCommandHandler', () => {
 
         const handler = new TextCommandHandler([command]);
 
-        handler.inputUpdated('This is a (*command*) test.');
+        handler.onInputUpdated('This is a (*command*) test.');
 
         expect(onMatchMock).toHaveBeenCalledWith('(*command*)');
     });
@@ -112,7 +112,7 @@ describe('TextCommandHandler', () => {
 
         const handler = new TextCommandHandler([command1, command2]);
 
-        handler.inputUpdated('!hello and /hello');
+        handler.onInputUpdated('!hello and /hello');
 
         expect(onMatchMock1).toHaveBeenCalledWith('!hello');
         expect(onMatchMock2).toHaveBeenCalledWith('/hello');
@@ -129,7 +129,7 @@ describe('TextCommandHandler', () => {
 
         const handler = new TextCommandHandler([command]);
 
-        handler.inputUpdated('Please matchme and findme in this text.');
+        handler.onInputUpdated('Please matchme and findme in this text.');
 
         expect(onMatchMock).toHaveBeenCalledTimes(2);
         expect(onMatchMock).toHaveBeenCalledWith('matchme');
@@ -262,7 +262,7 @@ describe('TextCommandHandler', () => {
 
         const handler = new TextCommandHandler([command]);
 
-        handler.inputUpdated('No matching command here.');
+        handler.onInputUpdated('No matching command here.');
 
         expect(onMatchMock).not.toHaveBeenCalled();
     });
@@ -278,7 +278,7 @@ describe('TextCommandHandler', () => {
 
         const handler = new TextCommandHandler([command]);
 
-        handler.inputUpdated('');
+        handler.onInputUpdated('');
 
         expect(onMatchMock).not.toHaveBeenCalled();
     });
@@ -301,9 +301,50 @@ describe('TextCommandHandler', () => {
 
         const handler = new TextCommandHandler([command1, command2]);
 
-        handler.inputUpdated('hello');
+        handler.onInputUpdated('hello');
 
         expect(onMatchMock1).toHaveBeenCalledWith('hello');
         expect(onMatchMock2).toHaveBeenCalledWith('hell');
     });
+
+    it('should remove the matched command if relevant flag is set', () => {
+        const onMatchMock = vi.fn();
+
+        const command: TextCommand = {
+            triggerType: TriggerType.PREFIX,
+            prefix: '!',
+            matchPattern: /hello/,
+            onMatch: onMatchMock,
+            removeCommandOnMatch: true
+        };
+
+        const handler = new TextCommandHandler([command]);
+
+        const resText = handler.onInputUpdated('!hello world !hello again');
+
+        expect(onMatchMock).toHaveBeenCalledTimes(2);
+        expect(onMatchMock).toHaveBeenCalledWith('!hello');
+        expect(resText).toEqual(' world  again')
+    });
+
+    it('should not remove the matched command if relevant flag is not set', () => {
+        const onMatchMock = vi.fn();
+
+        const command: TextCommand = {
+            triggerType: TriggerType.PREFIX,
+            prefix: '!',
+            matchPattern: /hello/,
+            onMatch: onMatchMock,
+            removeCommandOnMatch: false
+        };
+
+        const handler = new TextCommandHandler([command]);
+
+        const resText = handler.onInputUpdated('!hello world !hello again');
+
+        expect(onMatchMock).toHaveBeenCalledTimes(2);
+        expect(onMatchMock).toHaveBeenCalledWith('!hello');
+        expect(resText).toEqual('!hello world !hello again')
+    });
+
 });

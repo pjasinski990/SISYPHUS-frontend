@@ -56,14 +56,25 @@ export class TextCommandHandler {
         }
     }
 
-    inputUpdated(input: string): void {
+    onInputUpdated(input: string): string {
+        let updatedInput = input;
         for (const { command, pattern } of this.compiledPatterns) {
             let match: RegExpExecArray | null;
 
-            while ((match = pattern.exec(input)) !== null) {
+            pattern.lastIndex = 0;
+
+            while ((match = pattern.exec(updatedInput)) !== null) {
                 command.onMatch(match[0]);
+
+                if (command.removeCommandOnMatch) {
+                    updatedInput =
+                        updatedInput.slice(0, match.index) +
+                        updatedInput.slice(match.index + match[0].length);
+                    pattern.lastIndex = match.index;
+                }
             }
         }
+        return updatedInput;
     }
 
     getCommandSuggestions(input: string): string[] {
