@@ -1,42 +1,18 @@
-import React, { forwardRef, useState, useEffect } from 'react';
+import React, { forwardRef, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from 'src/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from 'src/components/ui/select';
 import { Button } from 'src/components/ui/button';
 import { EmojiInput } from 'src/components/library/EmojiInput';
 import { Input } from 'src/components/ui/input';
 import { Slider } from 'src/components/ui/slider';
-import {
-    Popover,
-    PopoverTrigger,
-    PopoverContent,
-} from 'src/components/ui/popover';
-import {
-    Command,
-    CommandInput,
-    CommandList,
-    CommandItem,
-} from 'src/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from 'src/components/ui/popover';
+import { Command, CommandInput, CommandItem, CommandList } from 'src/components/ui/command';
 import { Badge } from 'src/components/ui/badge';
-import { Task, TaskCategory, TaskSize } from '../../service/taskService';
-import {
-    extractHoursFromIsoTime,
-    extractMinutesFromIsoTime,
-    stringToEnum,
-} from '../../lib/utils';
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from 'src/components/ui/tooltip';
-import { TextCommand, TriggerType } from '../../lib/text_commands/textCommand';
-import { EmojiTextareaWithPreview } from '../library/EmojiTextAreaWithPreview';
+import { Task, TaskCategory, TaskSize } from '../../../service/taskService';
+import { extractHoursFromIsoTime, extractMinutesFromIsoTime } from '../../../lib/utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from 'src/components/ui/tooltip';
+import { EmojiTextareaWithPreview } from '../../library/EmojiTextAreaWithPreview';
+import { buildTaskFormTextCommands } from './taskFormTextCommands';
 
 export interface TaskFormData {
     title: string;
@@ -109,22 +85,6 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                       tags: [],
                   },
         });
-
-        const sizeCommand: TextCommand = {
-            triggerType: TriggerType.PREFIX,
-            prefix: '/',
-            matchPattern: /(big|small)$/,
-            onMatch: match => {
-                const sizeStr = match.slice(1).toUpperCase();
-                const enumVal = stringToEnum(sizeStr, TaskSize);
-                if (enumVal) {
-                    setValue('size', enumVal);
-                }
-            },
-            removeCommandOnMatch: true,
-        };
-        const titleTextCommands = [sizeCommand];
-
         const [selectedDependencies, setSelectedDependencies] = useState<
             string[]
         >(initialData?.dependencies || []);
@@ -134,6 +94,8 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
 
         const [tagInputValue, setTagInputValue] = useState('');
         const [dependencyInputValue, setDependencyInputValue] = useState('');
+
+        const taskFormTextCommands = buildTaskFormTextCommands(setValue)
 
         useEffect(() => {
             if (initialData?.dependencies) {
@@ -249,7 +211,7 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                                     {...field}
                                     placeholder="Task Title"
                                     autoComplete="off"
-                                    textCommands={titleTextCommands}
+                                    textCommands={taskFormTextCommands}
                                 />
                                 {errors.title && (
                                     <p className="mt-1 text-sm text-red-600">
@@ -277,7 +239,7 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                                 value={field.value ?? ''}
                                 onChange={field.onChange}
                                 placeholder="Task Description"
-                                textCommands={[]}
+                                textCommands={taskFormTextCommands}
                             />
                         )}
                     />
@@ -372,7 +334,7 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                                         min="0"
                                         placeholder="Hours"
                                         {...field}
-                                        value={field.value ?? undefined}
+                                        value={field.value ?? 0}
                                         onChange={e => {
                                             const value =
                                                 e.target.value === ''
@@ -397,7 +359,7 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                                         max="59"
                                         placeholder="Minutes"
                                         {...field}
-                                        value={field.value ?? undefined}
+                                        value={field.value ?? 0}
                                         onChange={e => {
                                             const value =
                                                 e.target.value === ''

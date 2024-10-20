@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { BaseDialog } from './BaseDialog';
-import { TaskForm, TaskFormData } from 'src/components/task/TaskForm';
+import { TaskForm, TaskFormData } from 'src/components/task/task_form/TaskForm';
 import { Task } from '../../service/taskService';
 import { useAllTaskLists } from 'src/components/context/TaskListsContext';
 

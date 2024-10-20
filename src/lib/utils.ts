@@ -79,3 +79,7 @@ export function stringToEnum<T extends Record<string, string | number>>(
         ? (value as T[keyof T])
         : undefined;
 }
+
+export function escapeRegex(text: string): string {
+    return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
