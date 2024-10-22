@@ -16,7 +16,7 @@ import { DeadlineField } from './fields/DeadlineField';
 import { TaskFormData } from './taskFormData';
 
 interface TaskFormProps {
-    initialTask?: Task;
+    initialTask: Task | null;
     listName: string;
     onSubmit: (task: TaskFormData) => void;
     onCancel: () => void;
@@ -34,7 +34,7 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
             getValues,
         } = useForm<TaskFormData>({
             defaultValues: initialTask
-                ? new TaskFormData(initialTask)
+                ? TaskFormData.fromTask(initialTask)
                 : new TaskFormData({}),
         });
         const hasDeadline = watch('hasDeadline');
@@ -54,7 +54,7 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
         const taskFormTextCommands = buildTaskFormTextCommands(
             getValues,
             setValue,
-            existingTags.keys().toArray()
+            [...existingTags.keys()],
         );
 
         const prepareFormForSubmission = useCallback(

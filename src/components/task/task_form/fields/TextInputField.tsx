@@ -1,52 +1,55 @@
 import React from 'react';
-import { Controller } from 'react-hook-form';
+import { Control, Controller, Path, RegisterOptions } from 'react-hook-form';
 import { Input } from 'src/components/ui/input';
+import { TaskFormData } from '../taskFormData';
 
 interface TextInputFieldProps {
-    name: string;
-    control: any;
+    name: Path<TaskFormData>;
+    control: Control<TaskFormData>;
     label: string;
     placeholder?: string;
-    rules?: any;
-    errors?: any;
+    rules?: RegisterOptions<TaskFormData>;
+    errors?: Record<string, { message: string }>;
     [key: string]: any;
 }
 
 export const TextInputField: React.FC<TextInputFieldProps> = ({
-    name,
-    control,
-    label,
-    placeholder,
-    rules,
-    errors,
-    ...rest
-}) => (
-    <div>
-        <label
-            htmlFor={name}
-            className="block text-sm font-medium text-gray-700"
-        >
-            {label}
-        </label>
-        <Controller
-            name={name}
-            control={control}
-            rules={rules}
-            render={({ field }) => (
-                <>
-                    <Input
-                        id={name}
-                        placeholder={placeholder}
-                        {...field}
-                        {...rest}
-                    />
-                    {errors && errors[name] && (
-                        <p className="mt-1 text-sm text-red-600">
-                            {errors[name].message}
-                        </p>
-                    )}
-                </>
-            )}
-        />
-    </div>
-);
+                                                                  name,
+                                                                  control,
+                                                                  label,
+                                                                  placeholder,
+                                                                  rules,
+                                                                  errors,
+                                                                  ...rest
+                                                              }) => {
+    return (
+        <div className="space-y-2">
+            <label htmlFor={name}>{label}</label>
+            <Controller
+                name={name}
+                control={control}
+                rules={rules}
+                render={({ field }) => (
+                    <>
+                        <Input
+                            id={name}
+                            placeholder={placeholder}
+                            {...rest}
+                            {...field}
+                            value={field.value?.toString() ?? ''}
+                            onChange={(e) => {
+                                const value = e.target.value;
+                                field.onChange(value === '' ? null : value);
+                            }}
+                        />
+                        {errors?.[name] && (
+                            <p className="text-sm text-red-500">
+                                {errors[name].message}
+                            </p>
+                        )}
+                    </>
+                )}
+            />
+        </div>
+    );
+};

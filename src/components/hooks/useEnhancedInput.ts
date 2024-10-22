@@ -161,8 +161,6 @@ export function useEnhancedInput<
                 }
             }
         }
-
-        // Removed the else part to ensure onChange is always called with the updated text
     };
 
     const handleEmojiSelect = (emoji: Emoji) => {

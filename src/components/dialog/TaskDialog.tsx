@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { BaseDialog } from './BaseDialog';
-import { TaskForm, TaskFormData } from 'src/components/task/task_form/TaskForm';
+import { TaskForm } from 'src/components/task/task_form/TaskForm';
 import { Task } from '../../service/taskService';
 import { useAllTaskLists } from 'src/components/context/TaskListsContext';
+import { TaskFormData } from '../task/task_form/taskFormData';
 
 interface TaskDialogProps {
     open: boolean;
@@ -63,7 +64,7 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({
                     ref={formRef}
                     listName={listName}
                     availableTasks={availableTasks}
-                    initialData={initialData || undefined}
+                    initialTask={initialData || null}
                     onSubmit={onSubmit}
                     onCancel={onCancel}
                 />

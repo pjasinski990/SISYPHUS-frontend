@@ -55,16 +55,13 @@ export const MultiSelectInput: React.FC<MultiSelectInputProps> = ({
                 const { scrollTop, scrollHeight, clientHeight } =
                     popoverContentRef.current;
                 if (e.deltaY < 0 && scrollTop === 0) {
-                    // Scrolling up at the top
                     e.preventDefault();
                 } else if (
                     e.deltaY > 0 &&
                     scrollTop + clientHeight >= scrollHeight
                 ) {
-                    // Scrolling down at the bottom
                     e.preventDefault();
                 }
-                // Allow scrolling within the popover
             }
         };
 
