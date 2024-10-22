@@ -1,10 +1,19 @@
-import { UseFormSetValue } from 'react-hook-form/dist/types/form';
+import {
+    UseFormGetValues,
+    UseFormSetValue,
+} from 'react-hook-form/dist/types/form';
 import { TaskFormData } from './TaskForm';
 import { TaskCategory, TaskSize } from '../../../service/taskService';
 import { escapeRegex, stringToEnum } from '../../../lib/utils';
-import { TextCommand, TriggerType } from '../../../lib/text_commands/textCommand';
+import {
+    TextCommand,
+    TriggerType,
+} from '../../../lib/text_commands/textCommand';
 
-export function buildTaskFormTextCommands(setValue: UseFormSetValue<TaskFormData>) {
+export function buildTaskFormTextCommands(
+    getValues: UseFormGetValues<TaskFormData>,
+    setValue: UseFormSetValue<TaskFormData>
+) {
     const sizeCommand: TextCommand = {
         triggerType: TriggerType.PREFIX,
         prefix: '/',
@@ -31,12 +40,12 @@ export function buildTaskFormTextCommands(setValue: UseFormSetValue<TaskFormData
             }
         },
         removeCommandOnMatch: true,
-    }
+    };
 
     const durationCommand: TextCommand = {
         triggerType: TriggerType.PREFIX,
         prefix: '/',
-        matchPattern: /(?:d|duration)\s+(?:(\d+)h)?(?:(\d+)m)?\s$/i,
+        matchPattern: /(?:d|duration)\s*(?:(\d+)h)?(?:(\d+)m)?\s/i,
         onMatch: match => {
             const matchString = match.trim();
             const hoursMatch = matchString.match(/(\d+)h/);
@@ -48,49 +57,70 @@ export function buildTaskFormTextCommands(setValue: UseFormSetValue<TaskFormData
             setValue('durationHours', hours);
         },
         removeCommandOnMatch: true,
-    }
+    };
 
     const flexibilityCommand: TextCommand = {
         triggerType: TriggerType.PREFIX,
         prefix: '/',
-        matchPattern: /(?:f|flex|flexibility)\s+(?:1|0?\.\d+)\s$/i,
+        matchPattern: /(?:f|flex|flexibility)\s*(?:1|0?\.\d+)\s/i,
         onMatch: match => {
             const matchString = match.trim();
             const flexibilityMatch = matchString.match(/(1|(0?\.\d+))/);
-            const flexibility = flexibilityMatch ? parseFloat(flexibilityMatch[1]) : 0;
+            const flexibility = flexibilityMatch
+                ? parseFloat(flexibilityMatch[1])
+                : 0;
 
             setValue('flexibility', flexibility);
         },
         removeCommandOnMatch: true,
-    }
+    };
 
     const startTimeCommand: TextCommand = {
         triggerType: TriggerType.PREFIX,
         prefix: '/',
-        matchPattern: /(?:s|start)\s+(\d{1,2}):(\d{1,2})\s$/i,
+        matchPattern: /(?:s|start)\s*(\d{1,2}):(\d{1,2})\s/i,
         onMatch: match => {
-            const startTime = toTimeInput(match.trim())
-            setValue('startTime', startTime)
+            const startTime = toTimeInput(match.trim());
+            setValue('startTime', startTime);
         },
         removeCommandOnMatch: true,
-    }
+    };
 
-    return [sizeCommand, categoryCommand, durationCommand, flexibilityCommand, startTimeCommand];
+    const createTagCommand: TextCommand = {
+        triggerType: TriggerType.PREFIX,
+        prefix: '#',
+        matchPattern: /[^\][a-zA-Z_\-:]+\s/i,
+        onMatch: match => {
+            const values = getValues('tags') ?? [];
+            const cleanTag = match.trim().slice(1);
+            setValue('tags', [...values, cleanTag]);
+        },
+        removeCommandOnMatch: true,
+    };
+
+    return [
+        sizeCommand,
+        categoryCommand,
+        durationCommand,
+        flexibilityCommand,
+        startTimeCommand,
+        createTagCommand,
+    ];
 }
 
-function getRegexMatcherForEnum<T extends Record<string, string | number>>( enumObj: T) {
+function getRegexMatcherForEnum<T extends Record<string, string | number>>(
+    enumObj: T
+) {
     const enumValues = Object.values(enumObj);
-    const stringValues = enumValues.map(e => e.toString().toLowerCase())
+    const stringValues = enumValues.map(e => e.toString().toLowerCase());
     const escapedValues = stringValues.map(s => escapeRegex(s));
-    return new RegExp(`(${escapedValues.join('|')})\\s$`,
-        'i'
-    )
+    return new RegExp(`(${escapedValues.join('|')})\\s`, 'i');
 }
 
 function toTimeInput(time: string): string {
-    const match = time.match(/(?:s|start)\s+(\d{1,2}):(\d{1,2})\s*$/);
+    const match = time.match(/(?:s|start)\s+(\d{1,2}):(\d{1,2})\s*/);
     if (!match) {
-        return '00:00'
+        return '00:00';
     }
 
     const [, rawHours, rawMinutes] = match;
