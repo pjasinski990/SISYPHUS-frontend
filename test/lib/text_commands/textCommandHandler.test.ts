@@ -240,7 +240,7 @@ describe('TextCommandHandler', () => {
             prefix: '!hello',
             matchPattern: /hello/,
             onMatch: vi.fn(),
-            getSuggestions: (input: string) => ['customSuggestion1', 'customSuggestion2'],
+            getSuggestions: (_: string) => ['customSuggestion1', 'customSuggestion2'],
         };
 
         const handler = new TextCommandHandler([command]);
@@ -347,4 +347,21 @@ describe('TextCommandHandler', () => {
         expect(resText).toEqual('!hello world !hello again')
     });
 
+    it('should not match escaped commands', () => {
+        const onMatchMock = vi.fn();
+
+        const command: TextCommand = {
+            triggerType: TriggerType.PREFIX,
+            prefix: '!',
+            matchPattern: /noEscape/,
+            onMatch: onMatchMock,
+            removeCommandOnMatch: true
+        };
+
+        const handler = new TextCommandHandler([command]);
+        handler.onInputUpdated('\\!noEscape, !noEscape!');
+
+        expect(onMatchMock).toHaveBeenCalledTimes(1);
+        expect(onMatchMock).toHaveBeenCalledWith('!noEscape');
+    });
 });

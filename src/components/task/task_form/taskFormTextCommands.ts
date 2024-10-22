@@ -89,7 +89,7 @@ export function buildTaskFormTextCommands(
     const createTagCommand: TextCommand = {
         triggerType: TriggerType.PREFIX,
         prefix: '#',
-        matchPattern: /[^\][a-zA-Z_\-:]+\s/i,
+        matchPattern: /[a-zA-Z_\-:]+\s$/i,
         onMatch: match => {
             const values = getValues('tags') ?? [];
             const cleanTag = match.trim().slice(1);

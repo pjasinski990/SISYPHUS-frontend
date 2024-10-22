@@ -63,14 +63,21 @@ export class TextCommandHandler {
 
             pattern.lastIndex = 0;
 
-            while ((match = pattern.exec(updatedInput)) !== null) {
+            const ignoreEscapedCommandPattern = new RegExp(
+                `(?<!\\\\)${pattern.source}`,
+                pattern.flags
+            );
+            while (
+                (match = ignoreEscapedCommandPattern.exec(updatedInput)) !==
+                null
+            ) {
                 command.onMatch(match[0]);
 
                 if (command.removeCommandOnMatch) {
                     updatedInput =
                         updatedInput.slice(0, match.index) +
                         updatedInput.slice(match.index + match[0].length);
-                    pattern.lastIndex = match.index;
+                    ignoreEscapedCommandPattern.lastIndex = match.index;
                 }
             }
         }
