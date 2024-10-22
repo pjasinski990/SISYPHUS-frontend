@@ -1,5 +1,6 @@
 import React from 'react';
 import { Controller } from 'react-hook-form';
+import { Input } from '../../../ui/input';
 
 interface CheckboxFieldProps {
     name: string;
@@ -19,7 +20,7 @@ export const CheckboxField: React.FC<CheckboxFieldProps> = ({
             name={name}
             control={control}
             render={({ field }) => (
-                <input
+                <Input
                     type="checkbox"
                     id={name}
                     checked={field.value}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Controller } from 'react-hook-form';
 import {
     Popover,
@@ -46,6 +46,41 @@ export const MultiSelectInput: React.FC<MultiSelectInputProps> = ({
 }) => {
     const [selectedIds, setSelectedIds] = useState<string[]>(initialSelection);
     const [inputValue, setInputValue] = useState('');
+
+    const popoverContentRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleWheel = (e: WheelEvent) => {
+            if (popoverContentRef.current) {
+                const { scrollTop, scrollHeight, clientHeight } =
+                    popoverContentRef.current;
+                if (e.deltaY < 0 && scrollTop === 0) {
+                    // Scrolling up at the top
+                    e.preventDefault();
+                } else if (
+                    e.deltaY > 0 &&
+                    scrollTop + clientHeight >= scrollHeight
+                ) {
+                    // Scrolling down at the bottom
+                    e.preventDefault();
+                }
+                // Allow scrolling within the popover
+            }
+        };
+
+        const popoverElement = popoverContentRef.current;
+        if (popoverElement) {
+            popoverElement.addEventListener('wheel', handleWheel, {
+                passive: false,
+            });
+        }
+
+        return () => {
+            if (popoverElement) {
+                popoverElement.removeEventListener('wheel', handleWheel);
+            }
+        };
+    }, []);
 
     const defaultRenderItem = (item: Item) => (
         <div className="flex items-center justify-between w-full">
@@ -137,13 +172,17 @@ export const MultiSelectInput: React.FC<MultiSelectInputProps> = ({
                                     </button>
                                 </PopoverTrigger>
                                 <PopoverContent
-                                    className="w-full p-0"
+                                    ref={popoverContentRef}
+                                    className="w-full p-0 overflow-y-auto"
                                     role="dialog"
                                     aria-modal="true"
                                     onKeyDown={e => {
                                         if (e.key === 'Escape') {
                                             e.stopPropagation();
                                         }
+                                    }}
+                                    onWheel={e => {
+                                        e.stopPropagation();
                                     }}
                                 >
                                     <Command>

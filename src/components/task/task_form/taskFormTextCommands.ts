@@ -2,17 +2,18 @@ import {
     UseFormGetValues,
     UseFormSetValue,
 } from 'react-hook-form/dist/types/form';
-import { TaskFormData } from './TaskForm';
 import { TaskCategory, TaskSize } from '../../../service/taskService';
 import { escapeRegex, stringToEnum } from '../../../lib/utils';
 import {
     TextCommand,
     TriggerType,
 } from '../../../lib/text_commands/textCommand';
+import { TaskFormData } from './taskFormData';
 
 export function buildTaskFormTextCommands(
     getValues: UseFormGetValues<TaskFormData>,
-    setValue: UseFormSetValue<TaskFormData>
+    setValue: UseFormSetValue<TaskFormData>,
+    availableTags: string[]
 ) {
     const sizeCommand: TextCommand = {
         triggerType: TriggerType.PREFIX,
@@ -96,6 +97,13 @@ export function buildTaskFormTextCommands(
             setValue('tags', [...values, cleanTag]);
         },
         removeCommandOnMatch: true,
+        getSuggestions: (input: string) => {
+            const cleanInput = input.trim().slice(1);
+            console.log(
+                `recommending: ${availableTags.filter(t => t.startsWith(cleanInput))}`
+            );
+            return availableTags.filter(tag => tag.startsWith(cleanInput));
+        },
     };
 
     return [

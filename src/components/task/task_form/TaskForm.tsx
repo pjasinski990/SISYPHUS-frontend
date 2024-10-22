@@ -1,19 +1,9 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useCallback } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Button } from 'src/components/ui/button';
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from 'src/components/ui/tooltip';
 import { EmojiInput } from 'src/components/library/EmojiInput';
 import { EmojiTextareaWithPreview } from '../../library/EmojiTextAreaWithPreview';
 import { Task, TaskCategory, TaskSize } from '../../../service/taskService';
-import {
-    extractHoursFromIsoTime,
-    extractMinutesFromIsoTime,
-} from '../../../lib/utils';
 import { buildTaskFormTextCommands } from './taskFormTextCommands';
 import { TextInputField } from './fields/TextInputField';
 import { SelectField } from './fields/SelectField';
@@ -22,26 +12,11 @@ import { DurationField } from './fields/DurationField';
 import { TagsInput } from './fields/TagsInput';
 import { DependenciesInput } from './fields/DependenciesInput';
 import { FlexibilitySlider } from './fields/FlexibilitySlider';
-
-export interface TaskFormData {
-    title: string;
-    category: TaskCategory;
-    size: TaskSize;
-    listName: string;
-    description: string | null;
-    startTime: string | null;
-    duration: string | null;
-    deadline: string | null;
-    dependencies: string[] | null;
-    flexibility: number | null;
-    durationHours: number | null;
-    durationMinutes: number | null;
-    hasDeadline: boolean;
-    tags: string[] | null;
-}
+import { DeadlineField } from './fields/DeadlineField';
+import { TaskFormData } from './taskFormData';
 
 interface TaskFormProps {
-    initialData?: Task;
+    initialTask?: Task;
     listName: string;
     onSubmit: (task: TaskFormData) => void;
     onCancel: () => void;
@@ -49,7 +24,7 @@ interface TaskFormProps {
 }
 
 export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
-    ({ initialData, listName, onSubmit, onCancel, availableTasks }, ref) => {
+    ({ initialTask, listName, onSubmit, onCancel, availableTasks }, ref) => {
         const {
             control,
             handleSubmit,
@@ -58,48 +33,11 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
             setValue,
             getValues,
         } = useForm<TaskFormData>({
-            defaultValues: initialData
-                ? {
-                      title: initialData.title,
-                      description: initialData.description,
-                      category: initialData.category,
-                      size: initialData.size,
-                      listName: initialData.listName,
-                      duration: initialData.duration,
-                      durationHours: extractHoursFromIsoTime(
-                          initialData.duration
-                      ),
-                      durationMinutes: extractMinutesFromIsoTime(
-                          initialData.duration
-                      ),
-                      startTime: initialData.startTime,
-                      deadline: initialData.deadline,
-                      dependencies: initialData.dependencies || [],
-                      flexibility: initialData.flexibility ?? 0.1,
-                      hasDeadline: !!initialData.deadline,
-                      tags: initialData.tags || [],
-                  }
-                : {
-                      title: '',
-                      description: '',
-                      category: TaskCategory.WHITE,
-                      size: TaskSize.SMALL,
-                      duration: null,
-                      startTime: '',
-                      deadline: null,
-                      dependencies: [],
-                      flexibility: 0.1,
-                      durationHours: null,
-                      durationMinutes: null,
-                      hasDeadline: false,
-                      tags: [],
-                  },
+            defaultValues: initialTask
+                ? new TaskFormData(initialTask)
+                : new TaskFormData({}),
         });
-
-        const taskFormTextCommands = buildTaskFormTextCommands(
-            getValues,
-            setValue
-        );
+        const hasDeadline = watch('hasDeadline');
 
         const existingTags = React.useMemo(() => {
             const tagCounts = new Map<string, number>();
@@ -113,39 +51,33 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
             return tagCounts;
         }, [availableTasks]);
 
-        const getFlexibilityMessage = (value: number) => {
-            if (value === 0) {
-                return "Task is fixed and won't be rescheduled.";
-            } else if (value === 1) {
-                return 'Task can be rescheduled freely or moved to next days.';
-            } else {
-                const maxRescheduleMinutes = value * 8 * 60;
-                return `Task can be rescheduled up to ${Math.round(maxRescheduleMinutes)} minutes.`;
-            }
-        };
+        const taskFormTextCommands = buildTaskFormTextCommands(
+            getValues,
+            setValue,
+            existingTags.keys().toArray()
+        );
 
-        const onFormSubmit = (data: TaskFormData) => {
-            data.listName = listName;
+        const prepareFormForSubmission = useCallback(
+            (data: TaskFormData) => {
+                data.listName = listName;
+                data.duration = buildDurationFromInputs(
+                    data.durationHours,
+                    data.durationMinutes
+                );
+                data.deadline = data.hasDeadline ? data.deadline : null;
 
-            const hours = data.durationHours || 0;
-            const minutes = data.durationMinutes || 0;
+                return data;
+            },
+            [listName]
+        );
 
-            if (hours || minutes) {
-                const durationParts = [
-                    hours ? `${hours}H` : '',
-                    minutes ? `${minutes}M` : '',
-                ].join('');
-                data.duration = `PT${durationParts}`;
-            } else {
-                data.duration = null;
-            }
-
-            if (!data.hasDeadline) {
-                data.deadline = null;
-            }
-
-            onSubmit(data);
-        };
+        const onFormSubmit = useCallback(
+            (data: TaskFormData) => {
+                const readyData = prepareFormForSubmission(data);
+                onSubmit(readyData);
+            },
+            [onSubmit, prepareFormForSubmission]
+        );
 
         const handleKeyDown = (event: React.KeyboardEvent) => {
             if (event.key === 'Enter') {
@@ -169,7 +101,6 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                 event.stopPropagation();
             }
         };
-        const hasDeadline = watch('hasDeadline');
 
         return (
             <form
@@ -275,54 +206,13 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                 />
 
                 {/* Deadline Field */}
-                <div className="relative">
-                    <label
-                        htmlFor="deadline"
-                        className="block text-sm font-medium text-gray-700"
-                    >
-                        Deadline
-                    </label>
-                    <Controller
-                        name="deadline"
-                        control={control}
-                        rules={{
-                            required: hasDeadline
-                                ? 'Deadline is required'
-                                : false,
-                        }}
-                        render={({ field }) => (
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <div>
-                                            <input
-                                                {...field}
-                                                id="deadline"
-                                                name="deadline"
-                                                type="datetime-local"
-                                                value={field.value ?? ''}
-                                                placeholder="Select deadline"
-                                                disabled={!hasDeadline}
-                                                className="input-class-name"
-                                            />
-                                        </div>
-                                    </TooltipTrigger>
-                                    {!hasDeadline && (
-                                        <TooltipContent>
-                                            Enable &quot;Has Deadline&quot; to
-                                            set a deadline.
-                                        </TooltipContent>
-                                    )}
-                                </Tooltip>
-                            </TooltipProvider>
-                        )}
-                    />
-                    {errors.deadline && (
-                        <p className="mt-1 text-sm text-red-600">
-                            {errors.deadline.message}
-                        </p>
-                    )}
-                </div>
+                <DeadlineField
+                    name={'deadline'}
+                    control={control}
+                    label={'Deadline'}
+                    enabled={hasDeadline}
+                    errors={errors}
+                />
 
                 {/* Tags Field */}
                 <TagsInput
@@ -330,7 +220,7 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                     control={control}
                     label="Tags"
                     availableTags={existingTags}
-                    initialTags={initialData?.tags || []}
+                    initialTags={initialTask?.tags || []}
                 />
 
                 {/* Dependencies Field */}
@@ -339,14 +229,11 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
                     control={control}
                     label="Dependencies"
                     availableTasks={availableTasks}
-                    initialDependencies={initialData?.dependencies || []}
+                    initialDependencies={initialTask?.dependencies || []}
                 />
 
                 {/* Flexibility Field */}
-                <FlexibilitySlider
-                    control={control}
-                    getFlexibilityMessage={getFlexibilityMessage}
-                />
+                <FlexibilitySlider control={control} />
 
                 {/* Form Actions */}
                 <div className="flex justify-end space-x-2 pt-4">
@@ -361,3 +248,18 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
 );
 
 TaskForm.displayName = 'TaskForm';
+
+const buildDurationFromInputs = (
+    hours: number | null,
+    minutes: number | null
+): string | null => {
+    const h = hours || 0;
+    const m = minutes || 0;
+
+    if (h || m) {
+        const durationParts = [h ? `${h}H` : '', m ? `${m}M` : ''].join('');
+        return `PT${durationParts}`;
+    } else {
+        return null;
+    }
+};
