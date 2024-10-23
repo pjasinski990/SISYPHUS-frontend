@@ -1,9 +1,11 @@
 import React from 'react';
 import { MultiSelectInput } from '../../../library/MultiSelectInput';
+import { Control, Path } from 'react-hook-form';
+import { TaskFormData } from '../taskFormData';
 
 interface TagsInputProps {
-    name: string;
-    control: any;
+    name: Path<TaskFormData>;
+    control: Control<TaskFormData>;
     label: string;
     availableTags: Map<string, number>;
     initialTags: string[];

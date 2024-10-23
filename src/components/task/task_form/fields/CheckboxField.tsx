@@ -1,12 +1,12 @@
 import React from 'react';
-import { Controller } from 'react-hook-form';
+import { Control, Controller, Path } from 'react-hook-form';
 import { Input } from '../../../ui/input';
+import { TaskFormData } from '../taskFormData';
 
 interface CheckboxFieldProps {
-    name: string;
-    control: any;
+    name: Path<TaskFormData>;
+    control: Control<TaskFormData>;
     label: string;
-    [key: string]: any;
 }
 
 export const CheckboxField: React.FC<CheckboxFieldProps> = ({
@@ -23,7 +23,7 @@ export const CheckboxField: React.FC<CheckboxFieldProps> = ({
                 <Input
                     type="checkbox"
                     id={name}
-                    checked={field.value}
+                    checked={!!field.value}
                     onChange={field.onChange}
                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                     {...rest}

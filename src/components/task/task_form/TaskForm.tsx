@@ -54,7 +54,7 @@ export const TaskForm = forwardRef<HTMLFormElement, TaskFormProps>(
         const taskFormTextCommands = buildTaskFormTextCommands(
             getValues,
             setValue,
-            [...existingTags.keys()],
+            [...existingTags.keys()]
         );
 
         const prepareFormForSubmission = useCallback(

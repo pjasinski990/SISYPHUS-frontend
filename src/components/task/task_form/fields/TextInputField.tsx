@@ -10,18 +10,17 @@ interface TextInputFieldProps {
     placeholder?: string;
     rules?: RegisterOptions<TaskFormData>;
     errors?: Record<string, { message: string }>;
-    [key: string]: any;
 }
 
 export const TextInputField: React.FC<TextInputFieldProps> = ({
-                                                                  name,
-                                                                  control,
-                                                                  label,
-                                                                  placeholder,
-                                                                  rules,
-                                                                  errors,
-                                                                  ...rest
-                                                              }) => {
+    name,
+    control,
+    label,
+    placeholder,
+    rules,
+    errors,
+    ...rest
+}) => {
     return (
         <div className="space-y-2">
             <label htmlFor={name}>{label}</label>
@@ -37,7 +36,7 @@ export const TextInputField: React.FC<TextInputFieldProps> = ({
                             {...rest}
                             {...field}
                             value={field.value?.toString() ?? ''}
-                            onChange={(e) => {
+                            onChange={e => {
                                 const value = e.target.value;
                                 field.onChange(value === '' ? null : value);
                             }}

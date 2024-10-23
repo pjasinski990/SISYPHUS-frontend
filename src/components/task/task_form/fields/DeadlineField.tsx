@@ -1,5 +1,5 @@
 import React from 'react';
-import { Controller, FieldErrors } from 'react-hook-form';
+import { Control, Controller, FieldErrors, Path } from 'react-hook-form';
 import {
     Tooltip,
     TooltipContent,
@@ -7,15 +7,14 @@ import {
     TooltipTrigger,
 } from '../../../ui/tooltip';
 import { Input } from '../../../ui/input';
-import { TaskFormData } from '../TaskForm';
+import { TaskFormData } from '../taskFormData';
 
 interface DeadlineFieldProps {
-    name: string;
-    control: any;
+    name: Path<TaskFormData>;
+    control: Control<TaskFormData>;
     label: string;
     enabled: boolean;
     errors: FieldErrors<TaskFormData>;
-    [key: string]: any;
 }
 
 export const DeadlineField: React.FC<DeadlineFieldProps> = ({
@@ -49,7 +48,11 @@ export const DeadlineField: React.FC<DeadlineFieldProps> = ({
                                     id="deadline"
                                     name="deadline"
                                     type="datetime-local"
-                                    value={field.value ?? ''}
+                                    value={
+                                        typeof field.value === 'string'
+                                            ? field.value
+                                            : ''
+                                    }
                                     placeholder="Select deadline"
                                     disabled={!enabled}
                                     {...rest}

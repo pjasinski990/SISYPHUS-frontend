@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Pie, Radar, Bar } from 'react-chartjs-2';
+import { Bar, Pie, Radar } from 'react-chartjs-2';
 import { StatsResponse, statsService } from '../service/statsService';
 import { TaskCategory, TaskSize } from '../service/taskService';
 import {
@@ -12,21 +12,23 @@ import Layout from 'src/components/Layout';
 import { categoryShades } from 'src/components/task/categoryShades';
 
 import {
-    Chart as ChartJS,
     ArcElement,
-    Tooltip as ChartTooltip,
-    Legend as ChartLegend,
-    ChartOptions,
-    RadialLinearScale,
-    PointElement,
-    LineElement,
-    Filler,
-    CategoryScale,
-    LinearScale,
     BarElement,
+    CategoryScale,
+    Chart as ChartJS,
+    ChartData,
+    ChartOptions,
+    DefaultDataPoint,
+    Filler,
+    Legend as ChartLegend,
+    LinearScale,
+    LineElement,
+    PointElement,
+    RadialLinearScale,
     Title as ChartTitle,
+    Tooltip as ChartTooltip,
 } from 'chart.js';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
+import ChartDataLabels, { Context } from 'chartjs-plugin-datalabels';
 import { TAILWIND_COLORS } from 'src/components/library/TailwindColors';
 import { hexToRgba } from 'src/lib/utils';
 import { useIsDarkMode } from 'src/components/hooks/useIsDarkMode';
@@ -54,10 +56,17 @@ ChartJS.register(
 const StatsPage: React.FC = () => {
     const isDarkMode = useIsDarkMode();
 
-    const [pieChartData, setPieChartData] = useState<any>(null);
-    const [radarChartData, setRadarChartData] = useState<any>(null);
-    const [barWeightChartData, setBarWeightChartData] = useState<any>(null);
-    const [barSizeChartData, setBarSizeChartData] = useState<any>(null);
+    const [pieChartData, setPieChartData] = useState<ChartData<
+        'pie',
+        DefaultDataPoint<'pie'>,
+        string
+    > | null>(null);
+    const [radarChartData, setRadarChartData] =
+        useState<ChartData<'radar'> | null>(null);
+    const [barWeightChartData, setBarWeightChartData] =
+        useState<ChartData<'bar'> | null>(null);
+    const [barSizeChartData, setBarSizeChartData] =
+        useState<ChartData<'bar'> | null>(null);
 
     const getCategoryColor = useCallback(
         (category: string) => {
@@ -273,8 +282,8 @@ const StatsPage: React.FC = () => {
                 align: 'start',
                 offset: 6,
                 clip: false,
-                formatter: (value: number, context: any) => {
-                    const total = context.dataset.data.reduce(
+                formatter: (value: number, context: Context) => {
+                    const total = (context.dataset.data as number[]).reduce(
                         (acc: number, val: number) => acc + val,
                         0
                     );
@@ -371,10 +380,11 @@ const StatsPage: React.FC = () => {
                                 </div>
                                 {pieChartData && (
                                     <CustomLegend
-                                        labels={pieChartData.labels}
+                                        labels={pieChartData.labels ?? []}
                                         colors={
-                                            pieChartData.datasets[0]
-                                                .backgroundColor
+                                            (pieChartData.datasets[0]
+                                                .backgroundColor as string[]) ??
+                                            []
                                         }
                                     />
                                 )}

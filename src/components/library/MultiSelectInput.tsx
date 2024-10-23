@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Controller } from 'react-hook-form';
+import { Control, Controller, Path } from 'react-hook-form';
 import {
     Popover,
     PopoverContent,
@@ -12,6 +12,7 @@ import {
     CommandList,
 } from 'src/components/ui/command';
 import { Badge } from 'src/components/ui/badge';
+import { TaskFormData } from '../task/task_form/taskFormData';
 
 interface Item {
     id: string;
@@ -20,8 +21,8 @@ interface Item {
 }
 
 interface MultiSelectInputProps {
-    name: string;
-    control: any;
+    name: Path<TaskFormData>;
+    control: Control<TaskFormData>;
     label: string;
     items: Item[];
     initialSelection?: string[];

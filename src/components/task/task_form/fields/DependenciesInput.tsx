@@ -1,10 +1,12 @@
 import React from 'react';
 import { Task } from '../../../../service/taskService';
 import { MultiSelectInput } from '../../../library/MultiSelectInput';
+import { TaskFormData } from '../taskFormData';
+import { Control, Path } from 'react-hook-form';
 
 interface DependenciesInputProps {
-    name: string;
-    control: any;
+    name: Path<TaskFormData>;
+    control: Control<TaskFormData>;
     label: string;
     availableTasks: Task[];
     initialDependencies: string[];

@@ -1,10 +1,11 @@
 import React from 'react';
-import { Controller } from 'react-hook-form';
+import { Control, Controller } from 'react-hook-form';
 import { Slider } from 'src/components/ui/slider';
 import { Input } from 'src/components/ui/input';
+import { TaskFormData } from '../taskFormData';
 
 interface FlexibilitySliderProps {
-    control: any;
+    control: Control<TaskFormData>;
 }
 
 export const FlexibilitySlider: React.FC<FlexibilitySliderProps> = ({

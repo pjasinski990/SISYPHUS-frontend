@@ -1,9 +1,10 @@
 import React from 'react';
-import { Controller } from 'react-hook-form';
+import { Control, Controller } from 'react-hook-form';
 import { Input } from 'src/components/ui/input';
+import { TaskFormData } from '../taskFormData';
 
 interface DurationFieldProps {
-    control: any;
+    control: Control<TaskFormData>;
 }
 
 export const DurationField: React.FC<DurationFieldProps> = ({ control }) => (

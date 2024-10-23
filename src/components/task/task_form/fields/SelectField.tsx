@@ -1,5 +1,5 @@
 import React from 'react';
-import { Controller } from 'react-hook-form';
+import { Control, Controller, Path } from 'react-hook-form';
 import {
     Select,
     SelectContent,
@@ -7,14 +7,14 @@ import {
     SelectTrigger,
     SelectValue,
 } from 'src/components/ui/select';
+import { TaskFormData } from '../taskFormData';
 
 interface SelectFieldProps {
-    name: string;
-    control: any;
+    name: Path<TaskFormData>;
+    control: Control<TaskFormData>;
     label: string;
     options: { value: string; label: string }[];
     placeholder?: string;
-    [key: string]: any;
 }
 
 export const SelectField: React.FC<SelectFieldProps> = ({
@@ -38,7 +38,7 @@ export const SelectField: React.FC<SelectFieldProps> = ({
             render={({ field }) => (
                 <Select
                     onValueChange={field.onChange}
-                    value={field.value}
+                    value={typeof field.value === 'string' ? field.value : ''}
                     {...rest}
                 >
                     <SelectTrigger id={name}>
