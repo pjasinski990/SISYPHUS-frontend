@@ -10,6 +10,7 @@ interface TextInputFieldProps {
     placeholder?: string;
     rules?: RegisterOptions<TaskFormData>;
     errors?: Record<string, { message: string }>;
+    type?: string
 }
 
 export const TextInputField: React.FC<TextInputFieldProps> = ({

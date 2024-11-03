@@ -7,17 +7,18 @@ import { DragDropContext } from '@hello-pangea/dnd';
 import { Shortcut } from 'src/components/context/ShortcutsContext';
 import { useRegisterShortcut } from 'src/components/hooks/useRegisterShortcut';
 import { useTaskDragAndDrop } from 'src/components/context/TaskDragDropContext';
-import {
-    TaskNavigationProvider,
-    useTaskNavigation,
-} from 'src/components/context/TaskNavigationContext';
+import { TaskNavigationProvider, useTaskNavigation } from 'src/components/context/TaskNavigationContext';
 import { TaskActionProvider } from 'src/components/context/TaskActionContext';
 import { mongoPersistenceProvider } from '../persistence_provider/MongoPersistenceProvider';
+import { useShortcutScope } from './hooks/useShortcutScope';
 
 export const DashboardContent: React.FC = () => {
     const [isLeftMenuOpen, setIsLeftMenuOpen] = useState(true);
     const [activeTab, setActiveTab] = useState<TabValue>('inbox');
     const { onDragEnd } = useTaskDragAndDrop();
+
+    const shortcutScope = 'dashboardContent';
+    useShortcutScope(shortcutScope);
 
     const toggleLeftMenu = useCallback(() => {
         setIsLeftMenuOpen(prev => !prev);
@@ -43,6 +44,7 @@ export const DashboardContent: React.FC = () => {
             action: toggleLeftMenu,
             description: 'Toggle reusable tasks picker',
             order: 2,
+            scope: shortcutScope,
         }),
         [toggleLeftMenu]
     );
@@ -54,6 +56,7 @@ export const DashboardContent: React.FC = () => {
             action: () => toggleTab('inbox'),
             description: 'Switch to inbox panel',
             order: 2,
+            scope: shortcutScope,
         }),
         [toggleTab]
     );
@@ -65,6 +68,7 @@ export const DashboardContent: React.FC = () => {
             action: () => toggleTab('reusableTasks'),
             description: 'Switch to reusable tasks panel',
             order: 2,
+            scope: shortcutScope,
         }),
         [toggleTab]
     );
@@ -75,6 +79,7 @@ export const DashboardContent: React.FC = () => {
 
     return (
         <TaskNavigationProvider>
+            <TaskNavigationHandler shortcutScope={shortcutScope} />
             <TaskActionProvider persistenceProvider={mongoPersistenceProvider}>
                 <div className={'flex flex-1'}>
                     <DragDropContext onDragEnd={onDragEnd}>
@@ -93,7 +98,6 @@ export const DashboardContent: React.FC = () => {
                                 toggleOpen={toggleLeftMenu}
                                 isOpen={isLeftMenuOpen}
                             />
-                            <TaskNavigationHandler />
                             <DailyPlanDashboard />
                         </div>
                     </DragDropContext>
@@ -103,7 +107,7 @@ export const DashboardContent: React.FC = () => {
     );
 };
 
-const TaskNavigationHandler: React.FC = () => {
+const TaskNavigationHandler: React.FC<{ shortcutScope: string }> = ({ shortcutScope }) => {
     const { moveHighlight, clearHighlight, performAction } =
         useTaskNavigation();
 
@@ -114,8 +118,9 @@ const TaskNavigationHandler: React.FC = () => {
             action: () => moveHighlight('left'),
             description: 'Move highlight left',
             order: 3,
+            scope: shortcutScope
         }),
-        [moveHighlight]
+        [moveHighlight, shortcutScope]
     );
 
     const moveDownShortcut: Shortcut = useMemo(
@@ -125,8 +130,9 @@ const TaskNavigationHandler: React.FC = () => {
             action: () => moveHighlight('down'),
             description: 'Move highlight down',
             order: 3,
+            scope: shortcutScope
         }),
-        [moveHighlight]
+        [moveHighlight, shortcutScope]
     );
 
     const moveUpShortcut: Shortcut = useMemo(
@@ -136,8 +142,9 @@ const TaskNavigationHandler: React.FC = () => {
             action: () => moveHighlight('up'),
             description: 'Move highlight up',
             order: 3,
+            scope: shortcutScope
         }),
-        [moveHighlight]
+        [moveHighlight, shortcutScope]
     );
 
     const moveRightShortcut: Shortcut = useMemo(
@@ -147,8 +154,9 @@ const TaskNavigationHandler: React.FC = () => {
             action: () => moveHighlight('right'),
             description: 'Move highlight right',
             order: 3,
+            scope: shortcutScope
         }),
-        [moveHighlight]
+        [moveHighlight, shortcutScope]
     );
 
     const clearHighlightShortcut: Shortcut = useMemo(
@@ -160,8 +168,9 @@ const TaskNavigationHandler: React.FC = () => {
             },
             description: 'Clear highlight',
             order: 4,
+            scope: shortcutScope
         }),
-        [clearHighlight]
+        [clearHighlight, shortcutScope]
     );
 
     const editTaskShortcut: Shortcut = useMemo(
@@ -171,8 +180,9 @@ const TaskNavigationHandler: React.FC = () => {
             action: () => performAction('edit'),
             description: 'Edit highlighted task',
             order: 3,
+            scope: shortcutScope
         }),
-        [performAction]
+        [performAction, shortcutScope]
     );
 
     const deleteTaskShortcut: Shortcut = useMemo(
@@ -182,8 +192,9 @@ const TaskNavigationHandler: React.FC = () => {
             action: () => performAction('delete'),
             description: 'Delete highlighted task',
             order: 3,
+            scope: shortcutScope
         }),
-        [performAction]
+        [performAction, shortcutScope]
     );
 
     const taskDetailsShortcut: Shortcut = useMemo(
@@ -193,30 +204,33 @@ const TaskNavigationHandler: React.FC = () => {
             action: () => performAction('show-details'),
             description: 'Show highlighted task details',
             order: 3,
+            scope: shortcutScope
         }),
-        [performAction]
+        [performAction, shortcutScope]
     );
 
     const moveTaskRightShortcut: Shortcut = useMemo(
         () => ({
             id: 'move-task-right',
-            keys: ['Shift', 'l'],
+            keys: ['shift', 'l'],
             action: () => performAction('move-next'),
             description: 'Move highlighted task right',
             order: 3,
+            scope: shortcutScope
         }),
-        [performAction]
+        [performAction, shortcutScope]
     );
 
     const moveTaskLeftShortcut: Shortcut = useMemo(
         () => ({
             id: 'move-task-left',
-            keys: ['Shift', 'h'],
+            keys: ['shift', 'h'],
             action: () => performAction('move-prev'),
             description: 'Move highlighted task left',
             order: 3,
+            scope: shortcutScope
         }),
-        [performAction]
+        [performAction, shortcutScope]
     );
 
     const openUnravelDialogShortcut: Shortcut = useMemo(
@@ -226,8 +240,9 @@ const TaskNavigationHandler: React.FC = () => {
             action: () => performAction('show-unravel'),
             description: 'Open unravel dialog for the highlighted task',
             order: 3,
+            scope: shortcutScope
         }),
-        [performAction]
+        [performAction, shortcutScope]
     );
 
     useRegisterShortcut(moveLeftShortcut);

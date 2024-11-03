@@ -1,11 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-} from 'src/components/ui/dialog';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from 'src/components/ui/dialog';
+import { useShortcutScope } from '../hooks/useShortcutScope';
+import { generateHash } from '../../lib/utils';
 
 interface BaseDialogProps {
     open: boolean;
@@ -35,6 +31,10 @@ export const BaseDialog: React.FC<BaseDialogProps> = ({
     contentClassName,
 }) => {
     const [isRendered, setIsRendered] = useState<boolean>(false);
+
+    // dialogs should disable lower scopes of shortcuts. dialog-on-dialog case requires unique hash
+    const dialogScope = useMemo(() => 'disableLowerScopes' + generateHash(8), []);
+    useShortcutScope(dialogScope, open)
 
     useEffect(() => {
         if (open) {

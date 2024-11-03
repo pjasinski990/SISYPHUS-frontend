@@ -83,3 +83,9 @@ export function stringToEnum<T extends Record<string, string | number>>(
 export function escapeRegex(text: string): string {
     return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
+
+export function generateHash(length = 16): string {
+    const array = new Uint8Array(length);
+    crypto.getRandomValues(array);
+    return Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join('');
+}

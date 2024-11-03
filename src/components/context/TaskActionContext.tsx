@@ -3,7 +3,7 @@ import { Task } from '../../service/taskService';
 import { TaskDialog } from '../dialog/TaskDialog';
 import { ConfirmDialog } from '../dialog/ConfirmDialog';
 import { useAllTaskLists } from './TaskListsContext';
-import { TaskFormData } from 'src/components/task/task_form/TaskForm';
+import { TaskFormData } from '../task/task_form/taskFormData';
 import { TaskItem } from 'src/components/task/TaskItem';
 import { TaskDetailsDialog } from 'src/components/dialog/TaskDetailsDialog';
 import { useAuth } from 'src/components/context/AuthContext';

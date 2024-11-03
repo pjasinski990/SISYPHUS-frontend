@@ -12,7 +12,7 @@ import ProfilePage from './pages/ProfilePage';
 import StatsPage from './pages/StatsPage';
 import { AuthProvider, useAuth } from './components/context/AuthContext';
 import { ShortcutsProvider } from './components/context/ShortcutsContext';
-import KeyboardShortcuts from './components/keyboard/KeyboardShortcutHandler';
+import { KeyboardShortcutHandler } from './components/keyboard/KeyboardShortcutHandler';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
     children,
@@ -86,7 +86,7 @@ const App: React.FC = () => {
     return (
         <AuthProvider>
             <ShortcutsProvider>
-                <KeyboardShortcuts />
+                <KeyboardShortcutHandler />
                 <Router>
                     <AppRoutes />
                 </Router>

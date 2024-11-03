@@ -5,6 +5,7 @@ import { useTaskNavigation } from 'src/components/context/TaskNavigationContext'
 import { TaskList } from '../../lib/taskList';
 import { Shortcut } from '../context/ShortcutsContext';
 import { useRegisterShortcut } from '../hooks/useRegisterShortcut';
+import { useShortcutScope } from '../hooks/useShortcutScope';
 
 interface ScratchTaskListProps {
     taskList: TaskList;
@@ -26,59 +27,67 @@ export const ScratchTaskList: React.FC<ScratchTaskListProps> = ({
     const { moveHighlight, clearHighlight, performAction } =
         useTaskNavigation();
 
+    const scratchListScope = 'scratchShortcutsScope'
+    useShortcutScope(scratchListScope);
+
     const moveDownShortcut: Shortcut = useMemo(
         () => ({
-            id: 'move-highlight-down',
+            id: 'move-highlight-down-scratch',
             keys: ['j'],
             action: () => moveHighlight('down'),
             description: 'Move highlight down',
             order: 3,
+            scope: scratchListScope,
         }),
         [moveHighlight]
     );
 
     const moveUpShortcut: Shortcut = useMemo(
         () => ({
-            id: 'move-highlight-up',
+            id: 'move-highlight-up-scratch',
             keys: ['k'],
             action: () => moveHighlight('up'),
             description: 'Move highlight up',
             order: 3,
+            scope: scratchListScope,
         }),
         [moveHighlight]
     );
 
     const clearHighlightShortcut: Shortcut = useMemo(
         () => ({
-            id: 'clear-highlight',
-            keys: ['Escape'],
+            id: 'clear-highlight-scratch',
+            keys: ['esc'],
             action: () => {
                 clearHighlight();
             },
             description: 'Clear highlight',
             order: 4,
+            scope: scratchListScope,
         }),
         [clearHighlight]
     );
 
     const editTaskShortcut: Shortcut = useMemo(
         () => ({
-            id: 'edit-highlighted-task',
+            id: 'edit-highlighted-task-scratch',
             keys: ['e'],
             action: () => performAction('edit'),
             description: 'Edit highlighted task',
             order: 3,
+            scope: scratchListScope,
         }),
         [performAction]
     );
 
     const deleteTaskShortcut: Shortcut = useMemo(
         () => ({
-            id: 'delete-highlighted-task',
+            id: 'delete-highlighted-task-scratch',
             keys: ['x'],
             action: () => performAction('delete'),
             description: 'Delete highlighted task',
             order: 3,
+            scope: scratchListScope,
         }),
         [performAction]
     );
