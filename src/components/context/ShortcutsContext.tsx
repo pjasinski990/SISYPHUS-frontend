@@ -12,7 +12,7 @@ export interface Shortcut {
     scope?: string;
 }
 
-interface ShortcutsContextType {
+export interface ShortcutsContextType {
     shortcuts: Shortcut[];
     setShortcuts: React.Dispatch<React.SetStateAction<Shortcut[]>>;
     pushScope: (scope: string) => void;

@@ -2,8 +2,8 @@ import React, { ReactElement } from 'react';
 import { render, RenderOptions } from '@testing-library/react';
 import { MockAuthProvider } from '../mocks/MockAuthContext';
 import { AuthContextType } from '../../src/components/context/AuthContext';
-import { ShortcutsContextType } from '../../src/components/context/ShortcutsContext';
 import { MockShortcutsProvider } from '../mocks/MockShortcutsContext';
+import { ShortcutsContextType } from '../../src/components/context/ShortcutsContext';
 
 interface CustomRenderOptions extends RenderOptions {
     authValue?: Partial<AuthContextType>;

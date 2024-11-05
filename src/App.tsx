@@ -30,7 +30,7 @@ const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     );
 };
 
-const AppRoutes: React.FC = () => {
+export const AppRoutes: React.FC = () => {
     const { isAuthenticated } = useAuth();
 
     return (

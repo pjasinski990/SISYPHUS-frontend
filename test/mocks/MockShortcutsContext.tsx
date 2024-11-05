@@ -11,6 +11,9 @@ export const MockShortcutsProvider: React.FC<MockShortcutsProviderProps> = ({ ch
     const defaultValue: ShortcutsContextType = {
         shortcuts: [],
         setShortcuts: vi.fn(),
+        pushScope: vi.fn(),
+        popScope: vi.fn(),
+        activeScope: 'someScope',
         ...value,
     };
 

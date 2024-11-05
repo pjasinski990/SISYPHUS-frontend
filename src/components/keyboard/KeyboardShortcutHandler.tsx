@@ -11,9 +11,6 @@ export const KeyboardShortcutHandler: React.FC = () => {
             return !shortcut.scope || shortcut.scope === activeScope;
         });
 
-        console.log('Active scope:', activeScope);
-        console.log('Active shortcuts:', activeShortcuts);
-
         activeShortcuts.forEach(shortcut => {
             Mousetrap.bind(shortcut.keys.join('+'), (event: KeyboardEvent) => {
                 event.preventDefault();
