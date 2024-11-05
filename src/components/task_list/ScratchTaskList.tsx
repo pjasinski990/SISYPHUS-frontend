@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { Task } from '../../service/taskService';
 import { TaskItem } from 'src/components/task/TaskItem';
-import { useTaskNavigation } from 'src/components/context/TaskNavigationContext';
+import { useTaskNavigation } from 'src/components/navigation/TaskNavigationContext';
 import { TaskList } from '../../lib/taskList';
 import { Shortcut } from '../context/ShortcutsContext';
 import { useRegisterShortcut } from '../hooks/useRegisterShortcut';

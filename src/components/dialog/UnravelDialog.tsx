@@ -18,7 +18,7 @@ import {
 } from 'src/components/context/TaskListsContext';
 import { Textarea } from '../ui/textarea';
 import { TaskList } from '../../lib/taskList';
-import { TaskNavigationProvider } from '../context/TaskNavigationContext';
+import { TaskNavigationProvider } from '../navigation/TaskNavigationContext';
 import { ScratchTaskList } from '../task_list/ScratchTaskList';
 import { InMemoryPersistenceProvider } from '../../persistence_provider/InMemoryPersistenceProvider';
 

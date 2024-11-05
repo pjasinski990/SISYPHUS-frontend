@@ -3,7 +3,7 @@ import { Droppable } from '@hello-pangea/dnd';
 import { Task } from '../../service/taskService';
 import { PlusButton } from 'src/components/library/Buttons';
 import { TaskItem } from 'src/components/task/TaskItem';
-import { useTaskNavigation } from 'src/components/context/TaskNavigationContext';
+import { useTaskNavigation } from 'src/components/navigation/TaskNavigationContext';
 
 interface TaskListProps {
     title: string;

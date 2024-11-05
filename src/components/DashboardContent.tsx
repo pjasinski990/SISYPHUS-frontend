@@ -7,10 +7,11 @@ import { DragDropContext } from '@hello-pangea/dnd';
 import { Shortcut } from 'src/components/context/ShortcutsContext';
 import { useRegisterShortcut } from 'src/components/hooks/useRegisterShortcut';
 import { useTaskDragAndDrop } from 'src/components/context/TaskDragDropContext';
-import { TaskNavigationProvider, useTaskNavigation } from 'src/components/context/TaskNavigationContext';
+import { TaskNavigationProvider, useTaskNavigation } from 'src/components/navigation/TaskNavigationContext';
 import { TaskActionProvider } from 'src/components/context/TaskActionContext';
 import { mongoPersistenceProvider } from '../persistence_provider/MongoPersistenceProvider';
 import { useShortcutScope } from './hooks/useShortcutScope';
+import { Movement } from './navigation/Movement';
 
 export const DashboardContent: React.FC = () => {
     const [isLeftMenuOpen, setIsLeftMenuOpen] = useState(true);
@@ -115,7 +116,7 @@ const TaskNavigationHandler: React.FC<{ shortcutScope: string }> = ({ shortcutSc
         () => ({
             id: 'move-highlight-left',
             keys: ['h'],
-            action: () => moveHighlight('left'),
+            action: () => moveHighlight(Movement.LEFT),
             description: 'Move highlight left',
             order: 3,
             scope: shortcutScope
@@ -127,7 +128,7 @@ const TaskNavigationHandler: React.FC<{ shortcutScope: string }> = ({ shortcutSc
         () => ({
             id: 'move-highlight-down',
             keys: ['j'],
-            action: () => moveHighlight('down'),
+            action: () => moveHighlight(Movement.DOWN),
             description: 'Move highlight down',
             order: 3,
             scope: shortcutScope
@@ -139,7 +140,7 @@ const TaskNavigationHandler: React.FC<{ shortcutScope: string }> = ({ shortcutSc
         () => ({
             id: 'move-highlight-up',
             keys: ['k'],
-            action: () => moveHighlight('up'),
+            action: () => moveHighlight(Movement.UP),
             description: 'Move highlight up',
             order: 3,
             scope: shortcutScope
@@ -151,8 +152,32 @@ const TaskNavigationHandler: React.FC<{ shortcutScope: string }> = ({ shortcutSc
         () => ({
             id: 'move-highlight-right',
             keys: ['l'],
-            action: () => moveHighlight('right'),
+            action: () => moveHighlight(Movement.RIGHT),
             description: 'Move highlight right',
+            order: 3,
+            scope: shortcutScope
+        }),
+        [moveHighlight, shortcutScope]
+    );
+
+    const moveAllUpShortcut: Shortcut = useMemo(
+        () => ({
+            id: 'move-highlight-all-up',
+            keys: ['g g'],
+            action: () => moveHighlight(Movement.ALL_UP),
+            description: 'Move highlight to the top',
+            order: 3,
+            scope: shortcutScope
+        }),
+        [moveHighlight, shortcutScope]
+    );
+
+    const moveAllDownShortcut: Shortcut = useMemo(
+        () => ({
+            id: 'move-highlight-all-down',
+            keys: ['G'],
+            action: () => moveHighlight(Movement.ALL_DOWN),
+            description: 'Move highlight to the bottom',
             order: 3,
             scope: shortcutScope
         }),
@@ -249,6 +274,8 @@ const TaskNavigationHandler: React.FC<{ shortcutScope: string }> = ({ shortcutSc
     useRegisterShortcut(moveDownShortcut);
     useRegisterShortcut(moveUpShortcut);
     useRegisterShortcut(moveRightShortcut);
+    useRegisterShortcut(moveAllUpShortcut);
+    useRegisterShortcut(moveAllDownShortcut);
     useRegisterShortcut(clearHighlightShortcut);
     useRegisterShortcut(editTaskShortcut);
     useRegisterShortcut(deleteTaskShortcut);

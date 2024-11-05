@@ -3,7 +3,7 @@ import Layout from 'src/components/Layout';
 import { TaskListsProvider } from 'src/components/context/TaskListsContext';
 import { TaskDragDropProvider } from 'src/components/context/TaskDragDropContext';
 import { DashboardContent } from 'src/components/DashboardContent';
-import { TaskNavigationProvider } from 'src/components/context/TaskNavigationContext';
+import { TaskNavigationProvider } from 'src/components/navigation/TaskNavigationContext';
 import { TaskActionProvider } from 'src/components/context/TaskActionContext';
 import { mongoPersistenceProvider } from '../persistence_provider/MongoPersistenceProvider';
 
