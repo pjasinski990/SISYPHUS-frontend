@@ -21,6 +21,8 @@ export const ReusableTaskPicker: React.FC = () => {
     const tasks = useTaskList('REUSABLE').taskList.tasks;
     const { openCreateTaskDialog } = useTaskAction();
 
+    const shortcutScope = 'dashboardContent';
+
     const cardContentRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
         if (cardContentRef.current) {
@@ -38,6 +40,7 @@ export const ReusableTaskPicker: React.FC = () => {
             action: () => openCreateTaskDialog('REUSABLE'),
             description: 'Add a new task to reusable tasks',
             order: 1,
+            scope: shortcutScope,
         }),
         [openCreateTaskDialog]
     );

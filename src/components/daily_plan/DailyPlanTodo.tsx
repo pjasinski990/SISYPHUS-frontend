@@ -9,13 +9,16 @@ export const DailyPlanTodo: React.FC = () => {
     const { openCreateTaskDialog } = useTaskAction();
     const { taskList } = useTaskList('DAILY_TODO');
 
+    const shortcutScope = 'dashboardContent';
+
     const addTaskShortcut: Shortcut = useMemo(
         () => ({
             id: 'add-task-daily-plan',
-            keys: ['C'],
+            keys: ['c'],
             action: () => openCreateTaskDialog('DAILY_TODO'),
             description: "Add a new task to today's todo list",
             order: 1,
+            scope: shortcutScope,
         }),
         [openCreateTaskDialog]
     );
