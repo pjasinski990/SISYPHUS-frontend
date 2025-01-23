@@ -19,12 +19,13 @@ If you're undeterred by the name and still want to try it out:
 
 1. Clone this repository:
    ```
-   git clone git@github.com:pjasinski990/SISYPHUS-frontend.git
+   git clone https://github.com/pjasinski990/SISYPHUS-frontend.git
    cd SISYPHUS-frontend
    ```
 
 2. Install dependencies:
    ```
+   nvm use
    npm install
    ```
 
