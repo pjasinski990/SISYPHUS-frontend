@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosResponse, AxiosRequestConfig } from 'axios';
 import { AuthService } from './authService';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const SISYPHUS_BACKEND_HOSTNAME = import.meta.env.VITE_SISYPHUS_BACKEND_HOSTNAME;
 
 class ApiService {
     private readonly api: AxiosInstance;
@@ -155,4 +155,4 @@ class ApiService {
     }
 }
 
-export const apiService = new ApiService(API_BASE_URL);
+export const apiService = new ApiService(`http://${SISYPHUS_BACKEND_HOSTNAME}`);

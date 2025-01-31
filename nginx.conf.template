@@ -10,6 +10,10 @@ server {
   }
 
   location /api/ {
-    proxy_pass http://localhost:8080;
+    proxy_pass http://$SISYPHUS_BACKEND_HOSTNAME;
+  }
+
+  location /auth/ {
+    proxy_pass http://$SISYPHUS_BACKEND_HOSTNAME;
   }
 }

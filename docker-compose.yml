@@ -1,6 +1,8 @@
 version: '3.8'
 services:
   sisyphus-frontend:
+    environment:
+      - SISYPHUS_BACKEND_HOSTNAME=${SISYPHUS_BACKEND_HOSTNAME}
     build:
       context: .
       dockerfile: ${DOCKERFILE:-Dockerfile.dev}

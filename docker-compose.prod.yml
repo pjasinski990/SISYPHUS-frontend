@@ -1,6 +1,8 @@
 version: '3.8'
 services:
   sisyphus-frontend:
+    environment:
+      - SISYPHUS_BACKEND_HOSTNAME=${SISYPHUS_BACKEND_HOSTNAME}
     image: ${DOCKER_REGISTRY_URL}/${TAG_NAME}
     ports:
       - "3000:80"
