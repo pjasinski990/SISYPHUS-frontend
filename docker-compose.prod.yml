@@ -1,0 +1,6 @@
+version: '3.8'
+services:
+  sisyphus-frontend:
+    image: ${DOCKER_REGISTRY_URL}/${TAG_NAME}
+    ports:
+      - "3000:80"

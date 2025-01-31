@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  sisyphus-frontend:
+    build:
+      context: .
+      dockerfile: ${DOCKERFILE:-Dockerfile.dev}
+    image: sisyphus-frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules

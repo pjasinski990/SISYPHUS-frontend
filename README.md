@@ -9,7 +9,7 @@ is my attempt at a custom task scheduler and day planner.
 - Existential crisis management (results may vary)
 
 ## Running the App
-If you're undeterred by the name and still want to try it out:
+If you feel undeterred by the name and still want to try it out:
 
 ### Prerequisites
 
