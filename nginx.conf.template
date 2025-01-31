@@ -1,12 +1,6 @@
 server {
-    listen 443 ssl;
+    listen 80;
     server_name $SISYPHUS_FRONTEND_HOSTNAME;
-
-    ssl_certificate     /etc/cloudflare_certs/hexd.space.pem;
-    ssl_certificate_key /etc/cloudflare_certs/hexd.space.key;
-
-    ssl_protocols       TLSv1.2 TLSv1.3;
-    ssl_ciphers         HIGH:!aNULL:!MD5;
 
     root /usr/share/nginx/html;
     index index.html;
@@ -16,15 +10,9 @@ server {
     }
 
     location /api/ {
-        proxy_pass https://$SISYPHUS_BACKEND_HOSTNAME;
+        proxy_pass http://$SISYPHUS_BACKEND_HOSTNAME;
     }
     location /auth/ {
-        proxy_pass https://$SISYPHUS_BACKEND_HOSTNAME;
+        proxy_pass http://$SISYPHUS_BACKEND_HOSTNAME;
     }
-}
-
-server {
-    listen 80;
-    server_name $SISYPHUS_FRONTEND_HOSTNAME;
-    return 301 https://$host$request_uri;
 }

@@ -5,6 +5,8 @@ services:
       - SISYPHUS_BACKEND_HOSTNAME=${SISYPHUS_BACKEND_HOSTNAME}
       - SISYPHUS_FRONTEND_HOSTNAME=${SISYPHUS_FRONTEND_HOSTNAME}
     build:
+      args:
+        SISYPHUS_BACKEND_HOSTNAME: ${SISYPHUS_BACKEND_HOSTNAME}
       context: .
       dockerfile: ${DOCKERFILE:-Dockerfile.dev}
     image: sisyphus-frontend
