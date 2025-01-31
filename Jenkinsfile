@@ -11,6 +11,7 @@ pipeline {
         DEPLOY_TARGET_HOST        = "${env.DEPLOY_TARGET_HOST}"
         DEPLOY_USER               = "${env.DEPLOY_USER}"
         SISYPHUS_BACKEND_HOSTNAME = "${env.SISYPHUS_BACKEND_HOSTNAME}"
+        SISYPHUS_FRONTEND_HOSTNAME = "${env.SISYPHUS_FRONTEND_HOSTNAME}"
 
         DEPLOY_TARGET_DIR    = "/home/${DEPLOY_USER}/${DOCKER_IMAGE_NAME}"
         TAG_NAME             = ""
@@ -55,6 +56,7 @@ pipeline {
                         DEPLOY_USER: ${DEPLOY_USER}
                         DEPLOY_TARGET_HOST: ${DEPLOY_TARGET_HOST}
                         SISYPHUS_BACKEND_HOSTNAME: "${SISYPHUS_BACKEND_HOSTNAME}"
+                        SISYPHUS_FRONTEND_HOSTNAME: "${SISYPHUS_FRONTEND_HOSTNAME}"
                     """
 
                     def commitHash = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
@@ -92,6 +94,7 @@ pipeline {
                                 && export DOCKER_REGISTRY_URL=${DOCKER_REGISTRY_URL} \
                                 && export TAG_NAME=${TAG_NAME} \
                                 && export SISYPHUS_BACKEND_HOSTNAME=${SISYPHUS_BACKEND_HOSTNAME} \
+                                && export SISYPHUS_FRONTEND_HOSTNAME=${SISYPHUS_FRONTEND_HOSTNAME} \
                                 && docker-compose pull \
                                 && docker-compose down && docker image prune -f && docker-compose up -d
                             "

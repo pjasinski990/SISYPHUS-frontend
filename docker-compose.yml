@@ -3,6 +3,7 @@ services:
   sisyphus-frontend:
     environment:
       - SISYPHUS_BACKEND_HOSTNAME=${SISYPHUS_BACKEND_HOSTNAME}
+      - SISYPHUS_FRONTEND_HOSTNAME=${SISYPHUS_FRONTEND_HOSTNAME}
     build:
       context: .
       dockerfile: ${DOCKERFILE:-Dockerfile.dev}

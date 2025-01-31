@@ -3,6 +3,10 @@ services:
   sisyphus-frontend:
     environment:
       - SISYPHUS_BACKEND_HOSTNAME=${SISYPHUS_BACKEND_HOSTNAME}
+      - SISYPHUS_FRONTEND_HOSTNAME=${SISYPHUS_FRONTEND_HOSTNAME}
     image: ${DOCKER_REGISTRY_URL}/${TAG_NAME}
     ports:
-      - "3000:80"
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /opt/cloudflare_certs:/etc/cloudflare_certs:ro
