@@ -25,8 +25,11 @@ const Navigation: React.FC<NavigationProps> = ({
     return (
         <nav className="flex justify-between items-center px-4 py-2 bg-white dark:bg-gray-800 shadow">
             <Link to="/" className="text-xl font-bold">
-                <div className={'flex items-center'}>
-                    <span>🤯 mind=blown 🤯</span>
+                <div className={'flex items-center mx-4 text-slate-400'}>
+                    <span>SISYPHUS</span>
+                    <div className="mx-2">
+                        <img src="/favicon.svg" alt="Favicon" width={40} height={40} />
+                    </div>
                 </div>
             </Link>
             <div className="flex items-center space-x-4">

@@ -64,7 +64,7 @@ describe('Navigation Component', () => {
         expect(screen.queryByText(/JaneDoe|JohnDoe/)).not.toBeInTheDocument();
 
         expect(screen.getByRole('button', { name: /toggle theme/i })).toBeInTheDocument();
-        expect(screen.getByText('🤯 mind=blown 🤯')).toBeInTheDocument();
+        expect(screen.getByText('SISYPHUS')).toBeInTheDocument();
     });
 
     it('calls toggleDarkMode when dark mode button is clicked', () => {
