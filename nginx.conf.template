@@ -15,4 +15,7 @@ server {
     location /auth/ {
         proxy_pass http://$SISYPHUS_BACKEND_HOSTNAME;
     }
+    location /generate/ {
+        proxy_pass http://$SISYPHUS_BACKEND_HOSTNAME;
+    }
 }

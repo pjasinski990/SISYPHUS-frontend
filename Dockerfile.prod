@@ -9,15 +9,11 @@ COPY . .
 
 FROM dependencies AS build
 
-ARG SISYPHUS_BACKEND_HOSTNAME
-ENV VITE_SISYPHUS_BACKEND_HOSTNAME=$SISYPHUS_BACKEND_HOSTNAME
-
 RUN npm run build
 
 FROM nginx:alpine AS production
 
 ARG SISYPHUS_BACKEND_HOSTNAME
-ENV VITE_SISYPHUS_BACKEND_HOSTNAME=$SISYPHUS_BACKEND_HOSTNAME
 
 COPY nginx.conf.template /etc/nginx/templates/default.conf.template
 RUN apk add --no-cache gettext
