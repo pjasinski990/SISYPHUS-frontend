@@ -10,6 +10,18 @@ export interface AuthResponse {
 export class AuthService {
     static TOKEN_TIMEOUT_DURATION = 1000;
 
+    public async refreshRequest(
+        refreshToken: string | null,
+    ): Promise<AuthResponse> {
+        try {
+            return await apiService.post<AuthResponse>('/auth/refresh', {
+                refreshToken,
+            });
+        } catch (error) {
+            this.handleAuthError(error);
+        }
+    }
+
     public async authRequest(
         endpoint: string,
         username: string,
@@ -109,12 +121,9 @@ export class AuthService {
             throw new Error('No refresh token available');
         }
         try {
-            const response = await axios.post<AuthResponse>(
-                'http://localhost:8080/auth/refresh',
-                { refreshToken }
-            );
-            const newToken = response.data.token;
-            const newRefreshToken = response.data.refreshToken;
+            const response = await authService.refreshRequest(refreshToken);
+            const newToken = response.token;
+            const newRefreshToken = response.refreshToken;
             if (!newToken) {
                 throw new Error('No new access token returned');
             }
