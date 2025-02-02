@@ -43,11 +43,9 @@ const LoginPage: React.FC = () => {
     };
 
     const handleSuccessfulLoginResponse = async (response: AuthResponse) => {
-        const token = AuthService.extractToken(response);
-        const refreshToken = AuthService.extractRefreshToken(response);
-        setToken(token);
-        setRefreshToken(refreshToken);
-        const tokenSet = await AuthService.waitForToken(token);
+        setToken(response.token);
+        setRefreshToken(response.refreshToken);
+        const tokenSet = await AuthService.waitForToken(response.token);
         if (tokenSet) {
             navigate('/dashboard');
         } else {

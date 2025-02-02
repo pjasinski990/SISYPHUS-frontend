@@ -1,7 +1,14 @@
-import axios, { AxiosInstance, AxiosResponse, AxiosRequestConfig } from 'axios';
-import { AuthService } from './authService';
+import axios, {
+    AxiosInstance,
+    AxiosResponse,
+    AxiosError,
+    InternalAxiosRequestConfig,
+} from 'axios';
+import { authService } from './authService';
 
-const SISYPHUS_BACKEND_HOSTNAME = import.meta.env.VITE_SISYPHUS_BACKEND_HOSTNAME ?? "";
+interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
+    _retry?: boolean;
+}
 
 class ApiService {
     private readonly api: AxiosInstance;
@@ -11,46 +18,47 @@ class ApiService {
             baseURL,
             withCredentials: true,
         });
+        this.initializeInterceptors();
+    }
+
+    private initializeInterceptors() {
         this.api.interceptors.request.use(
-            async config => {
-                let token = AuthService.getAuthToken();
+            async (config: InternalAxiosRequestConfig) => {
+                let token = authService.getAuthToken();
                 if (token) {
-                    if (!AuthService.isTokenValid(token)) {
+                    if (!authService.isTokenValid(token)) {
                         try {
-                            await AuthService.refreshAccessToken();
-                            token = AuthService.getAuthToken();
+                            await authService.refreshAccessToken();
+                            token = authService.getAuthToken();
                         } catch (error) {
-                            AuthService.logout();
+                            authService.logout();
                             throw error;
                         }
                     }
+                    config.headers = config.headers || {};
                     config.headers['Authorization'] = `Bearer ${token}`;
                 }
                 return config;
             },
-            error => Promise.reject(error)
+            (error) => Promise.reject(error)
         );
 
         this.api.interceptors.response.use(
-            response => response,
-            async error => {
-                const originalRequest = error.config;
-                if (
-                    error.response &&
-                    error.response.status === 401 &&
-                    !originalRequest._retry
-                ) {
+            (response) => response,
+            async (error: AxiosError) => {
+                const originalRequest = error.config as CustomAxiosRequestConfig;
+                if (error.response?.status === 401 && !originalRequest._retry) {
                     originalRequest._retry = true;
                     try {
-                        await AuthService.refreshAccessToken();
-                        const token = AuthService.getAuthToken();
+                        await authService.refreshAccessToken();
+                        const token = authService.getAuthToken();
                         if (token) {
-                            originalRequest.headers['Authorization'] =
-                                `Bearer ${token}`;
+                            originalRequest.headers = originalRequest.headers || {};
+                            originalRequest.headers['Authorization'] = `Bearer ${token}`;
                         }
                         return this.api(originalRequest);
                     } catch (refreshError) {
-                        AuthService.logout();
+                        authService.logout();
                         return Promise.reject(refreshError);
                     }
                 }
@@ -59,7 +67,7 @@ class ApiService {
         );
     }
 
-    handleAxiosError(error: unknown): never {
+    private handleAxiosError(error: unknown): never {
         if (axios.isAxiosError(error)) {
             console.error('Axios error:', error.message);
             throw new Error(`Request failed: ${error.message}`);
@@ -69,90 +77,63 @@ class ApiService {
         }
     }
 
-    public async authenticatedGet<T>(
-        endpoint: string,
-        config: AxiosRequestConfig = {}
+    private async requestWrapper<T>(
+        requestFn: () => Promise<AxiosResponse<T>>
     ): Promise<T> {
         try {
-            const response: AxiosResponse<T> = await this.api.get(
-                endpoint,
-                config
-            );
+            const response = await requestFn();
             return response.data;
         } catch (error) {
             this.handleAxiosError(error);
         }
     }
 
-    public async authenticatedPost<T>(
+    public authenticatedGet<T>(
+        endpoint: string,
+        config: Record<string, unknown> = {}
+    ): Promise<T> {
+        return this.requestWrapper(() => this.api.get<T>(endpoint, config));
+    }
+
+    public authenticatedPost<T>(
         endpoint: string,
         data: object,
-        config: AxiosRequestConfig = {}
+        config: Record<string, unknown> = {}
     ): Promise<T> {
-        try {
-            const response: AxiosResponse<T> = await this.api.post(
-                endpoint,
-                data,
-                config
-            );
-            return response.data;
-        } catch (error) {
-            this.handleAxiosError(error);
-        }
+        return this.requestWrapper(() => this.api.post<T>(endpoint, data, config));
     }
 
-    public async authenticatedPut<T>(
+    public authenticatedPut<T>(
         endpoint: string,
         data: object,
-        config: AxiosRequestConfig = {}
+        config: Record<string, unknown> = {}
     ): Promise<T> {
-        try {
-            const response: AxiosResponse<T> = await this.api.put(
-                endpoint,
-                data,
-                config
-            );
-            return response.data;
-        } catch (error) {
-            this.handleAxiosError(error);
-        }
+        return this.requestWrapper(() => this.api.put<T>(endpoint, data, config));
     }
 
-    public async authenticatedDelete<T>(
+    public authenticatedDelete<T>(
         endpoint: string,
-        config: AxiosRequestConfig = {}
+        config: Record<string, unknown> = {}
     ): Promise<T> {
-        try {
-            const response: AxiosResponse<T> = await this.api.delete(
-                endpoint,
-                config
-            );
-            return response.data;
-        } catch (error) {
-            this.handleAxiosError(error);
-        }
+        return this.requestWrapper(() => this.api.delete<T>(endpoint, config));
     }
 
-    public async get<T>(
+    public get<T>(
         endpoint: string,
-        config: AxiosRequestConfig = {}
+        config: Record<string, unknown> = {}
     ): Promise<T> {
-        const response: AxiosResponse<T> = await this.api.get(endpoint, config);
-        return response.data;
+        return this.requestWrapper(() => this.api.get<T>(endpoint, config));
     }
 
-    public async post<T>(
+    public post<T>(
         endpoint: string,
         data: object,
-        config: AxiosRequestConfig = {}
+        config: Record<string, unknown> = {}
     ): Promise<T> {
-        const response: AxiosResponse<T> = await this.api.post(
-            endpoint,
-            data,
-            config
-        );
-        return response.data;
+        return this.requestWrapper(() => this.api.post<T>(endpoint, data, config));
     }
 }
 
-export const apiService = new ApiService(`${SISYPHUS_BACKEND_HOSTNAME}`);
+export const apiService = new ApiService(
+    import.meta.env.VITE_SISYPHUS_BACKEND_HOSTNAME ?? ""
+);
