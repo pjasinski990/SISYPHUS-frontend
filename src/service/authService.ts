@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { InternalAxiosRequestConfig } from 'axios';
 import { apiService } from './apiService';
 
 export interface AuthResponse {
@@ -13,7 +13,6 @@ export class AuthService {
 
     async refreshRequest(refreshToken: string | null): Promise<AuthResponse> {
         try {
-            console.log('Refreshing token...');
             return await apiService.post<AuthResponse>('/auth/refresh', { refreshToken });
         } catch (error) {
             this.handleAuthError(error);
@@ -64,6 +63,10 @@ export class AuthService {
             console.error('Error parsing token:', error);
             return false;
         }
+    }
+
+    isRefreshRequest(config: InternalAxiosRequestConfig): boolean {
+        return config.url?.includes('/auth/refresh') ?? false
     }
 
     async refreshAccessToken(): Promise<void> {

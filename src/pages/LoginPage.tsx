@@ -43,6 +43,9 @@ const LoginPage: React.FC = () => {
     };
 
     const handleSuccessfulLoginResponse = async (response: AuthResponse) => {
+        if (!response.token) {
+            throw new Error('Token is missing');
+        }
         setToken(response.token);
         setRefreshToken(response.refreshToken);
         const tokenSet = await AuthService.waitForToken(response.token);

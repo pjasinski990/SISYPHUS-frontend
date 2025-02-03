@@ -24,6 +24,10 @@ class ApiService {
     private initializeInterceptors() {
         this.api.interceptors.request.use(
             async (config: InternalAxiosRequestConfig) => {
+                if (authService.isRefreshRequest(config)) {
+                    return config;
+                }
+
                 let token = authService.getAuthToken();
                 if (token) {
                     if (!authService.isTokenValid(token)) {

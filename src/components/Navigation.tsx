@@ -28,7 +28,7 @@ const Navigation: React.FC<NavigationProps> = ({
                 <div className={'flex items-center mx-4 text-slate-400'}>
                     <span>SISYPHUS</span>
                     <div className="mx-2">
-                        <img src="/favicon.svg" alt="Favicon" width={40} height={40} />
+                        <img src="/favicon.svg" alt="Favicon" width={28} height={28} />
                     </div>
                 </div>
             </Link>
