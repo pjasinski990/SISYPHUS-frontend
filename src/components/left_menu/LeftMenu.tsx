@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
     Tabs,
     TabsContent,
@@ -22,7 +22,7 @@ const LeftMenuComponent: React.FC<LeftMenuProps> = ({
     onActiveTabChange,
 }) => {
     const [direction, setDirection] = useState(1);
-    const prevTabRef = useRef<TabValue>('inbox');
+    const prevTabRef = useRef<TabValue>(activeTab);
 
     const tabOrder: Record<TabValue, number> = useMemo(
         () => ({
@@ -32,18 +32,17 @@ const LeftMenuComponent: React.FC<LeftMenuProps> = ({
         []
     );
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         const prevIndex = tabOrder[prevTabRef.current];
         const newIndex = tabOrder[activeTab];
 
         if (newIndex > prevIndex) {
-            setDirection(-1);
-        } else if (newIndex < prevIndex) {
             setDirection(1);
+        } else if (newIndex < prevIndex) {
+            setDirection(-1);
         } else {
             setDirection(0);
         }
-
         prevTabRef.current = activeTab;
     }, [activeTab, tabOrder]);
 
