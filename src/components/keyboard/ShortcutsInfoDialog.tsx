@@ -23,17 +23,15 @@ const ShortcutsInfoDialog: React.FC = () => {
         setOpen(true);
     }, []);
 
-    const platform = navigator.userAgent.toLowerCase();
-    const isMac = platform.includes('darwin') || platform.includes('mac');
     const openInfoDialogShortcut: Shortcut = useMemo(
         () => ({
             id: 'open-shortcut-info-dialog',
-            keys: isMac ? ['Meta', '?'] : ['Ctrl', '?'],
+            keys: ['?'],
             action: openDialog,
             description: 'Open keyboard shortcuts dialog',
             order: 2,
         }),
-        [isMac, openDialog]
+        [openDialog]
     );
     useRegisterShortcut(openInfoDialogShortcut);
 

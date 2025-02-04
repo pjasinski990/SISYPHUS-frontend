@@ -187,7 +187,7 @@ const TaskNavigationHandler: React.FC<{ shortcutScope: string }> = ({ shortcutSc
     const clearHighlightShortcut: Shortcut = useMemo(
         () => ({
             id: 'clear-highlight',
-            keys: ['Escape'],
+            keys: ['escape'],
             action: () => {
                 clearHighlight();
             },
