@@ -110,7 +110,11 @@ export class AuthService {
     logout() {
         localStorage.removeItem('authToken');
         localStorage.removeItem('refreshToken');
-        window.dispatchEvent(new Event('authLogout'));
+        window.dispatchEvent(
+            new CustomEvent('authLogout', {
+                detail: { 'message': 'Your session has ended.'}
+            })
+        );
     }
 
     static waitForToken(token: string): Promise<boolean> {

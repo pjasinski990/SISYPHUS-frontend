@@ -1,11 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from 'src/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from 'src/components/ui/card';
 import { Input } from 'src/components/ui/input';
 import { Button } from 'src/components/ui/button';
 import { Alert, AlertDescription } from 'src/components/ui/alert';
@@ -20,6 +15,19 @@ const LoginPage: React.FC = () => {
     const [message, setMessage] = useState('');
     const { setToken, setRefreshToken } = useAuth();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const handleAuthLogout = (event: Event) => {
+            const customEvent = event as CustomEvent<{ message: string }>;
+            if (customEvent.detail.message) {
+                setMessage(customEvent.detail.message);
+            }
+            navigate('/login');
+        };
+
+        window.addEventListener('authLogout', handleAuthLogout);
+        return () => window.removeEventListener('authLogout', handleAuthLogout);
+    }, [navigate]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

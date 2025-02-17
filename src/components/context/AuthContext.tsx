@@ -84,24 +84,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             }
         };
 
-        const handleLogout = () => {
-            setToken(null);
-            setRefreshToken(null);
-            setUsername(null);
-        };
-
         window.addEventListener(
             'tokenRefreshed',
             handleTokenRefreshed as EventListener
         );
-        window.addEventListener('authLogout', handleLogout);
+        window.addEventListener('authLogout', logout);
 
         return () => {
             window.removeEventListener(
                 'tokenRefreshed',
                 handleTokenRefreshed as EventListener
             );
-            window.removeEventListener('authLogout', handleLogout);
+            window.removeEventListener('authLogout', logout);
         };
     }, []);
 
