@@ -276,6 +276,8 @@ export const TaskItemContent: React.FC<TaskItemContentProps> = ({
                     position={contextMenuPosition}
                     onClose={() => setShowContextMenu(false)}
                     onShowDetails={() => openTaskDetailsDialog(task)}
+                    onEdit={() => handleEditTask(task)}
+                    onRemove={() => handleRemoveTask(task)}
                     onUnravel={() => openUnravelTaskDialog(task)}
                 />
             </div>
