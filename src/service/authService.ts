@@ -45,7 +45,6 @@ export class AuthService {
             const message = data.message || 'Unknown authentication error occurred';
             throw new Error(message);
         } else {
-            console.error('Unknown error occurred:', error);
             throw new Error('An unknown error occurred during authentication.');
         }
     }

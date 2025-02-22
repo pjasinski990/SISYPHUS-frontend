@@ -71,10 +71,9 @@ class ApiService {
         );
     }
 
-    private handleAxiosError(error: unknown): never {
+    private handleRequestError(error: unknown): never {
         if (axios.isAxiosError(error)) {
-            console.error('Axios error:', error.message);
-            throw new Error(`Request failed: ${error.message}`);
+            throw error
         } else {
             console.error('Unexpected error:', error);
             throw new Error('An unexpected error occurred');
@@ -88,7 +87,7 @@ class ApiService {
             const response = await requestFn();
             return response.data;
         } catch (error) {
-            this.handleAxiosError(error);
+            this.handleRequestError(error);
         }
     }
 
