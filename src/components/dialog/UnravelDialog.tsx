@@ -161,7 +161,7 @@ export const UnravelDialog: React.FC<UnravelDialogProps> = ({
             </form>
             <div
                 className={
-                    'max-h-[600px] overflow-auto px-8 py-2 flex flex-col space-y-2'
+                    'px-8 py-2 flex flex-col space-y-2'
                 }
             >
                 {isLoading ? (

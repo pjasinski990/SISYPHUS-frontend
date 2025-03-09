@@ -59,16 +59,14 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({
             submitOnCtrlEnter={true}
             contentClassName={'min-w-[800px]'}
         >
-            <div className={'max-h-[600px] overflow-auto p-2'}>
-                <TaskForm
-                    ref={formRef}
-                    listName={listName}
-                    availableTasks={availableTasks}
-                    initialTask={initialData || null}
-                    onSubmit={onSubmit}
-                    onCancel={onCancel}
-                />
-            </div>
+            <TaskForm
+                ref={formRef}
+                listName={listName}
+                availableTasks={availableTasks}
+                initialTask={initialData || null}
+                onSubmit={onSubmit}
+                onCancel={onCancel}
+            />
         </BaseDialog>
     );
 };

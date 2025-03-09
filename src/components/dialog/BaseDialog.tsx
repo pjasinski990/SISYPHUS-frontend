@@ -77,7 +77,9 @@ export const BaseDialog: React.FC<BaseDialogProps> = ({
                 <DialogHeader>
                     <DialogTitle>{title}</DialogTitle>
                 </DialogHeader>
-                {children}
+                <div className={'max-h-[70vh] overflow-auto p-2 pr-4 mr-[-4px]'}>
+                    {children}
+                </div>
             </DialogContent>
         </Dialog>
     );

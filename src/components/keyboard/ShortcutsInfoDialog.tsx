@@ -1,23 +1,14 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Button } from 'src/components/ui/button';
 import { Keyboard } from 'lucide-react';
-import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from 'src/components/ui/dialog';
+
 import ShortcutsList from './ShortcutsList';
-import { Description } from '@radix-ui/react-dialog';
 import { Shortcut } from 'src/components/context/ShortcutsContext';
 import { useRegisterShortcut } from 'src/components/hooks/useRegisterShortcut';
+import { BaseDialog } from '../dialog/BaseDialog';
 
 const ShortcutsInfoDialog: React.FC = () => {
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
 
     const openDialog = useCallback(() => {
         setOpen(true);
@@ -33,37 +24,36 @@ const ShortcutsInfoDialog: React.FC = () => {
         }),
         [openDialog]
     );
+
     useRegisterShortcut(openInfoDialogShortcut);
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    aria-label={'Shortcuts info'}
-                    className="flex items-center space-x-2 dark:hover:bg-slate-700"
-                >
-                    <Keyboard className="h-4 w-4" />
-                    <span>Shortcuts</span>
-                </Button>
-            </DialogTrigger>
-            <DialogDescription className={'hidden'}>
-                List of shortcuts
-            </DialogDescription>
-            <DialogContent className="max-w-xl">
-                <DialogHeader>
-                    <DialogTitle>Keyboard Shortcuts</DialogTitle>
-                </DialogHeader>
-                <Description />
+        <>
+            <Button
+                variant="ghost"
+                size="sm"
+                aria-label="Shortcuts info"
+                onClick={openDialog}
+                className="flex items-center space-x-2 dark:hover:bg-slate-700"
+            >
+                <Keyboard className="h-4 w-4" />
+                <span>Shortcuts</span>
+            </Button>
+
+            <BaseDialog
+                open={open}
+                onCancel={() => setOpen(false)}
+                title="Keyboard Shortcuts"
+                description="List of shortcuts"
+                contentClassName={'min-w-[600px]'}
+            >
                 <ShortcutsList />
-                <DialogFooter>
-                    <DialogClose asChild>
-                        <Button onClick={() => setOpen(false)}>Close</Button>
-                    </DialogClose>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
+
+                <div className="flex justify-end mt-4">
+                    <Button onClick={() => setOpen(false)}>Close</Button>
+                </div>
+            </BaseDialog>
+        </>
     );
 };
 
