@@ -161,7 +161,7 @@ export const UnravelDialog: React.FC<UnravelDialogProps> = ({
             </form>
             <div
                 className={
-                    'px-8 py-2 flex flex-col space-y-2'
+                    'overflow-auto px-8 py-2 flex flex-col space-y-2'
                 }
             >
                 {isLoading ? (
@@ -186,7 +186,7 @@ export const UnravelDialog: React.FC<UnravelDialogProps> = ({
                             </TaskActionProvider>
                         </TaskListsProvider>
                     </>
-                ) : (
+                ): (
                     <p className="text-gray-500">No tasks generated.</p>
                 )}
             </div>
